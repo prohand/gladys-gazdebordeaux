@@ -23,12 +23,39 @@ export function toNumber(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+// The electricity days of a peak/off-peak contract carry the kWh split
+// (`consumptionHp` / `consumptionHc`) and may have no plain `kwh`.
+function kwhOf(entry) {
+  const kwh = toNumber(entry?.kwh ?? entry?.amountOfEnergy);
+  if (kwh !== null) {
+    return kwh;
+  }
+  const peak = toNumber(entry?.consumptionHp);
+  const offPeak = toNumber(entry?.consumptionHc);
+  return peak === null && offPeak === null ? null : (peak ?? 0) + (offPeak ?? 0);
+}
+
 function readingOf(entry) {
   return {
-    kwh: toNumber(entry?.kwh ?? entry?.amountOfEnergy),
+    kwh: kwhOf(entry),
     volume: toNumber(entry?.volumeOfEnergy ?? entry?.volume),
     cost: toNumber(entry?.price ?? entry?.amount),
     temperature: toNumber(entry?.temperature),
+  };
+}
+
+// What the day cost, split the way the customer website charts it: the
+// energy (`consumptionPrice`, or `priceHp` + `priceHc`) and the share of the
+// subscription (`contractPrice`). prices.js derives the contract prices from
+// them. Absent on gas and on old days: all null then.
+function costsOf(entry) {
+  return {
+    energyCost: toNumber(entry?.consumptionPrice),
+    subscriptionCost: toNumber(entry?.contractPrice),
+    peakKwh: toNumber(entry?.consumptionHp),
+    offPeakKwh: toNumber(entry?.consumptionHc),
+    peakCost: toNumber(entry?.priceHp),
+    offPeakCost: toNumber(entry?.priceHc),
   };
 }
 
@@ -40,13 +67,13 @@ function assertObject(raw, what) {
 
 /**
  * Daily readings, oldest first; days without a consumption are left out.
- * @returns {Array<{ date: string, kwh: number, volume: number | null, cost: number | null, temperature: number | null }>}
+ * @returns {Array<{ date: string, kwh: number, volume: number | null, cost: number | null, temperature: number | null, energyCost: number | null, subscriptionCost: number | null, peakKwh: number | null, offPeakKwh: number | null, peakCost: number | null, offPeakCost: number | null }>}
  */
 export function parseDaily(raw) {
   assertObject(raw, 'daily consumption');
   return Object.entries(raw)
     .filter(([key]) => isDay(key))
-    .map(([date, entry]) => ({ date, ...readingOf(entry) }))
+    .map(([date, entry]) => ({ date, ...readingOf(entry), ...costsOf(entry) }))
     .filter((day) => day.kwh !== null)
     .sort((a, b) => a.date.localeCompare(b.date));
 }

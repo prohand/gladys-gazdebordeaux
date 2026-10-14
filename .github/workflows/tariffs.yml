@@ -1,0 +1,93 @@
+# -----------------------------------------------------------------------------
+# Keep the electricity contract templates on the official Gaz de Bordeaux
+# prices.
+#
+# Every month (and on demand: Actions -> Electricity prices -> Run workflow),
+# downloads the official price grid of each electricity offer from
+# www.gazdebordeaux.fr, rebuilds the `energy_contracts` templates of the
+# manifest with .github/scripts/tariffs.mjs and, when a price changed, opens a
+# pull request (manifest + CHANGELOG line). Merge it, then cut a release:
+# Gladys offers the new prices to the contracts using the templates.
+#
+# The grids come from a form of the website that needs a real browser
+# (Playwright, Chromium) and are PDFs (pdftotext, poppler-utils).
+#
+# Note: a pull request opened with the default GITHUB_TOKEN does not trigger
+# the CI by itself — close and reopen it, or push to its branch, to run the
+# checks. The repository must also allow GitHub Actions to create pull
+# requests (Settings -> Actions -> General).
+# -----------------------------------------------------------------------------
+name: Electricity prices
+
+on:
+  schedule:
+    # The 2nd of each month, 06:17 UTC: the grids change on the 1st.
+    - cron: '17 6 2 * *'
+  workflow_dispatch:
+
+concurrency:
+  group: electricity-prices
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the update branch
+      pull-requests: write # open the pull request
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install the browser and pdftotext
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Download the grids and update the templates
+        id: update
+        run: node .github/scripts/tariffs.mjs fetch
+
+      - name: Format and check
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          npx prettier --write gladys-assistant-integration.json CHANGELOG.md
+          npm test
+
+      - name: Open the pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GRID_DATE: ${{ steps.update.outputs.date }}
+          TEMPLATES: ${{ steps.update.outputs.templates }}
+        run: |
+          set -euo pipefail
+          branch="prices/${GRID_DATE}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add gladys-assistant-integration.json CHANGELOG.md
+          git commit -m "chore(prices): Gaz de Bordeaux electricity grid of ${GRID_DATE}"
+          git push --force origin "$branch"
+          body="New default prices from the official Gaz de Bordeaux grids of ${GRID_DATE}.
+
+          Templates: ${TEMPLATES}
+
+          Each changed template takes the grid date as its version: once released, Gladys offers the update to the contracts using it."
+          if gh pr view "$branch" >/dev/null 2>&1; then
+            gh pr edit "$branch" --body "$body"
+          else
+            gh pr create --head "$branch" --base "${GITHUB_REF_NAME}" \
+              --title "Electricity prices of ${GRID_DATE}" --body "$body"
+          fi

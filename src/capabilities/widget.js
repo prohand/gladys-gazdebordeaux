@@ -20,6 +20,7 @@ import { ENERGIES } from '../gazdebordeaux/client.js';
 import { noonOf, TIME_ZONE } from '../gazdebordeaux/dates.js';
 import { findContract } from '../devices/index.js';
 import { refreshedMessage, errorMessage } from '../messages.js';
+import { contractPrices } from '../gazdebordeaux/prices.js';
 import { localize, pick } from '../i18n.js';
 
 const logger = createLogger({ name: 'widget' });
@@ -62,6 +63,7 @@ const LABELS = {
     de: 'Gas, letzter Tag',
     es: 'Gas, último día',
   },
+  pricePaid: { en: 'Price paid', fr: 'Prix payé', de: 'Bezahlter Preis', es: 'Precio pagado' },
   refreshedAt: {
     en: 'Last refresh',
     fr: 'Dernier rafraîchissement',
@@ -126,6 +128,31 @@ function yearSummary({ kwh, cost }) {
   return parts.join(' · ') || '–';
 }
 
+const PEAK_NAMES = {
+  en: ['Peak', 'off-peak'],
+  fr: ['HP', 'HC'],
+  de: ['HT', 'NT'],
+  es: ['Punta', 'valle'],
+};
+
+// The kWh price of the contract, computed from the account (prices.js):
+// "0,18373 €/kWh" or "HP 0,19648 · HC 0,14669 €/kWh" (≤ 40 characters).
+function pricePaidText(snapshot, language) {
+  const prices = contractPrices(snapshot);
+  if (!prices) {
+    return null;
+  }
+  const format = (value) =>
+    new Intl.NumberFormat(LANGUAGE_LOCALES[language] ?? 'en-GB', {
+      maximumFractionDigits: 5,
+    }).format(value);
+  if (prices.peakOffPeak && prices.peakPrice !== null && prices.offPeakPrice !== null) {
+    const [peak, offPeak] = PEAK_NAMES[language] ?? PEAK_NAMES.en;
+    return `${peak} ${format(prices.peakPrice)} · ${offPeak} ${format(prices.offPeakPrice)} €/kWh`;
+  }
+  return prices.kwhPrice === null ? null : `${format(prices.kwhPrice)} €/kWh`;
+}
+
 /** The snapshot the widget shows: the chosen contract, or the first one. */
 function snapshotFor(gladys, account, settings) {
   const contracts = account.state.contracts;
@@ -183,6 +210,15 @@ export function buildContent({ gladys, account }, { settings, language = 'en' })
       label: LABELS.volume,
       icon: 'droplet',
       value: `${Number(lastDay.volume.toFixed(2))} m³`,
+      color: WIDGET_COLORS.NEUTRAL,
+    });
+  }
+  const paid = pricePaidText(snapshot, language);
+  if (paid) {
+    status.push({
+      label: LABELS.pricePaid,
+      icon: 'tag',
+      value: paid,
       color: WIDGET_COLORS.NEUTRAL,
     });
   }

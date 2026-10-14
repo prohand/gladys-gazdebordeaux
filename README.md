@@ -15,16 +15,18 @@ User documentation: [English](./docs/en.md) · [Français](./docs/fr.md) ·
 
 ## What it does
 
-| Gladys surface   | What the integration offers                                                       |
-| ---------------- | --------------------------------------------------------------------------------- |
-| Devices          | One per contract (gas, electricity): daily kWh / € / m³ dated by day, month, year |
-| Energy           | Electricity contracts feed their daily consumption (`publishEnergyConsumption`)   |
-| Transport badge  | `cloud` — `unreachable` when the account fails, degraded when readings are stale  |
-| Configuration    | Email + password (secret), refresh interval, history to import, alert thresholds  |
-| Buttons          | **Test the connection**, **Refresh now**                                          |
-| Scene triggers   | New daily reading · High daily consumption · Customer account unreachable         |
-| Scene actions    | Refresh the readings · Get a consumption (last day, month, year)                  |
-| Dashboard widget | Last day / month consumption and cost, 30-day chart, year total, Refresh button   |
+| Gladys surface   | What the integration offers                                                         |
+| ---------------- | ----------------------------------------------------------------------------------- |
+| Devices          | One per contract (gas, electricity): daily kWh / € / m³ dated by day, month, year   |
+| Energy           | Electricity contracts feed their daily consumption (`publishEnergyConsumption`)     |
+| Transport badge  | `cloud` — `unreachable` when the account fails, degraded when readings are stale    |
+| Configuration    | Email + password (secret), refresh interval, history to import, alert thresholds    |
+| Buttons          | **Test the connection**, **Refresh now**, **My contract prices**                    |
+| Scene triggers   | New daily reading · High daily consumption · Customer account unreachable           |
+| Scene actions    | Refresh the readings · Get a consumption (last day, month, year)                    |
+| Dashboard widget | Last day / month consumption and cost, 30-day chart, year total, Refresh button     |
+| Energy contracts | NovaFixe, NovaFixe Bonus, NovaFlex Élec templates (Base, Peak/Off-peak), Gladys 5.2 |
+| Contract prices  | **My contract prices** button + widget row: the prices charged, from the account    |
 
 Manifest: `type: "device"`, `transports: ["cloud"]`, `categories: ["energy"]`,
 `gladys_version: ">=5.2.0"` (scenes and widget need 5.1, energy contracts 5.2).
@@ -36,6 +38,19 @@ the customer website (sign-in, contracts, consumptions), the same ones the commu
 [Home Assistant integration](https://github.com/chriscamicas/gazdebordeaux-ha) uses. See
 [`src/gazdebordeaux/client.js`](./src/gazdebordeaux/client.js) and [`CLAUDE.md`](./CLAUDE.md)
 for the endpoints and their quirks.
+
+### Electricity prices
+
+- **New prices**: the contract templates default to the **official price grids**, downloaded from
+  www.gazdebordeaux.fr (`.github/scripts/tariffs.mjs`: Playwright fills the website form, `pdftotext`
+  reads the PDF). The [Electricity prices](.github/workflows/tariffs.yml) workflow runs it every
+  month and opens a pull request when a price changed.
+- **Old prices**: a fixed-price offer keeps the price of its subscription date, which no current grid
+  gives. The integration computes it from the customer's own account (the kWh and their cost, day by
+  day: [`src/gazdebordeaux/prices.js`](./src/gazdebordeaux/prices.js)) and shows it on the
+  **My contract prices** button and in the widget, to copy into the Gladys contract wizard.
+
+### Readings
 
 Gaz de Bordeaux publishes each day one or two days late, so the integration reads the account
 every few hours (6 by default), publishes the new days **dated by the day they describe**, and
@@ -69,7 +84,9 @@ restart never publishes a day twice nor announces it twice.
    ├─ workflows/release.yml          # UI-driven release: bump + changelog + tag + build
    ├─ workflows/build.yml            # multi-arch image (amd64 + arm64) to ghcr.io
    ├─ workflows/github-release.yml   # GitHub Release of every version tag
+   ├─ workflows/tariffs.yml          # monthly: official electricity prices -> pull request
    ├─ scripts/changelog-release.mjs  # changelog roll used by release.yml
+   ├─ scripts/tariffs.mjs            # official price grids -> contract templates
    └─ dependabot.yml                 # npm weekly, Actions and Docker monthly
 ```
 

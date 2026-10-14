@@ -28,8 +28,14 @@ the notes of the version's GitHub Release.
 - Dashboard widget: last day, month and year consumption and costs, a chart
   of the last 30 days and a Refresh button.
 - Energy contract templates for the Gladys contract wizard (Gladys 5.2+):
-  NovaFixe Élec Base and Peak/Off-peak, prices editable, October 2026 prices
+  NovaFixe Élec, NovaFixe Bonus Élec and NovaFlex Élec, Base and
+  Peak/Off-peak, with the official Gaz de Bordeaux prices of 1 October 2026
   as defaults.
+- "My contract prices" button and a "Price paid" widget row: the kWh price,
+  subscription, power and off-peak hours of your own contract, computed from
+  the customer account (a fixed price keeps its subscription-date price).
+- Monthly "Electricity prices" workflow: downloads the official price grids
+  and opens a pull request when a price changes.
 - "Test the connection" and "Refresh now" buttons in the configuration screen.
 - English, French, German and Spanish texts and documentation.
 - CI (format, lint, tests on Node 22 and 24, store checks, Docker build),

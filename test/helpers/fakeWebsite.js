@@ -13,16 +13,60 @@ export const GAS_ID = '0b7d4c3e-1111-4a5b-9c8d-00000000a001';
 export const ELEC_ID = '0b7d4c3e-2222-4a5b-9c8d-00000000b002';
 export const TODAY = '2026-10-14';
 
+// The October 2026 NovaFixe Élec prices: what the electricity days are
+// charged at, so the prices computed back from them can be checked.
+export const KWH_PRICE = 0.18373;
+export const PEAK_PRICE = 0.19648;
+export const OFF_PEAK_PRICE = 0.14669;
+export const SUBSCRIPTION_PER_MONTH = 15.87;
+const DAILY_SUBSCRIPTION = (SUBSCRIPTION_PER_MONTH * 12) / 365;
+
 /** `count` days ending the day before `today`, oldest first. */
 export function makeDays(count, { today = TODAY, kwh = (i) => 40 + i, gas = true } = {}) {
-  return Array.from({ length: count }, (_, i) => ({
-    date: addDays(today, i - count),
-    kwh: kwh(i),
-    volumeOfEnergy: gas ? Math.round((kwh(i) / 11.2) * 100) / 100 : 0,
-    price: Math.round(kwh(i) * 0.12 * 100) / 100,
-    ratio: 0,
-    temperature: 12,
-  }));
+  return Array.from({ length: count }, (_, i) => {
+    const date = addDays(today, i - count);
+    if (gas) {
+      // Gas days: the total price only, no split (like the oldest days).
+      return {
+        date,
+        kwh: kwh(i),
+        volumeOfEnergy: Math.round((kwh(i) / 11.2) * 100) / 100,
+        price: Math.round(kwh(i) * 0.12 * 100) / 100,
+        ratio: 0,
+        temperature: 12,
+      };
+    }
+    const consumptionPrice = kwh(i) * KWH_PRICE;
+    return {
+      date,
+      kwh: kwh(i),
+      volumeOfEnergy: 0,
+      price: Math.round((consumptionPrice + DAILY_SUBSCRIPTION) * 100) / 100,
+      consumptionPrice,
+      contractPrice: DAILY_SUBSCRIPTION,
+      ratio: 0,
+      temperature: 12,
+    };
+  });
+}
+
+/** Electricity days of a peak/off-peak contract: the kWh and their cost split. */
+export function makePeakOffPeakDays(count, { today = TODAY } = {}) {
+  return Array.from({ length: count }, (_, i) => {
+    const peak = 20 + (i % 5);
+    const offPeak = 12 + (i % 3);
+    return {
+      date: addDays(today, i - count),
+      isHphc: true,
+      consumptionHp: peak,
+      consumptionHc: offPeak,
+      priceHp: peak * PEAK_PRICE,
+      priceHc: offPeak * OFF_PEAK_PRICE,
+      contractPrice: DAILY_SUBSCRIPTION,
+      price: peak * PEAK_PRICE + offPeak * OFF_PEAK_PRICE + DAILY_SUBSCRIPTION,
+      temperature: 12,
+    };
+  });
 }
 
 const json = (status, body) =>
@@ -40,7 +84,17 @@ export function createFakeWebsite({
     password: PASSWORD,
     me: { selectedHouse, houses: contracts.map(({ id }) => `/api/houses/${id}`) },
     houses: Object.fromEntries(
-      contracts.map(({ id, category }) => [id, { id, contractType: { category } }]),
+      contracts.map(({ id, category, house = {} }) => [
+        id,
+        {
+          id,
+          contractType: { category },
+          ...(category === 'electricity'
+            ? { electricityPower: 6, priceCategory: 'BASE', offPeakTimes: null }
+            : {}),
+          ...house,
+        },
+      ]),
     ),
     days: Object.fromEntries(
       contracts.map(({ id, category }) => [id, makeDays(40, { gas: category === 'gas' })]),

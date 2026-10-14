@@ -118,6 +118,12 @@ export function contractFromHouse(path, house) {
     // Shown in the device name when the account holds several contracts of
     // the same energy; any of these may be missing.
     reference: house?.contractNumber ?? house?.reference ?? house?.pdl ?? house?.pce ?? null,
+    // Electricity only, what the customer website shows under "Option
+    // tarifaire": subscribed power (kVA), `HPHC` or base, off-peak hours
+    // (their shape is not documented: kept raw, read by prices.js).
+    power: Number.isFinite(Number(house?.electricityPower)) ? Number(house.electricityPower) : null,
+    priceCategory: typeof house?.priceCategory === 'string' ? house.priceCategory : null,
+    offPeakTimes: house?.offPeakTimes ?? null,
   };
 }
 
@@ -226,8 +232,9 @@ export function createClient({
   }
 
   /**
-   * Every contract of the account, `{ id, path, energy, reference }`.
-   * @returns {Promise<Array<{ id: string, path: string, energy: string, reference: string | null }>>}
+   * Every contract of the account, `{ id, path, energy, reference, power,
+   * priceCategory, offPeakTimes }`.
+   * @returns {Promise<Array<object>>}
    */
   async function getContracts() {
     const me = await get('/api/users/me');
@@ -244,7 +251,11 @@ export function createClient({
     }
     const contracts = [];
     for (const path of paths) {
-      contracts.push(contractFromHouse(path, await get(path)));
+      const house = await get(path);
+      // The field names only (never their values: an address, a meter
+      // number), to check what the website sends when a field is missing.
+      logger.debug(`House ${houseIdOf(path)} fields: ${Object.keys(house ?? {}).join(', ')}`);
+      contracts.push(contractFromHouse(path, house));
     }
     return contracts;
   }

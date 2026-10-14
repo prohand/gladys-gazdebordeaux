@@ -77,6 +77,8 @@ Neustart.
   Passwort an und listet die gefundenen Verträge.
 - **Jetzt aktualisieren**: liest das Kundenkonto sofort und nennt den letzten
   gelesenen Tag.
+- **Meine Vertragspreise**: berechnet die tatsächlich bezahlten Preise Ihres
+  Stromvertrags (siehe „Energieverträge“).
 
 ## Szenen
 
@@ -128,35 +130,58 @@ gelassen ist es der erste.
 ## Energieverträge (Strom)
 
 Die Integration fügt dem Vertragsassistenten von Gladys (**Energie** → Vertrag
-des Zählers) zwei Vertragsvorlagen hinzu, damit Gladys die Kosten Ihres Stroms
-zu den Preisen von Gaz de Bordeaux berechnet:
+des Zählers) Vertragsvorlagen hinzu, damit Gladys die Kosten Ihres Stroms zu
+den Preisen von Gaz de Bordeaux berechnet. Eine Vorlage pro Angebot und Option:
 
-| Vorlage                               | Preise                                      |
-| ------------------------------------- | ------------------------------------------- |
-| Gaz de Bordeaux NovaFixe Élec – Base  | ein kWh-Preis zu jeder Stunde + Grundgebühr |
-| Gaz de Bordeaux NovaFixe Élec – HT/NT | Hoch-/Niedertarif + Grundgebühr             |
+| Angebot             | Preise                                                                 | Vorlagen    |
+| ------------------- | ---------------------------------------------------------------------- | ----------- |
+| NovaFixe Élec       | 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif    | Base, HT/NT |
+| NovaFixe Bonus Élec | wie NovaFixe, plus 100 € Bonus im ersten Jahr                          | Base, HT/NT |
+| NovaFlex Élec       | an den regulierten Tarif (TRV) gebunden, kWh ohne Steuern 5 % darunter | Base, HT/NT |
 
-Die vorgeschlagenen Werte sind die Bruttopreise vom **Oktober 2026** für
-6 kVA:
+### Ihre Preise: die Schaltfläche „Meine Vertragspreise“
 
-| Leistung | Grundgebühr / Monat | kWh Base | kWh HT / NT         |
-| -------- | ------------------- | -------- | ------------------- |
-| 3 kVA    | 12,13 €             | 0,1837 € | –                   |
-| 6 kVA    | 15,87 €             | 0,1837 € | 0,1965 € / 0,1467 € |
-| 9 kVA    | 19,88 €             | 0,1823 € | 0,1965 € / 0,1467 € |
-| 12 kVA   | 23,76 €             | 0,1823 € | 0,1965 € / 0,1467 € |
-| 15 kVA   | 27,40 €             | 0,1823 € | 0,1965 € / 0,1467 € |
-| 18 kVA   | 31,14 €             | –        | 0,1965 € / 0,1467 € |
-| 24 kVA   | 39,13 €             | –        | 0,1965 € / 0,1467 € |
-| 30 kVA   | 46,46 €             | –        | 0,1965 € / 0,1467 € |
-| 36 kVA   | 53,88 €             | –        | 0,1965 € / 0,1467 € |
+Ein Festpreisangebot behält **den Preis des Abschlusstages**: ein vor zwei
+Jahren geschlossener Vertrag hat nicht die heutigen Preise. Die Schaltfläche
+**Meine Vertragspreise** (Reiter **Konfiguration**) berechnet sie aus **Ihrem**
+Kundenkonto: für jeden Tag nennt Gaz de Bordeaux die kWh und ihre Kosten, die
+Integration leitet daraus den tatsächlich bezahlten kWh-Preis (Hoch- und
+Niedertarif getrennt), die monatliche Grundgebühr, die Leistung und die
+Niedertarifzeiten ab. Beispiel:
 
-NovaFixe Élec hält den Preis **2 Jahre ab Vertragsabschluss** fest: Ihre Preise
-können abweichen. **Übernehmen Sie die Ihres Vertrags oder Ihrer Rechnung** in
-den Assistenten (kWh-Preis, Grundgebühr und beim Niedertarif dessen Zeiten,
-die auf der Rechnung stehen).
+> Strom (6 kVA): 0,18373 €/kWh, Grundgebühr 15,87 €/Monat. Berechnet aus den
+> letzten 30 Tagen Ihres Kontos.
 
-Gut zu wissen:
+Übernehmen Sie diese Werte in den Vertragsassistenten von Gladys. Der bezahlte
+Preis wird auch im Widget angezeigt (Zeile **Bezahlter Preis**).
+
+Gladys erlaubt einer Integration nicht, einen Vertrag für Sie auszufüllen:
+deshalb werden sie einmal übernommen (und bei NovaFlex bei jeder Preisänderung).
+
+### Die Standardpreise: die offiziellen Preislisten
+
+Die vorgeschlagenen Standardwerte sind die der **offiziellen Preislisten** von
+Gaz de Bordeaux (brutto, hier die vom 1. Oktober 2026). Sie werden jeden Monat
+von gazdebordeaux.fr geladen: ändert sich ein Preis, bietet eine neue Version
+der Integration die neuen Preise an (Gladys fragt dann, ob Ihr Vertrag
+aktualisiert werden soll).
+
+| Leistung | Grundgebühr / Monat | NovaFixe: kWh Base | NovaFixe: HT / NT | NovaFlex: kWh Base | NovaFlex: HT / NT |
+| -------- | ------------------- | ------------------ | ----------------- | ------------------ | ----------------- |
+| 3 kVA    | 12,13               | 0,18373            | –                 | 0,19190            | –                 |
+| 6 kVA    | 15,87               | 0,18373            | 0,19648 / 0,14669 | 0,19190            | 0,20536 / 0,15280 |
+| 9 kVA    | 19,88               | 0,18233            | 0,19648 / 0,14669 | 0,19042            | 0,20536 / 0,15280 |
+| 12 kVA   | 23,76               | 0,18233            | 0,19648 / 0,14669 | 0,19042            | 0,20536 / 0,15280 |
+| 15 kVA   | 27,40               | 0,18233            | 0,19648 / 0,14669 | 0,19042            | 0,20536 / 0,15280 |
+| 18 kVA   | 31,14               | –                  | 0,19648 / 0,14669 | –                  | 0,20536 / 0,15280 |
+| 24 kVA   | 39,13               | –                  | 0,19648 / 0,14669 | –                  | 0,20536 / 0,15280 |
+| 30 kVA   | 46,46               | –                  | 0,19648 / 0,14669 | –                  | 0,20536 / 0,15280 |
+| 36 kVA   | 53,88               | –                  | 0,19648 / 0,14669 | –                  | 0,20536 / 0,15280 |
+
+Die Grundgebühr ist bei allen drei Angeboten gleich. NovaFixe Bonus Élec hat
+die Preise von NovaFixe Élec.
+
+### Gut zu wissen
 
 - **Base** funktioniert mit dem Tagesverbrauch, den diese Integration an das
   Energie-Modul sendet.

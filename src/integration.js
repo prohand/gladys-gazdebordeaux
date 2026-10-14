@@ -17,7 +17,13 @@ import { createAccount } from './gazdebordeaux/account.js';
 import { parisDay } from './gazdebordeaux/dates.js';
 import { buildDiscoveredDevices } from './devices/index.js';
 import { buildTransportEntries, publishAll } from './publish.js';
-import { contractsFoundMessage, errorMessage, refreshedMessage } from './messages.js';
+import {
+  contractPricesMessage,
+  contractsFoundMessage,
+  errorMessage,
+  refreshedMessage,
+} from './messages.js';
+import { contractPrices } from './gazdebordeaux/prices.js';
 import { fireConnectionFailed, fireReadingEvents, SCENE_ACTIONS } from './capabilities/scenes.js';
 import { refreshWidgets, WIDGETS } from './capabilities/widget.js';
 import { createFileStore } from './store.js';
@@ -159,6 +165,19 @@ export function createIntegration(
   gladys.onAction('refresh_now', async () => {
     const { ok, error } = await refresh('button');
     return ok ? refreshedMessage(account) : errorMessage(error);
+  });
+
+  // The prices of the user's own contract, computed from the account (a
+  // fixed-price offer keeps the price of its subscription date, which no
+  // current grid gives): read the account first when nothing was read yet.
+  gladys.onAction('show_prices', async () => {
+    if (account.state.snapshots.size === 0) {
+      const { ok, error } = await refresh('button');
+      if (!ok) {
+        return errorMessage(error);
+      }
+    }
+    return contractPricesMessage([...account.state.snapshots.values()].map(contractPrices));
   });
 
   // --- Scene actions (Gladys 5.1+) -----------------------------------------

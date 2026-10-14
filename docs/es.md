@@ -76,6 +76,8 @@ a importar**). Nunca se envían dos veces, ni siquiera tras un reinicio.
   introducidos y lista los contratos encontrados.
 - **Actualizar ahora**: lee la cuenta de cliente en el acto e indica el último
   día leído.
+- **Mis precios de contrato**: calcula los precios realmente pagados en su
+  contrato de electricidad (ver «Contratos de energía»).
 
 ## Escenas
 
@@ -124,36 +126,60 @@ el primero.
 
 ## Contratos de energía (electricidad)
 
-La integración añade dos plantillas de contrato al asistente de contratos de
+La integración añade plantillas de contrato al asistente de contratos de
 Gladys (**Energía** → contrato del contador), para que Gladys calcule el coste
-de su electricidad a los precios de Gaz de Bordeaux:
+de su electricidad a los precios de Gaz de Bordeaux. Una plantilla por oferta y
+opción:
 
-| Plantilla                                   | Precios                                          |
-| ------------------------------------------- | ------------------------------------------------ |
-| Gaz de Bordeaux NovaFixe Élec – Base        | un precio del kWh a cualquier hora + suscripción |
-| Gaz de Bordeaux NovaFixe Élec – Horas valle | precios punta / valle + suscripción              |
+| Oferta              | Precios                                                                   | Plantillas        |
+| ------------------- | ------------------------------------------------------------------------- | ----------------- |
+| NovaFixe Élec       | fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada       | Base, Horas valle |
+| NovaFixe Bonus Élec | como NovaFixe, más 100 € de regalo el primer año                          | Base, Horas valle |
+| NovaFlex Élec       | indexados a la tarifa regulada (TRV), kWh sin impuestos un 5 % por debajo | Base, Horas valle |
 
-Los valores propuestos son los precios con IVA de **octubre de 2026**, en
-6 kVA:
+### Sus precios: el botón «Mis precios de contrato»
 
-| Potencia | Suscripción / mes | kWh Base | kWh punta / valle   |
-| -------- | ----------------- | -------- | ------------------- |
-| 3 kVA    | 12,13 €           | 0,1837 € | –                   |
-| 6 kVA    | 15,87 €           | 0,1837 € | 0,1965 € / 0,1467 € |
-| 9 kVA    | 19,88 €           | 0,1823 € | 0,1965 € / 0,1467 € |
-| 12 kVA   | 23,76 €           | 0,1823 € | 0,1965 € / 0,1467 € |
-| 15 kVA   | 27,40 €           | 0,1823 € | 0,1965 € / 0,1467 € |
-| 18 kVA   | 31,14 €           | –        | 0,1965 € / 0,1467 € |
-| 24 kVA   | 39,13 €           | –        | 0,1965 € / 0,1467 € |
-| 30 kVA   | 46,46 €           | –        | 0,1965 € / 0,1467 € |
-| 36 kVA   | 53,88 €           | –        | 0,1965 € / 0,1467 € |
+Una oferta a precio fijo conserva **el precio del día de la contratación**: un
+contrato firmado hace dos años no tiene los precios de la tarifa de hoy. El
+botón **Mis precios de contrato** (pestaña **Configuración**) los calcula a
+partir de **su** cuenta de cliente: para cada día Gaz de Bordeaux da los kWh y
+lo que costaron, y la integración deduce el precio del kWh realmente pagado
+(punta y valle por separado), la suscripción mensual, la potencia y las horas
+valle. Ejemplo:
 
-NovaFixe Élec bloquea el precio **2 años desde la contratación**: sus precios
-pueden ser distintos. **Copie los de su contrato o factura** en el asistente
-(precio del kWh, suscripción y, para las horas valle, sus horarios, indicados
-en la factura).
+> Electricidad (6 kVA): 0,18373 €/kWh, suscripción 15,87 €/mes. Calculado sobre
+> los últimos 30 días de su cuenta.
 
-Conviene saber:
+Copie estos valores en el asistente de contratos de Gladys. El precio pagado
+también aparece en el widget (fila **Precio pagado**).
+
+Gladys no permite que una integración rellene un contrato por usted: por eso
+se copian una vez (y en cada cambio de precio, para NovaFlex).
+
+### Los precios por defecto: las tarifas oficiales
+
+Los valores propuestos por defecto son los de las **tarifas oficiales** de Gaz
+de Bordeaux (IVA incluido, aquí las del 1 de octubre de 2026). Se descargan
+cada mes de gazdebordeaux.fr: cuando cambia un precio, una nueva versión de la
+integración propone los nuevos precios (Gladys pregunta entonces si actualizar
+su contrato).
+
+| Potencia | Suscripción / mes | NovaFixe: kWh Base | NovaFixe: punta / valle | NovaFlex: kWh Base | NovaFlex: punta / valle |
+| -------- | ----------------- | ------------------ | ----------------------- | ------------------ | ----------------------- |
+| 3 kVA    | 12,13             | 0,18373            | –                       | 0,19190            | –                       |
+| 6 kVA    | 15,87             | 0,18373            | 0,19648 / 0,14669       | 0,19190            | 0,20536 / 0,15280       |
+| 9 kVA    | 19,88             | 0,18233            | 0,19648 / 0,14669       | 0,19042            | 0,20536 / 0,15280       |
+| 12 kVA   | 23,76             | 0,18233            | 0,19648 / 0,14669       | 0,19042            | 0,20536 / 0,15280       |
+| 15 kVA   | 27,40             | 0,18233            | 0,19648 / 0,14669       | 0,19042            | 0,20536 / 0,15280       |
+| 18 kVA   | 31,14             | –                  | 0,19648 / 0,14669       | –                  | 0,20536 / 0,15280       |
+| 24 kVA   | 39,13             | –                  | 0,19648 / 0,14669       | –                  | 0,20536 / 0,15280       |
+| 30 kVA   | 46,46             | –                  | 0,19648 / 0,14669       | –                  | 0,20536 / 0,15280       |
+| 36 kVA   | 53,88             | –                  | 0,19648 / 0,14669       | –                  | 0,20536 / 0,15280       |
+
+La suscripción es la misma para las tres ofertas. NovaFixe Bonus Élec tiene los
+precios de NovaFixe Élec.
+
+### Conviene saber
 
 - **Base** funciona con el consumo diario que esta integración envía al módulo
   Energía.

@@ -102,3 +102,89 @@ export function refreshedMessage(account) {
     })}`;
   });
 }
+
+const LOCALES = { en: 'en-GB', fr: 'fr-FR', de: 'de-DE', es: 'es-ES' };
+
+function formatNumber(language, value, digits) {
+  return new Intl.NumberFormat(LOCALES[language] ?? 'en-GB', {
+    minimumFractionDigits: Math.min(2, digits),
+    maximumFractionDigits: digits,
+  }).format(value);
+}
+
+/** "0,18373 €/kWh" in the reader's language. */
+export function kwhPriceText(language, value) {
+  return `${formatNumber(language, value, 5)} €/kWh`;
+}
+
+/**
+ * The prices of one contract on one line: what to copy into the Gladys
+ * contract wizard.
+ * @param {string} language
+ * @param {ReturnType<import('./gazdebordeaux/prices.js').contractPrices>} prices
+ */
+export function contractPricesLine(language, prices) {
+  const details = [];
+  if (prices.power) {
+    details.push(`${prices.power} kVA`);
+  }
+  if (prices.peakOffPeak && prices.offPeakSlots) {
+    details.push(
+      `${pick(language, { en: 'off-peak', fr: 'heures creuses', de: 'Niedertarif', es: 'horas valle' })} ${prices.offPeakSlots.map(([start, end]) => `${start}–${end}`).join(', ')}`,
+    );
+  }
+  const values = [];
+  if (prices.peakOffPeak && (prices.peakPrice !== null || prices.offPeakPrice !== null)) {
+    const [peak, offPeak] = {
+      en: ['peak', 'off-peak'],
+      fr: ['HP', 'HC'],
+      de: ['HT', 'NT'],
+      es: ['punta', 'valle'],
+    }[language] ?? ['peak', 'off-peak'];
+    if (prices.peakPrice !== null) {
+      values.push(`${peak} ${kwhPriceText(language, prices.peakPrice)}`);
+    }
+    if (prices.offPeakPrice !== null) {
+      values.push(`${offPeak} ${kwhPriceText(language, prices.offPeakPrice)}`);
+    }
+  } else if (prices.kwhPrice !== null) {
+    values.push(kwhPriceText(language, prices.kwhPrice));
+  }
+  if (prices.subscriptionPerMonth !== null) {
+    values.push(
+      `${pick(language, { en: 'subscription', fr: 'abonnement', de: 'Grundgebühr', es: 'suscripción' })} ${formatNumber(language, prices.subscriptionPerMonth, 2)} €/${pick(language, { en: 'month', fr: 'mois', de: 'Monat', es: 'mes' })}`,
+    );
+  }
+  const name = energyName(language, prices.energy);
+  const head = details.length ? `${name} (${details.join(', ')})` : name;
+  // French puts a space before the colon.
+  const colon = language === 'fr' ? ' : ' : ': ';
+  return `${head[0].toUpperCase()}${head.slice(1)}${colon}${values.join(', ')}`;
+}
+
+/**
+ * The answer of "My contract prices": one line per contract whose prices the
+ * customer account gives, and what to do with them.
+ * @param {Array<object>} pricesList the contractPrices() of each contract, nulls included
+ */
+export function contractPricesMessage(pricesList) {
+  const known = pricesList.filter(Boolean);
+  return localize((language) => {
+    if (known.length === 0) {
+      return pick(language, {
+        en: 'The customer account does not detail the cost of each day yet: no price to compute. Refresh later.',
+        fr: "L'espace client ne détaille pas encore le coût de chaque jour : aucun prix à calculer. Rafraîchissez plus tard.",
+        de: 'Das Kundenkonto schlüsselt die Kosten pro Tag noch nicht auf: kein Preis berechenbar. Später aktualisieren.',
+        es: 'La cuenta de cliente aún no detalla el coste de cada día: ningún precio que calcular. Actualice más tarde.',
+      });
+    }
+    const lines = known.map((prices) => contractPricesLine(language, prices));
+    const footer = pick(language, {
+      en: `Computed from the last ${known[0].days} days of your account. Copy them into the Gladys energy contract.`,
+      fr: `Calculé sur les ${known[0].days} derniers jours de votre compte. Recopiez-les dans le contrat d'énergie Gladys.`,
+      de: `Berechnet aus den letzten ${known[0].days} Tagen Ihres Kontos. Übernehmen Sie sie in den Gladys-Energievertrag.`,
+      es: `Calculado sobre los últimos ${known[0].days} días de su cuenta. Cópielos en el contrato de energía de Gladys.`,
+    });
+    return `${lines.join(' — ')}. ${footer}`;
+  });
+}

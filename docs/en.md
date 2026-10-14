@@ -73,6 +73,8 @@ are imported. They are never sent twice, even after a restart.
   lists the contracts found.
 - **Refresh now**: reads the customer account right away and gives the latest
   day read.
+- **My contract prices**: computes the prices actually charged on your
+  electricity contract (see "Energy contracts").
 
 ## Scenes
 
@@ -120,36 +122,58 @@ first one.
 
 ## Energy contracts (electricity)
 
-The integration adds two contract templates to the Gladys contract wizard
+The integration adds contract templates to the Gladys contract wizard
 (**Energy** → the meter contract), so Gladys computes the cost of your
-electricity at the Gaz de Bordeaux prices:
+electricity at the Gaz de Bordeaux prices. One template per offer and option:
 
-| Template                                      | Prices                                    |
-| --------------------------------------------- | ----------------------------------------- |
-| Gaz de Bordeaux NovaFixe Élec – Base          | one kWh price at all hours + subscription |
-| Gaz de Bordeaux NovaFixe Élec – Peak/Off-peak | peak / off-peak prices + subscription     |
+| Offer               | Prices                                                             | Templates           |
+| ------------------- | ------------------------------------------------------------------ | ------------------- |
+| NovaFixe Élec       | locked for 3 years at subscription, 10% below the regulated tariff | Base, Peak/Off-peak |
+| NovaFixe Bonus Élec | like NovaFixe, plus €100 off the first year                        | Base, Peak/Off-peak |
+| NovaFlex Élec       | indexed on the regulated tariff (TRV), kWh excl. taxes 5% below it | Base, Peak/Off-peak |
 
-The values offered are the prices incl. VAT read in **October 2026**, for
-6 kVA:
+### Your prices: the "My contract prices" button
 
-| Power  | Subscription / month | Base kWh | Peak / off-peak kWh |
-| ------ | -------------------- | -------- | ------------------- |
-| 3 kVA  | €12.13               | €0.1837  | –                   |
-| 6 kVA  | €15.87               | €0.1837  | €0.1965 / €0.1467   |
-| 9 kVA  | €19.88               | €0.1823  | €0.1965 / €0.1467   |
-| 12 kVA | €23.76               | €0.1823  | €0.1965 / €0.1467   |
-| 15 kVA | €27.40               | €0.1823  | €0.1965 / €0.1467   |
-| 18 kVA | €31.14               | –        | €0.1965 / €0.1467   |
-| 24 kVA | €39.13               | –        | €0.1965 / €0.1467   |
-| 30 kVA | €46.46               | –        | €0.1965 / €0.1467   |
-| 36 kVA | €53.88               | –        | €0.1965 / €0.1467   |
+A fixed-price offer keeps **the price of its subscription day**: a contract
+signed two years ago does not have today's grid prices. The **My contract
+prices** button (**Configuration** tab) computes them from **your** customer
+account: for each day Gaz de Bordeaux gives the kWh and what they cost, and
+the integration derives the kWh price actually charged (peak and off-peak
+apart), the monthly subscription, the power and the off-peak hours. Example:
 
-NovaFixe Élec locks the price **for 2 years from the subscription**: your
-prices may differ. **Copy the ones of your contract or invoice** into the
-wizard (kWh price, subscription and, for off-peak, the off-peak hours shown on
-the invoice).
+> Electricity (6 kVA): 0.18373 €/kWh, subscription 15.87 €/month. Computed from
+> the last 30 days of your account.
 
-Good to know:
+Copy these values into the Gladys contract wizard. The price charged is also
+shown in the widget (**Price paid** row).
+
+Gladys gives an integration no way to fill a contract in for you: that is why
+they are copied once (and at each price change, for NovaFlex).
+
+### The default prices: the official grids
+
+The values offered by default are those of the **official Gaz de Bordeaux
+price grids** (incl. VAT, here the 1 October 2026 ones). They are downloaded
+every month from gazdebordeaux.fr: when a price changes, a new version of the
+integration offers the new prices (Gladys then asks whether to update your
+contract).
+
+| Power  | Subscription / month | NovaFixe: Base kWh | NovaFixe: peak / off-peak | NovaFlex: Base kWh | NovaFlex: peak / off-peak |
+| ------ | -------------------- | ------------------ | ------------------------- | ------------------ | ------------------------- |
+| 3 kVA  | 12.13                | 0.18373            | –                         | 0.19190            | –                         |
+| 6 kVA  | 15.87                | 0.18373            | 0.19648 / 0.14669         | 0.19190            | 0.20536 / 0.15280         |
+| 9 kVA  | 19.88                | 0.18233            | 0.19648 / 0.14669         | 0.19042            | 0.20536 / 0.15280         |
+| 12 kVA | 23.76                | 0.18233            | 0.19648 / 0.14669         | 0.19042            | 0.20536 / 0.15280         |
+| 15 kVA | 27.40                | 0.18233            | 0.19648 / 0.14669         | 0.19042            | 0.20536 / 0.15280         |
+| 18 kVA | 31.14                | –                  | 0.19648 / 0.14669         | –                  | 0.20536 / 0.15280         |
+| 24 kVA | 39.13                | –                  | 0.19648 / 0.14669         | –                  | 0.20536 / 0.15280         |
+| 30 kVA | 46.46                | –                  | 0.19648 / 0.14669         | –                  | 0.20536 / 0.15280         |
+| 36 kVA | 53.88                | –                  | 0.19648 / 0.14669         | –                  | 0.20536 / 0.15280         |
+
+The subscription is the same for the three offers. NovaFixe Bonus Élec has the
+NovaFixe Élec prices.
+
+### Good to know
 
 - **Base** works with the daily consumption this integration sends to the
   Energy module.

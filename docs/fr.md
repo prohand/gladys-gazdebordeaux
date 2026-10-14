@@ -76,6 +76,8 @@ un redémarrage.
   saisis et liste les contrats trouvés.
 - **Rafraîchir maintenant** : lit l'espace client tout de suite et indique
   le dernier jour relevé.
+- **Mes prix de contrat** : calcule les prix réellement payés sur votre
+  contrat d'électricité (voir « Contrats d'énergie »).
 
 ## Scènes
 
@@ -129,36 +131,60 @@ c'est le premier.
 
 ## Contrats d'énergie (électricité)
 
-L'intégration ajoute deux modèles de contrat à l'assistant de contrat de
-Gladys (**Énergie** → contrat du compteur), pour que Gladys calcule le coût
-de votre électricité au prix de Gaz de Bordeaux :
+L'intégration ajoute des modèles de contrat à l'assistant de contrat de Gladys
+(**Énergie** → contrat du compteur), pour que Gladys calcule le coût de votre
+électricité au prix de Gaz de Bordeaux. Un modèle par offre et par option :
 
-| Modèle                                         | Prix                                              |
-| ---------------------------------------------- | ------------------------------------------------- |
-| Gaz de Bordeaux NovaFixe Élec – Base           | un prix du kWh à toute heure + abonnement         |
-| Gaz de Bordeaux NovaFixe Élec – Heures creuses | prix heures pleines / heures creuses + abonnement |
+| Offre               | Prix                                                         | Modèles              |
+| ------------------- | ------------------------------------------------------------ | -------------------- |
+| NovaFixe Élec       | fixes 3 ans à la souscription, 10 % sous le tarif réglementé | Base, Heures creuses |
+| NovaFixe Bonus Élec | comme NovaFixe, plus 100 € offerts la première année         | Base, Heures creuses |
+| NovaFlex Élec       | indexés sur le tarif réglementé (TRV), kWh HT 5 % en dessous | Base, Heures creuses |
 
-Les valeurs proposées sont les prix TTC relevés en **octobre 2026**, en
-6 kVA :
+### Vos prix : le bouton « Mes prix de contrat »
 
-| Puissance | Abonnement / mois | kWh Base | kWh HP / HC         |
-| --------- | ----------------- | -------- | ------------------- |
-| 3 kVA     | 12,13 €           | 0,1837 € | –                   |
-| 6 kVA     | 15,87 €           | 0,1837 € | 0,1965 € / 0,1467 € |
-| 9 kVA     | 19,88 €           | 0,1823 € | 0,1965 € / 0,1467 € |
-| 12 kVA    | 23,76 €           | 0,1823 € | 0,1965 € / 0,1467 € |
-| 15 kVA    | 27,40 €           | 0,1823 € | 0,1965 € / 0,1467 € |
-| 18 kVA    | 31,14 €           | –        | 0,1965 € / 0,1467 € |
-| 24 kVA    | 39,13 €           | –        | 0,1965 € / 0,1467 € |
-| 30 kVA    | 46,46 €           | –        | 0,1965 € / 0,1467 € |
-| 36 kVA    | 53,88 €           | –        | 0,1965 € / 0,1467 € |
+Une offre à prix fixe garde **le prix du jour de la souscription** : un
+contrat signé il y a deux ans n'a pas les prix de la grille d'aujourd'hui. Le
+bouton **Mes prix de contrat** (onglet **Configuration**) les calcule à
+partir de **votre** espace client : pour chaque jour, Gaz de Bordeaux donne
+les kWh et ce qu'ils ont coûté, l'intégration en déduit le prix du kWh
+réellement payé (heures pleines et creuses séparées), l'abonnement mensuel,
+la puissance et les heures creuses. Exemple :
 
-NovaFixe Élec bloque le prix **2 ans à partir de la souscription** : vos
-prix peuvent donc être différents. **Recopiez ceux de votre contrat ou de
-votre facture** dans l'assistant (prix du kWh, abonnement, et pour les
-heures creuses leurs horaires, indiqués sur la facture).
+> Électricité (6 kVA) : 0,18373 €/kWh, abonnement 15,87 €/mois. Calculé sur
+> les 30 derniers jours de votre compte.
 
-Bon à savoir :
+Recopiez ces valeurs dans l'assistant de contrat de Gladys. Le prix payé est
+aussi affiché dans le widget (ligne **Prix payé**).
+
+Gladys ne permet pas à une intégration de remplir un contrat à votre place :
+c'est pourquoi il faut les recopier une fois (et à chaque changement de prix,
+pour NovaFlex).
+
+### Les prix par défaut : les grilles officielles
+
+Les valeurs proposées par défaut sont celles des **grilles tarifaires
+officielles** de Gaz de Bordeaux (prix TTC, ici celles du 1er octobre 2026).
+Elles sont téléchargées chaque mois sur gazdebordeaux.fr : quand un prix
+change, une nouvelle version de l'intégration propose les nouveaux prix
+(Gladys vous demande alors si vous voulez mettre votre contrat à jour).
+
+| Puissance | Abonnement / mois | NovaFixe : kWh Base | NovaFixe : HP / HC | NovaFlex : kWh Base | NovaFlex : HP / HC |
+| --------- | ----------------- | ------------------- | ------------------ | ------------------- | ------------------ |
+| 3 kVA     | 12,13             | 0,18373             | –                  | 0,19190             | –                  |
+| 6 kVA     | 15,87             | 0,18373             | 0,19648 / 0,14669  | 0,19190             | 0,20536 / 0,15280  |
+| 9 kVA     | 19,88             | 0,18233             | 0,19648 / 0,14669  | 0,19042             | 0,20536 / 0,15280  |
+| 12 kVA    | 23,76             | 0,18233             | 0,19648 / 0,14669  | 0,19042             | 0,20536 / 0,15280  |
+| 15 kVA    | 27,40             | 0,18233             | 0,19648 / 0,14669  | 0,19042             | 0,20536 / 0,15280  |
+| 18 kVA    | 31,14             | –                   | 0,19648 / 0,14669  | –                   | 0,20536 / 0,15280  |
+| 24 kVA    | 39,13             | –                   | 0,19648 / 0,14669  | –                   | 0,20536 / 0,15280  |
+| 30 kVA    | 46,46             | –                   | 0,19648 / 0,14669  | –                   | 0,20536 / 0,15280  |
+| 36 kVA    | 53,88             | –                   | 0,19648 / 0,14669  | –                   | 0,20536 / 0,15280  |
+
+L'abonnement est le même pour les trois offres. NovaFixe Bonus Élec a les
+prix de NovaFixe Élec.
+
+### Bon à savoir
 
 - **Base** fonctionne avec la consommation journalière que cette intégration
   envoie au module Énergie.

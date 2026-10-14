@@ -11,8 +11,9 @@ supplier. It signs in to the customer account (life.gazdebordeaux.fr) with the u
 password and publishes, per contract, the daily consumption, cost and gas volume, plus the month
 and year totals. Gladys 5.1+ adds scene triggers (new daily reading, high consumption, account
 unreachable), scene actions (refresh, get a consumption) and a "consumption" widget; Gladys 5.2+
-adds two electricity contract templates (NovaFixe Élec Base and Peak/Off-peak) to the contract
-wizard, declared in the manifest `energy_contracts` (no code: the core rule engine prices them).
+adds electricity contract templates (three offers × Base, Peak/Off-peak) to the contract wizard,
+declared in the manifest `energy_contracts` (the core rule engine prices them), and the
+"My contract prices" button gives the prices of the user's own contract.
 
 Started from the official
 [JavaScript template](https://github.com/GladysAssistant/integration-template-js); the workflows
@@ -48,6 +49,7 @@ src/gazdebordeaux/client.js  HTTP client of life.gazdebordeaux.fr (login, contra
 src/gazdebordeaux/readings.js payloads -> plain days and totals
 src/gazdebordeaux/account.js one refresh = every contract read; snapshots kept in memory
 src/gazdebordeaux/dates.js   YYYY-MM-DD days on the Paris calendar
+src/gazdebordeaux/prices.js  the prices of the user's own contract, computed from the account
 src/devices/contract.js      the device of a contract: features, dated states, totals
 src/devices/index.js         discovery payload, contract lookup, "is it created?"
 src/capabilities/scenes.js   scene triggers fired after a refresh, scene action handlers
@@ -55,6 +57,7 @@ src/capabilities/widget.js   dashboard widget content + its Refresh action
 docs/{en,fr,de,es}.md        user documentation, re-hosted by Gladys (keep the four in sync)
 test/                        node --test, against the SDK fake Gladys + test/helpers/fakeWebsite.js
 .github/scripts/changelog-release.mjs  changelog roll of the Release workflow (tested)
+.github/scripts/tariffs.mjs  official price grids -> energy contract templates (tested)
 ```
 
 ### The Gaz de Bordeaux website
@@ -97,14 +100,23 @@ There is no public API: the client calls the JSON endpoints the customer website
 - **Every feature declares `min`/`max`** (NOT NULL in Gladys).
 - **Secrets**: never log the password, the token or the login body. The rootfs is read-only:
   write only under `/data`.
-- **Energy contracts** (`energy_contracts.templates`, `pricing_mode: "rules"`): prices are
-  template `inputs` with the current grid as defaults, because NovaFixe Élec locks the price at
-  subscription — every customer may have other prices. A new price grid = new defaults + a new
-  template `version` (users are offered the update, never a silent change); never rename a
-  template key. Electricity only: Gladys contracts do not cover gas. Peak/Off-peak needs
-  half-hourly readings; the daily consumption of this integration only suits Base. The tariff
-  grammar is `tariff.schema.json` of `GladysAssistant/energy-contracts`; the store validator checks
-  it on pull requests.
+- **Energy contracts** (`energy_contracts.templates`, `pricing_mode: "rules"`, Gladys 5.2+): six
+  templates (NovaFixe Élec, NovaFixe Bonus Élec, NovaFlex Élec × Base, Peak/Off-peak), **generated**
+  by `.github/scripts/tariffs.mjs` from the official grids — never edit them by hand: run
+  `node .github/scripts/tariffs.mjs fetch` (needs `npm install --no-save playwright` and
+  `pdftotext`), or `update <dir>` on `grid-<offer>.txt` files. The monthly workflow
+  `.github/workflows/tariffs.yml` does it and opens a PR; a template whose prices changed takes the
+  grid date as `version` (Gladys offers the update), an unchanged one is kept as is. When the
+  prices change, also update the price tables of `docs/*.md` and `test/fixtures/grid-*.txt`
+  (`test/tariffs.test.js` checks the manifest matches the fixtures). Prices are template `inputs`:
+  a fixed-price contract keeps the price of its subscription date. Never rename a template key.
+  Electricity only (Gladys contracts do not cover gas). Peak/Off-peak needs half-hourly readings.
+- **Contract prices from the account** (`src/gazdebordeaux/prices.js`): the median over the last
+  30 days of `consumptionPrice / kwh` (or `priceHp / consumptionHp`, `priceHc / consumptionHc`)
+  and of `contractPrice` × 365 / 12; power, option and off-peak hours from the house
+  (`electricityPower`, `priceCategory`, `offPeakTimes`). These field names come from the
+  customer website's own code, not from a documented API: keep every read null-safe. The house
+  field NAMES are logged at debug level to check them on a real account.
 - **Widget budget**: 8 components at most (4 tiles + chart + status + button today);
   `test/widget.test.js` runs `validateWidgetContent` in the four languages.
 

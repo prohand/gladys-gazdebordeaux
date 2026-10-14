@@ -16,7 +16,7 @@ module sur le compteur.
 - Gaz de Bordeaux publie la consommation d'une journée **un ou deux jours plus
   tard** (le temps que le compteur Gazpar ou Linky la remonte). Gladys affiche
   donc toujours le **dernier jour relevé**, pas aujourd'hui.
-- Gladys 5.1 ou plus récent est nécessaire.
+- Gladys 5.2 ou plus récent est nécessaire.
 
 ## Configuration
 
@@ -126,6 +126,49 @@ affiche :
 
 Dans les réglages du widget, choisissez le contrat à afficher ; laissé vide,
 c'est le premier.
+
+## Contrats d'énergie (électricité)
+
+L'intégration ajoute deux modèles de contrat à l'assistant de contrat de
+Gladys (**Énergie** → contrat du compteur), pour que Gladys calcule le coût
+de votre électricité au prix de Gaz de Bordeaux :
+
+| Modèle                                         | Prix                                              |
+| ---------------------------------------------- | ------------------------------------------------- |
+| Gaz de Bordeaux NovaFixe Élec – Base           | un prix du kWh à toute heure + abonnement         |
+| Gaz de Bordeaux NovaFixe Élec – Heures creuses | prix heures pleines / heures creuses + abonnement |
+
+Les valeurs proposées sont les prix TTC relevés en **octobre 2026**, en
+6 kVA :
+
+| Puissance | Abonnement / mois | kWh Base | kWh HP / HC         |
+| --------- | ----------------- | -------- | ------------------- |
+| 3 kVA     | 12,13 €           | 0,1837 € | –                   |
+| 6 kVA     | 15,87 €           | 0,1837 € | 0,1965 € / 0,1467 € |
+| 9 kVA     | 19,88 €           | 0,1823 € | 0,1965 € / 0,1467 € |
+| 12 kVA    | 23,76 €           | 0,1823 € | 0,1965 € / 0,1467 € |
+| 15 kVA    | 27,40 €           | 0,1823 € | 0,1965 € / 0,1467 € |
+| 18 kVA    | 31,14 €           | –        | 0,1965 € / 0,1467 € |
+| 24 kVA    | 39,13 €           | –        | 0,1965 € / 0,1467 € |
+| 30 kVA    | 46,46 €           | –        | 0,1965 € / 0,1467 € |
+| 36 kVA    | 53,88 €           | –        | 0,1965 € / 0,1467 € |
+
+NovaFixe Élec bloque le prix **2 ans à partir de la souscription** : vos
+prix peuvent donc être différents. **Recopiez ceux de votre contrat ou de
+votre facture** dans l'assistant (prix du kWh, abonnement, et pour les
+heures creuses leurs horaires, indiqués sur la facture).
+
+Bon à savoir :
+
+- **Base** fonctionne avec la consommation journalière que cette intégration
+  envoie au module Énergie.
+- **Heures creuses** a besoin d'une consommation à la **demi-heure** (un
+  compteur Linky relevé toutes les 30 minutes par une autre intégration).
+  Avec la seule consommation journalière, Gladys ne peut pas savoir quels kWh
+  sont en heures creuses : n'utilisez pas ce modèle dans ce cas.
+- **Le gaz n'est pas concerné** : les contrats d'énergie de Gladys ne
+  couvrent que l'électricité. Le coût du gaz reste celui donné par Gaz de
+  Bordeaux (fonctionnalités « Coût du jour relevé », « Coût du mois »…).
 
 ## En cas de problème
 

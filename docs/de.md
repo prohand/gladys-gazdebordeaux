@@ -16,7 +16,7 @@ installieren, kein Modul am Zähler.
 - Gaz de Bordeaux veröffentlicht den Verbrauch eines Tages **ein bis zwei Tage
   später** (so lange braucht der Gazpar- oder Linky-Zähler). Gladys zeigt daher
   immer den **letzten gelesenen Tag**, nicht heute.
-- Gladys 5.1 oder neuer ist erforderlich.
+- Gladys 5.2 oder neuer ist erforderlich.
 
 ## Konfiguration
 
@@ -124,6 +124,49 @@ zeigt:
 
 Wählen Sie in den Widget-Einstellungen den anzuzeigenden Vertrag; leer
 gelassen ist es der erste.
+
+## Energieverträge (Strom)
+
+Die Integration fügt dem Vertragsassistenten von Gladys (**Energie** → Vertrag
+des Zählers) zwei Vertragsvorlagen hinzu, damit Gladys die Kosten Ihres Stroms
+zu den Preisen von Gaz de Bordeaux berechnet:
+
+| Vorlage                               | Preise                                      |
+| ------------------------------------- | ------------------------------------------- |
+| Gaz de Bordeaux NovaFixe Élec – Base  | ein kWh-Preis zu jeder Stunde + Grundgebühr |
+| Gaz de Bordeaux NovaFixe Élec – HT/NT | Hoch-/Niedertarif + Grundgebühr             |
+
+Die vorgeschlagenen Werte sind die Bruttopreise vom **Oktober 2026** für
+6 kVA:
+
+| Leistung | Grundgebühr / Monat | kWh Base | kWh HT / NT         |
+| -------- | ------------------- | -------- | ------------------- |
+| 3 kVA    | 12,13 €             | 0,1837 € | –                   |
+| 6 kVA    | 15,87 €             | 0,1837 € | 0,1965 € / 0,1467 € |
+| 9 kVA    | 19,88 €             | 0,1823 € | 0,1965 € / 0,1467 € |
+| 12 kVA   | 23,76 €             | 0,1823 € | 0,1965 € / 0,1467 € |
+| 15 kVA   | 27,40 €             | 0,1823 € | 0,1965 € / 0,1467 € |
+| 18 kVA   | 31,14 €             | –        | 0,1965 € / 0,1467 € |
+| 24 kVA   | 39,13 €             | –        | 0,1965 € / 0,1467 € |
+| 30 kVA   | 46,46 €             | –        | 0,1965 € / 0,1467 € |
+| 36 kVA   | 53,88 €             | –        | 0,1965 € / 0,1467 € |
+
+NovaFixe Élec hält den Preis **2 Jahre ab Vertragsabschluss** fest: Ihre Preise
+können abweichen. **Übernehmen Sie die Ihres Vertrags oder Ihrer Rechnung** in
+den Assistenten (kWh-Preis, Grundgebühr und beim Niedertarif dessen Zeiten,
+die auf der Rechnung stehen).
+
+Gut zu wissen:
+
+- **Base** funktioniert mit dem Tagesverbrauch, den diese Integration an das
+  Energie-Modul sendet.
+- **HT/NT** braucht einen **halbstündlichen** Verbrauch (ein Linky-Zähler, der
+  von einer anderen Integration alle 30 Minuten gelesen wird). Mit dem
+  Tagesverbrauch allein kann Gladys nicht wissen, welche kWh im Niedertarif
+  lagen: verwenden Sie diese Vorlage dann nicht.
+- **Gas ist nicht betroffen**: die Energieverträge von Gladys gelten nur für
+  Strom. Die Gaskosten bleiben die von Gaz de Bordeaux gelieferten (Funktionen
+  „Kosten des gelesenen Tages“, „Monatskosten“…).
 
 ## Fehlerbehebung
 

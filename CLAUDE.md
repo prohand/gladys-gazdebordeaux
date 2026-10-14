@@ -10,7 +10,9 @@ A Gladys Assistant **external integration** (Node 22+, ESM, no build step, one r
 supplier. It signs in to the customer account (life.gazdebordeaux.fr) with the user's email and
 password and publishes, per contract, the daily consumption, cost and gas volume, plus the month
 and year totals. Gladys 5.1+ adds scene triggers (new daily reading, high consumption, account
-unreachable), scene actions (refresh, get a consumption) and a "consumption" widget.
+unreachable), scene actions (refresh, get a consumption) and a "consumption" widget; Gladys 5.2+
+adds two electricity contract templates (NovaFixe Élec Base and Peak/Off-peak) to the contract
+wizard, declared in the manifest `energy_contracts` (no code: the core rule engine prices them).
 
 Started from the official
 [JavaScript template](https://github.com/GladysAssistant/integration-template-js); the workflows
@@ -95,6 +97,14 @@ There is no public API: the client calls the JSON endpoints the customer website
 - **Every feature declares `min`/`max`** (NOT NULL in Gladys).
 - **Secrets**: never log the password, the token or the login body. The rootfs is read-only:
   write only under `/data`.
+- **Energy contracts** (`energy_contracts.templates`, `pricing_mode: "rules"`): prices are
+  template `inputs` with the current grid as defaults, because NovaFixe Élec locks the price at
+  subscription — every customer may have other prices. A new price grid = new defaults + a new
+  template `version` (users are offered the update, never a silent change); never rename a
+  template key. Electricity only: Gladys contracts do not cover gas. Peak/Off-peak needs
+  half-hourly readings; the daily consumption of this integration only suits Base. The tariff
+  grammar is `tariff.schema.json` of `GladysAssistant/energy-contracts`; the store validator checks
+  it on pull requests.
 - **Widget budget**: 8 components at most (4 tiles + chart + status + button today);
   `test/widget.test.js` runs `validateWidgetContent` in the four languages.
 
@@ -109,7 +119,7 @@ There is no public API: the client calls the JSON endpoints the customer website
   `test/manifest.test.js`), messages (`src/messages.js`, built with `src/i18n.js`), widget texts
   and the four docs.
 - **Manifest.** `categories` needs Gladys ≥ 4.86.0; `widgets`, `scene_triggers`,
-  `scene_actions` need ≥ 5.1.0. The catalog `description` holds 10 to 100 characters per
-  language. Change the manifest and the handlers together.
+  `scene_actions` need ≥ 5.1.0; `energy_contracts` needs ≥ 5.2.0. The catalog `description`
+  holds 10 to 100 characters per language. Change the manifest and the handlers together.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why, in English. Tests
   never touch the network: use `test/helpers/fakeWebsite.js`.

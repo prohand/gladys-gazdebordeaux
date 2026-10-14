@@ -16,7 +16,7 @@ módulo en el contador.
 - Gaz de Bordeaux publica el consumo de un día **uno o dos días después** (lo
   que tarda el contador Gazpar o Linky en enviarlo). Gladys muestra por tanto
   siempre el **último día leído**, no el de hoy.
-- Se necesita Gladys 5.1 o posterior.
+- Se necesita Gladys 5.2 o posterior.
 
 ## Configuración
 
@@ -121,6 +121,49 @@ Añada el widget **Consumo Gaz de Bordeaux** a un panel. Muestra:
 
 En los ajustes del widget, elija el contrato a mostrar; si se deja vacío, es
 el primero.
+
+## Contratos de energía (electricidad)
+
+La integración añade dos plantillas de contrato al asistente de contratos de
+Gladys (**Energía** → contrato del contador), para que Gladys calcule el coste
+de su electricidad a los precios de Gaz de Bordeaux:
+
+| Plantilla                                   | Precios                                          |
+| ------------------------------------------- | ------------------------------------------------ |
+| Gaz de Bordeaux NovaFixe Élec – Base        | un precio del kWh a cualquier hora + suscripción |
+| Gaz de Bordeaux NovaFixe Élec – Horas valle | precios punta / valle + suscripción              |
+
+Los valores propuestos son los precios con IVA de **octubre de 2026**, en
+6 kVA:
+
+| Potencia | Suscripción / mes | kWh Base | kWh punta / valle   |
+| -------- | ----------------- | -------- | ------------------- |
+| 3 kVA    | 12,13 €           | 0,1837 € | –                   |
+| 6 kVA    | 15,87 €           | 0,1837 € | 0,1965 € / 0,1467 € |
+| 9 kVA    | 19,88 €           | 0,1823 € | 0,1965 € / 0,1467 € |
+| 12 kVA   | 23,76 €           | 0,1823 € | 0,1965 € / 0,1467 € |
+| 15 kVA   | 27,40 €           | 0,1823 € | 0,1965 € / 0,1467 € |
+| 18 kVA   | 31,14 €           | –        | 0,1965 € / 0,1467 € |
+| 24 kVA   | 39,13 €           | –        | 0,1965 € / 0,1467 € |
+| 30 kVA   | 46,46 €           | –        | 0,1965 € / 0,1467 € |
+| 36 kVA   | 53,88 €           | –        | 0,1965 € / 0,1467 € |
+
+NovaFixe Élec bloquea el precio **2 años desde la contratación**: sus precios
+pueden ser distintos. **Copie los de su contrato o factura** en el asistente
+(precio del kWh, suscripción y, para las horas valle, sus horarios, indicados
+en la factura).
+
+Conviene saber:
+
+- **Base** funciona con el consumo diario que esta integración envía al módulo
+  Energía.
+- **Horas valle** necesita un consumo **cada media hora** (un contador Linky
+  leído cada 30 minutos por otra integración). Con el consumo diario solo,
+  Gladys no puede saber qué kWh fueron en horas valle: no use esta plantilla en
+  ese caso.
+- **El gas no está incluido**: los contratos de energía de Gladys solo cubren
+  la electricidad. El coste del gas sigue siendo el que da Gaz de Bordeaux
+  (funciones «Coste del día leído», «Coste del mes»…).
 
 ## Solución de problemas
 

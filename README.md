@@ -27,7 +27,7 @@ User documentation: [English](./docs/en.md) · [Français](./docs/fr.md) ·
 | Dashboard widget | Last day / month consumption and cost, 30-day chart, year total, Refresh button   |
 
 Manifest: `type: "device"`, `transports: ["cloud"]`, `categories: ["energy"]`,
-`gladys_version: ">=5.1.0"` (scene and widget capabilities).
+`gladys_version: ">=5.2.0"` (scenes and widget need 5.1, energy contracts 5.2).
 
 ## How it talks to Gaz de Bordeaux
 

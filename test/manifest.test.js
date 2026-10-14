@@ -89,6 +89,90 @@ test('declaring scene triggers, scene actions and widgets requires Gladys >= 5.1
   assert.ok(isAtLeast(minGladysVersion(), [5, 1, 0]), `got "${manifest.gladys_version}"`);
 });
 
+// --- Energy contracts (Gladys 5.2+) -----------------------------------------
+// The store validator (CI, pull requests) runs the full tariff schema; these
+// tests catch the mistakes that are easy to make when editing the prices.
+
+const templates = manifest.energy_contracts?.templates ?? [];
+
+// Every `{{input:<key>}}` placeholder of a tariff.
+function placeholdersOf(node, found = new Set()) {
+  if (typeof node === 'string') {
+    for (const [, key] of node.matchAll(/\{\{input:([a-z0-9_]+)\}\}/g)) {
+      found.add(key);
+    }
+  } else if (node && typeof node === 'object') {
+    Object.values(node).forEach((child) => placeholdersOf(child, found));
+  }
+  return found;
+}
+
+test('declaring energy contracts requires Gladys >= 5.2.0', () => {
+  assert.ok(templates.length > 0, 'energy contract templates are declared');
+  assert.ok(isAtLeast(minGladysVersion(), [5, 2, 0]), `got "${manifest.gladys_version}"`);
+});
+
+test('the contract templates are French electricity offers priced by the rules engine', () => {
+  const keys = templates.map((template) => template.key);
+  assert.equal(new Set(keys).size, keys.length, 'template keys are unique');
+  for (const template of templates) {
+    assert.match(template.key, /^[a-z0-9][a-z0-9-]{0,63}$/);
+    assert.equal(template.country, 'FR');
+    assert.equal(template.currency, 'EUR');
+    assert.equal(template.timezone, 'Europe/Paris');
+    assert.equal(template.pricing_mode, 'rules');
+    for (const [lang, name] of Object.entries(template.name)) {
+      assert.ok(name.length <= 64, `${template.key} name.${lang}: ${name.length} characters`);
+    }
+  }
+});
+
+test('every tariff placeholder names a declared input, and every input is used', () => {
+  for (const template of templates) {
+    const inputs = template.inputs.map((input) => input.key);
+    const used = placeholdersOf(template.tariff);
+    for (const key of used) {
+      assert.ok(inputs.includes(key), `${template.key}: {{input:${key}}} is not declared`);
+    }
+    for (const key of inputs) {
+      assert.ok(used.has(key), `${template.key}: input "${key}" is never used`);
+    }
+  }
+});
+
+test('the default prices are plausible euros, the subscription is monthly', () => {
+  for (const template of templates) {
+    for (const input of template.inputs.filter((i) => i.type === 'number')) {
+      const max = input.unit === 'EUR/kWh' ? 1 : 100;
+      assert.ok(input.default > 0 && input.default < max, `${template.key}.${input.key}`);
+    }
+    const fixed = template.tariff.components.filter((c) => c.kind === 'fixed');
+    assert.deepEqual(
+      fixed.map((c) => c.per),
+      ['month'],
+    );
+  }
+});
+
+test('every consumption component has a price for any hour (a fallback)', () => {
+  for (const template of templates) {
+    for (const component of template.tariff.components.filter((c) => c.kind === 'consumption')) {
+      assert.ok(component.fallback?.price, `${template.key}.${component.key}`);
+    }
+  }
+});
+
+test('the off-peak hours default to 8 hours a day, as Enedis sets them', () => {
+  const template = templates.find((t) => t.key === 'novafixe-elec-peak-off-peak');
+  const slots = template.inputs.find((i) => i.key === 'off_peak_slots').default;
+  const minutes = (time) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3));
+  const total = slots.reduce(
+    (sum, [start, end]) => sum + ((minutes(end) - minutes(start) + 1440) % 1440),
+    0,
+  );
+  assert.equal(total, 8 * 60);
+});
+
 test('every manifest action has a registered handler', async () => {
   const gladys = createFakeGladys();
   createIntegration(gladys, { store: createMemoryStore() });

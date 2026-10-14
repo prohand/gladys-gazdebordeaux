@@ -10,7 +10,7 @@
   },
   "version": "1.0.0",
   "docker_image": "ghcr.io/prohand/gladys-gazdebordeaux:1.0.0",
-  "gladys_version": ">=5.1.0",
+  "gladys_version": ">=5.2.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-gazdebordeaux/main/cover.png",
   "categories": ["energy"],
   "transports": ["cloud"],
@@ -218,7 +218,12 @@
           "options": [
             {
               "value": "gas",
-              "label": { "en": "Gas", "fr": "Gaz", "de": "Gas", "es": "Gas" }
+              "label": {
+                "en": "Gas",
+                "fr": "Gaz",
+                "de": "Gas",
+                "es": "Gas"
+              }
             },
             {
               "value": "electricity",
@@ -313,7 +318,12 @@
           "options": [
             {
               "value": "gas",
-              "label": { "en": "Gas", "fr": "Gaz", "de": "Gas", "es": "Gas" }
+              "label": {
+                "en": "Gas",
+                "fr": "Gaz",
+                "de": "Gas",
+                "es": "Gas"
+              }
             },
             {
               "value": "electricity",
@@ -656,5 +666,203 @@
         }
       ]
     }
-  ]
+  ],
+  "energy_contracts": {
+    "templates": [
+      {
+        "key": "novafixe-elec-base",
+        "name": {
+          "en": "Gaz de Bordeaux NovaFixe Élec – Base",
+          "fr": "Gaz de Bordeaux NovaFixe Élec – Base",
+          "de": "Gaz de Bordeaux NovaFixe Élec – Base",
+          "es": "Gaz de Bordeaux NovaFixe Élec – Base"
+        },
+        "description": {
+          "en": "Fixed-price electricity offer (price locked for 2 years from subscription), single price at all hours. The defaults are the October 2026 prices incl. VAT for 6 kVA: enter the prices of your own contract.",
+          "fr": "Offre d'électricité à prix fixe (bloqué 2 ans à la souscription), un seul prix à toute heure. Les valeurs par défaut sont les prix TTC d'octobre 2026 en 6 kVA : saisissez ceux de votre contrat.",
+          "de": "Strom-Festpreisangebot (Preis 2 Jahre ab Vertragsabschluss fest), ein Preis zu jeder Stunde. Die Standardwerte sind die Bruttopreise von Oktober 2026 für 6 kVA: tragen Sie die Ihres Vertrags ein.",
+          "es": "Oferta de electricidad a precio fijo (bloqueado 2 años desde la contratación), un solo precio a cualquier hora. Los valores por defecto son los precios con IVA de octubre de 2026 en 6 kVA: introduzca los de su contrato."
+        },
+        "country": "FR",
+        "currency": "EUR",
+        "timezone": "Europe/Paris",
+        "pricing_mode": "rules",
+        "version": "2026-10-02",
+        "inputs": [
+          {
+            "key": "kwh_price",
+            "type": "number",
+            "unit": "EUR/kWh",
+            "default": 0.1837,
+            "required": true,
+            "label": {
+              "en": "kWh price (incl. VAT)",
+              "fr": "Prix du kWh (TTC)",
+              "de": "kWh-Preis (inkl. MwSt.)",
+              "es": "Precio del kWh (IVA incl.)"
+            },
+            "description": {
+              "en": "Default: up to 6 kVA (0.1823 from 9 kVA).",
+              "fr": "Par défaut : jusqu’à 6 kVA (0,1823 à partir de 9 kVA).",
+              "de": "Standard: bis 6 kVA (0,1823 ab 9 kVA).",
+              "es": "Por defecto: hasta 6 kVA (0,1823 a partir de 9 kVA)."
+            }
+          },
+          {
+            "key": "subscription_per_month",
+            "type": "number",
+            "unit": "EUR/month",
+            "default": 15.87,
+            "required": true,
+            "label": {
+              "en": "Subscription per month (incl. VAT)",
+              "fr": "Abonnement par mois (TTC)",
+              "de": "Grundgebühr pro Monat (inkl. MwSt.)",
+              "es": "Suscripción al mes (IVA incl.)"
+            },
+            "description": {
+              "en": "From your contract or invoice. Default: 6 kVA (3 kVA 12.13, 9 kVA 19.88, 12 kVA 23.76, 15 kVA 27.40).",
+              "fr": "Sur votre contrat ou facture. Par défaut : 6 kVA (3 kVA 12,13, 9 kVA 19,88, 12 kVA 23,76, 15 kVA 27,40).",
+              "de": "Laut Vertrag oder Rechnung. Standard: 6 kVA (3 kVA 12,13, 9 kVA 19,88, 12 kVA 23,76, 15 kVA 27,40).",
+              "es": "Según su contrato o factura. Por defecto: 6 kVA (3 kVA 12,13, 9 kVA 19,88, 12 kVA 23,76, 15 kVA 27,40)."
+            }
+          }
+        ],
+        "tariff": {
+          "tariff_version": 1,
+          "components": [
+            {
+              "key": "energy",
+              "kind": "consumption",
+              "label": "Base",
+              "fallback": {
+                "price": "{{input:kwh_price}}"
+              }
+            },
+            {
+              "key": "subscription",
+              "kind": "fixed",
+              "label": "Abonnement",
+              "amount": "{{input:subscription_per_month}}",
+              "per": "month"
+            }
+          ]
+        }
+      },
+      {
+        "key": "novafixe-elec-peak-off-peak",
+        "name": {
+          "en": "Gaz de Bordeaux NovaFixe Élec – Peak/Off-peak",
+          "fr": "Gaz de Bordeaux NovaFixe Élec – Heures creuses",
+          "de": "Gaz de Bordeaux NovaFixe Élec – HT/NT",
+          "es": "Gaz de Bordeaux NovaFixe Élec – Horas valle"
+        },
+        "description": {
+          "en": "Fixed-price electricity offer (price locked for 2 years from subscription), peak and off-peak prices; off-peak hours as set by Enedis on your meter. The defaults are the October 2026 prices incl. VAT for 6 kVA: enter the prices of your own contract.",
+          "fr": "Offre d'électricité à prix fixe (bloqué 2 ans à la souscription), heures pleines et heures creuses ; les heures creuses sont celles fixées par Enedis sur votre compteur. Les valeurs par défaut sont les prix TTC d'octobre 2026 en 6 kVA : saisissez ceux de votre contrat.",
+          "de": "Strom-Festpreisangebot (Preis 2 Jahre ab Vertragsabschluss fest), Hoch- und Niedertarif; die Niedertarifzeiten legt Enedis an Ihrem Zähler fest. Die Standardwerte sind die Bruttopreise von Oktober 2026 für 6 kVA: tragen Sie die Ihres Vertrags ein.",
+          "es": "Oferta de electricidad a precio fijo (bloqueado 2 años desde la contratación), horas punta y valle; las horas valle son las fijadas por Enedis en su contador. Los valores por defecto son los precios con IVA de octubre de 2026 en 6 kVA: introduzca los de su contrato."
+        },
+        "country": "FR",
+        "currency": "EUR",
+        "timezone": "Europe/Paris",
+        "pricing_mode": "rules",
+        "version": "2026-10-02",
+        "inputs": [
+          {
+            "key": "peak_price",
+            "type": "number",
+            "unit": "EUR/kWh",
+            "default": 0.1965,
+            "required": true,
+            "label": {
+              "en": "Peak kWh price (incl. VAT)",
+              "fr": "Prix du kWh heures pleines (TTC)",
+              "de": "kWh-Preis Hochtarif (inkl. MwSt.)",
+              "es": "Precio del kWh punta (IVA incl.)"
+            }
+          },
+          {
+            "key": "off_peak_price",
+            "type": "number",
+            "unit": "EUR/kWh",
+            "default": 0.1467,
+            "required": true,
+            "label": {
+              "en": "Off-peak kWh price (incl. VAT)",
+              "fr": "Prix du kWh heures creuses (TTC)",
+              "de": "kWh-Preis Niedertarif (inkl. MwSt.)",
+              "es": "Precio del kWh valle (IVA incl.)"
+            }
+          },
+          {
+            "key": "off_peak_slots",
+            "type": "time_intervals",
+            "default": [["22:00", "06:00"]],
+            "required": true,
+            "label": {
+              "en": "Off-peak hours",
+              "fr": "Heures creuses",
+              "de": "Niedertarifzeiten",
+              "es": "Horas valle"
+            },
+            "description": {
+              "en": "Shown on your invoice (8 hours a day, set by Enedis).",
+              "fr": "Indiquées sur votre facture (8 heures par jour, fixées par Enedis).",
+              "de": "Auf Ihrer Rechnung angegeben (8 Stunden am Tag, von Enedis festgelegt).",
+              "es": "Indicadas en su factura (8 horas al día, fijadas por Enedis)."
+            }
+          },
+          {
+            "key": "subscription_per_month",
+            "type": "number",
+            "unit": "EUR/month",
+            "default": 15.87,
+            "required": true,
+            "label": {
+              "en": "Subscription per month (incl. VAT)",
+              "fr": "Abonnement par mois (TTC)",
+              "de": "Grundgebühr pro Monat (inkl. MwSt.)",
+              "es": "Suscripción al mes (IVA incl.)"
+            },
+            "description": {
+              "en": "From your contract or invoice. Default: 6 kVA (9 kVA 19.88, 12 kVA 23.76, 15 kVA 27.40, 18 kVA 31.14, 24 kVA 39.13, 36 kVA 53.88).",
+              "fr": "Sur votre contrat ou facture. Par défaut : 6 kVA (9 kVA 19,88, 12 kVA 23,76, 15 kVA 27,40, 18 kVA 31,14, 24 kVA 39,13, 36 kVA 53,88).",
+              "de": "Laut Vertrag oder Rechnung. Standard: 6 kVA (9 kVA 19,88, 12 kVA 23,76, 15 kVA 27,40, 18 kVA 31,14, 24 kVA 39,13, 36 kVA 53,88).",
+              "es": "Según su contrato o factura. Por defecto: 6 kVA (9 kVA 19,88, 12 kVA 23,76, 15 kVA 27,40, 18 kVA 31,14, 24 kVA 39,13, 36 kVA 53,88)."
+            }
+          }
+        ],
+        "tariff": {
+          "tariff_version": 1,
+          "components": [
+            {
+              "key": "energy",
+              "kind": "consumption",
+              "rules": [
+                {
+                  "label": "Heures creuses",
+                  "when": {
+                    "time": "{{input:off_peak_slots}}"
+                  },
+                  "price": "{{input:off_peak_price}}"
+                }
+              ],
+              "fallback": {
+                "label": "Heures pleines",
+                "price": "{{input:peak_price}}"
+              }
+            },
+            {
+              "key": "subscription",
+              "kind": "fixed",
+              "label": "Abonnement",
+              "amount": "{{input:subscription_per_month}}",
+              "per": "month"
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

@@ -15,7 +15,7 @@ module on the meter.
 - Gaz de Bordeaux publishes the consumption of a day **one or two days later**
   (the time it takes the Gazpar or Linky meter to report it). Gladys therefore
   always shows the **latest day read**, not today.
-- Gladys 5.1 or later is required.
+- Gladys 5.2 or later is required.
 
 ## Configuration
 
@@ -117,6 +117,48 @@ Add the **Gaz de Bordeaux consumption** widget to a dashboard. It shows:
 
 In the widget settings, pick the contract to show; left empty, it is the
 first one.
+
+## Energy contracts (electricity)
+
+The integration adds two contract templates to the Gladys contract wizard
+(**Energy** → the meter contract), so Gladys computes the cost of your
+electricity at the Gaz de Bordeaux prices:
+
+| Template                                      | Prices                                    |
+| --------------------------------------------- | ----------------------------------------- |
+| Gaz de Bordeaux NovaFixe Élec – Base          | one kWh price at all hours + subscription |
+| Gaz de Bordeaux NovaFixe Élec – Peak/Off-peak | peak / off-peak prices + subscription     |
+
+The values offered are the prices incl. VAT read in **October 2026**, for
+6 kVA:
+
+| Power  | Subscription / month | Base kWh | Peak / off-peak kWh |
+| ------ | -------------------- | -------- | ------------------- |
+| 3 kVA  | €12.13               | €0.1837  | –                   |
+| 6 kVA  | €15.87               | €0.1837  | €0.1965 / €0.1467   |
+| 9 kVA  | €19.88               | €0.1823  | €0.1965 / €0.1467   |
+| 12 kVA | €23.76               | €0.1823  | €0.1965 / €0.1467   |
+| 15 kVA | €27.40               | €0.1823  | €0.1965 / €0.1467   |
+| 18 kVA | €31.14               | –        | €0.1965 / €0.1467   |
+| 24 kVA | €39.13               | –        | €0.1965 / €0.1467   |
+| 30 kVA | €46.46               | –        | €0.1965 / €0.1467   |
+| 36 kVA | €53.88               | –        | €0.1965 / €0.1467   |
+
+NovaFixe Élec locks the price **for 2 years from the subscription**: your
+prices may differ. **Copy the ones of your contract or invoice** into the
+wizard (kWh price, subscription and, for off-peak, the off-peak hours shown on
+the invoice).
+
+Good to know:
+
+- **Base** works with the daily consumption this integration sends to the
+  Energy module.
+- **Peak/Off-peak** needs a **half-hourly** consumption (a Linky meter read
+  every 30 minutes by another integration). With the daily consumption only,
+  Gladys cannot tell which kWh were off-peak: do not use this template then.
+- **Gas is not covered**: Gladys energy contracts are for electricity only. The
+  gas cost stays the one given by Gaz de Bordeaux ("Cost of the day read",
+  "Month cost"… features).
 
 ## Troubleshooting
 

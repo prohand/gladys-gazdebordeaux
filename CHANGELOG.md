@@ -27,6 +27,9 @@ the notes of the version's GitHub Release.
   year).
 - Dashboard widget: last day, month and year consumption and costs, a chart
   of the last 30 days and a Refresh button.
+- Energy contract templates for the Gladys contract wizard (Gladys 5.2+):
+  NovaFixe Élec Base and Peak/Off-peak, prices editable, October 2026 prices
+  as defaults.
 - "Test the connection" and "Refresh now" buttons in the configuration screen.
 - English, French, German and Spanish texts and documentation.
 - CI (format, lint, tests on Node 22 and 24, store checks, Docker build),

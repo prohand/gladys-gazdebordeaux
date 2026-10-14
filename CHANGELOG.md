@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes to this integration are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
+[semantic versioning](https://semver.org/), bumped by the Release workflow.
+
+Describe each change under `## [Unreleased]` as you make it. The Release
+workflow moves that section under the version it ships, and the section becomes
+the notes of the version's GitHub Release.
+
+## [Unreleased]
+
+### Added
+
+- First version of the Gaz de Bordeaux integration, built on the official
+  JavaScript template: sign-in to the customer account (life.gazdebordeaux.fr),
+  one device per contract (gas, electricity).
+- Daily consumption, cost and gas volume, dated by day, with the last days
+  imported when a device is created; month and year totals.
+- Electricity contracts feed their daily consumption to the Gladys energy
+  feature (`publishEnergyConsumption`).
+- Cloud transport badge, flagged degraded when the latest reading is more than
+  four days old.
+- Scene triggers: new daily reading, high daily consumption (thresholds in the
+  configuration), customer account unreachable.
+- Scene actions: refresh the readings, get a consumption (last day, month,
+  year).
+- Dashboard widget: last day, month and year consumption and costs, a chart
+  of the last 30 days and a Refresh button.
+- "Test the connection" and "Refresh now" buttons in the configuration screen.
+- English, French, German and Spanish texts and documentation.
+- CI (format, lint, tests on Node 22 and 24, store checks, Docker build),
+  Release, multi-arch build and GitHub Release workflows, Dependabot.
+- `SECURITY.md` and `CLAUDE.md`.
+
+[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/commits/main

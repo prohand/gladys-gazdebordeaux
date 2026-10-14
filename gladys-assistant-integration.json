@@ -1,0 +1,660 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Gaz de Bordeaux",
+  "description": {
+    "en": "Gas and electricity consumption and costs from your Gaz de Bordeaux customer account.",
+    "fr": "Consommation et coût du gaz et de l'électricité de votre compte client Gaz de Bordeaux.",
+    "de": "Gas- und Stromverbrauch samt Kosten aus Ihrem Gaz de Bordeaux Kundenkonto.",
+    "es": "Consumo y coste de gas y electricidad de su cuenta de cliente Gaz de Bordeaux."
+  },
+  "version": "1.0.0",
+  "docker_image": "ghcr.io/prohand/gladys-gazdebordeaux:1.0.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-gazdebordeaux/main/cover.png",
+  "categories": ["energy"],
+  "transports": ["cloud"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "Enter the email and password of your Gaz de Bordeaux customer account (the ones of the life.gazdebordeaux.fr website). The integration reads your consumption from it a few times a day: Gaz de Bordeaux publishes each day's reading one or two days later. One device is offered per contract (gas, electricity).",
+        "fr": "Saisissez l'e-mail et le mot de passe de votre compte client Gaz de Bordeaux (ceux du site life.gazdebordeaux.fr). L'intégration y lit votre consommation plusieurs fois par jour : Gaz de Bordeaux publie le relevé d'une journée un ou deux jours plus tard. Un appareil est proposé par contrat (gaz, électricité).",
+        "de": "Geben Sie die E-Mail-Adresse und das Passwort Ihres Gaz de Bordeaux Kundenkontos ein (die der Website life.gazdebordeaux.fr). Die Integration liest dort mehrmals täglich Ihren Verbrauch: Gaz de Bordeaux veröffentlicht den Wert eines Tages ein bis zwei Tage später. Pro Vertrag (Gas, Strom) wird ein Gerät angeboten.",
+        "es": "Introduzca el correo electrónico y la contraseña de su cuenta de cliente Gaz de Bordeaux (los del sitio life.gazdebordeaux.fr). La integración lee allí su consumo varias veces al día: Gaz de Bordeaux publica la lectura de un día uno o dos días después. Se ofrece un dispositivo por contrato (gas, electricidad)."
+      },
+      "links": [
+        {
+          "url": "https://life.gazdebordeaux.fr",
+          "label": {
+            "en": "Gaz de Bordeaux customer account",
+            "fr": "Espace client Gaz de Bordeaux",
+            "de": "Gaz de Bordeaux Kundenkonto",
+            "es": "Cuenta de cliente Gaz de Bordeaux"
+          }
+        }
+      ]
+    },
+    {
+      "key": "email",
+      "type": "string",
+      "label": {
+        "en": "Email",
+        "fr": "E-mail",
+        "de": "E-Mail",
+        "es": "Correo electrónico"
+      },
+      "description": {
+        "en": "The email you sign in to your Gaz de Bordeaux customer account with.",
+        "fr": "L'e-mail avec lequel vous vous connectez à votre espace client Gaz de Bordeaux.",
+        "de": "Die E-Mail-Adresse, mit der Sie sich bei Ihrem Gaz de Bordeaux Kundenkonto anmelden.",
+        "es": "El correo con el que inicia sesión en su cuenta de cliente Gaz de Bordeaux."
+      },
+      "placeholder": {
+        "en": "e.g. jane@example.com",
+        "fr": "ex. marie@exemple.fr",
+        "de": "z. B. anna@beispiel.de",
+        "es": "p. ej. ana@ejemplo.es"
+      },
+      "required": true
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "required": true
+    },
+    {
+      "key": "refresh_hours",
+      "type": "number",
+      "label": {
+        "en": "Refresh interval (hours)",
+        "fr": "Intervalle de rafraîchissement (heures)",
+        "de": "Aktualisierungsintervall (Stunden)",
+        "es": "Intervalo de actualización (horas)"
+      },
+      "description": {
+        "en": "How often the customer account is read. The readings change once a day: every 6 hours is plenty.",
+        "fr": "Fréquence de lecture de l'espace client. Les relevés changent une fois par jour : toutes les 6 heures suffit.",
+        "de": "Wie oft das Kundenkonto gelesen wird. Die Werte ändern sich einmal am Tag: alle 6 Stunden genügt.",
+        "es": "Frecuencia de lectura de la cuenta de cliente. Las lecturas cambian una vez al día: cada 6 horas es suficiente."
+      },
+      "required": false,
+      "default": 6,
+      "min": 1,
+      "max": 24
+    },
+    {
+      "key": "history_days",
+      "type": "number",
+      "label": {
+        "en": "Days of history to import",
+        "fr": "Jours d'historique à importer",
+        "de": "Zu importierende Tage",
+        "es": "Días de historial a importar"
+      },
+      "description": {
+        "en": "Daily readings imported into Gladys when a device is created, so its charts do not start empty.",
+        "fr": "Relevés journaliers importés dans Gladys à la création d'un appareil, pour que ses graphiques ne démarrent pas vides.",
+        "de": "Tageswerte, die beim Anlegen eines Geräts in Gladys importiert werden, damit seine Diagramme nicht leer beginnen.",
+        "es": "Lecturas diarias importadas en Gladys al crear un dispositivo, para que sus gráficos no empiecen vacíos."
+      },
+      "required": false,
+      "default": 30,
+      "min": 1,
+      "max": 90
+    },
+    {
+      "key": "gas_alert_kwh",
+      "type": "number",
+      "label": {
+        "en": "Gas alert threshold (kWh/day)",
+        "fr": "Seuil d'alerte gaz (kWh/jour)",
+        "de": "Gas-Warnschwelle (kWh/Tag)",
+        "es": "Umbral de alerta gas (kWh/día)"
+      },
+      "description": {
+        "en": "The \"High daily consumption\" scene trigger fires when a day of gas goes above it. 0 turns it off.",
+        "fr": "Le déclencheur de scène « Consommation journalière élevée » se lance quand une journée de gaz le dépasse. 0 le désactive.",
+        "de": "Der Szenen-Auslöser „Hoher Tagesverbrauch“ wird ausgelöst, wenn ein Gastag darüber liegt. 0 schaltet ihn ab.",
+        "es": "El disparador de escena «Consumo diario elevado» se lanza cuando un día de gas lo supera. 0 lo desactiva."
+      },
+      "required": false,
+      "default": 0,
+      "min": 0,
+      "max": 1000
+    },
+    {
+      "key": "electricity_alert_kwh",
+      "type": "number",
+      "label": {
+        "en": "Electricity alert threshold (kWh/day)",
+        "fr": "Seuil d'alerte électricité (kWh/jour)",
+        "de": "Strom-Warnschwelle (kWh/Tag)",
+        "es": "Umbral de alerta electricidad (kWh/día)"
+      },
+      "description": {
+        "en": "The \"High daily consumption\" scene trigger fires when a day of electricity goes above it. 0 turns it off.",
+        "fr": "Le déclencheur de scène « Consommation journalière élevée » se lance quand une journée d'électricité le dépasse. 0 le désactive.",
+        "de": "Der Szenen-Auslöser „Hoher Tagesverbrauch“ wird ausgelöst, wenn ein Stromtag darüber liegt. 0 schaltet ihn ab.",
+        "es": "El disparador de escena «Consumo diario elevado» se lanza cuando un día de electricidad lo supera. 0 lo desactiva."
+      },
+      "required": false,
+      "default": 0,
+      "min": 0,
+      "max": 1000
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 60
+    },
+    {
+      "key": "refresh_now",
+      "label": {
+        "en": "Refresh now",
+        "fr": "Rafraîchir maintenant",
+        "de": "Jetzt aktualisieren",
+        "es": "Actualizar ahora"
+      },
+      "timeout_seconds": 120
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "daily_reading",
+      "label": {
+        "en": "New daily reading",
+        "fr": "Nouveau relevé journalier",
+        "de": "Neuer Tageswert",
+        "es": "Nueva lectura diaria"
+      },
+      "description": {
+        "en": "Gaz de Bordeaux published the consumption of a new day.",
+        "fr": "Gaz de Bordeaux a publié la consommation d'une nouvelle journée.",
+        "de": "Gaz de Bordeaux hat den Verbrauch eines neuen Tages veröffentlicht.",
+        "es": "Gaz de Bordeaux ha publicado el consumo de un nuevo día."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Contract",
+            "fr": "Contrat",
+            "de": "Vertrag",
+            "es": "Contrato"
+          }
+        },
+        {
+          "key": "energy",
+          "type": "multi_select",
+          "label": {
+            "en": "Energy",
+            "fr": "Énergie",
+            "de": "Energie",
+            "es": "Energía"
+          },
+          "options": [
+            {
+              "value": "gas",
+              "label": { "en": "Gas", "fr": "Gaz", "de": "Gas", "es": "Gas" }
+            },
+            {
+              "value": "electricity",
+              "label": {
+                "en": "Electricity",
+                "fr": "Électricité",
+                "de": "Strom",
+                "es": "Electricidad"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Day (YYYY-MM-DD)",
+            "fr": "Jour (AAAA-MM-JJ)",
+            "de": "Tag (JJJJ-MM-TT)",
+            "es": "Día (AAAA-MM-DD)"
+          }
+        },
+        {
+          "key": "kwh",
+          "type": "number",
+          "label": {
+            "en": "Consumption (kWh)",
+            "fr": "Consommation (kWh)",
+            "de": "Verbrauch (kWh)",
+            "es": "Consumo (kWh)"
+          }
+        },
+        {
+          "key": "cost",
+          "type": "number",
+          "label": {
+            "en": "Cost (€)",
+            "fr": "Coût (€)",
+            "de": "Kosten (€)",
+            "es": "Coste (€)"
+          }
+        },
+        {
+          "key": "volume",
+          "type": "number",
+          "label": {
+            "en": "Gas volume (m³)",
+            "fr": "Volume de gaz (m³)",
+            "de": "Gasvolumen (m³)",
+            "es": "Volumen de gas (m³)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "high_consumption",
+      "label": {
+        "en": "High daily consumption",
+        "fr": "Consommation journalière élevée",
+        "de": "Hoher Tagesverbrauch",
+        "es": "Consumo diario elevado"
+      },
+      "description": {
+        "en": "The new daily reading goes above the alert threshold set in the configuration.",
+        "fr": "Le nouveau relevé journalier dépasse le seuil d'alerte réglé dans la configuration.",
+        "de": "Der neue Tageswert liegt über der in der Konfiguration eingestellten Warnschwelle.",
+        "es": "La nueva lectura diaria supera el umbral de alerta definido en la configuración."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Contract",
+            "fr": "Contrat",
+            "de": "Vertrag",
+            "es": "Contrato"
+          }
+        },
+        {
+          "key": "energy",
+          "type": "multi_select",
+          "label": {
+            "en": "Energy",
+            "fr": "Énergie",
+            "de": "Energie",
+            "es": "Energía"
+          },
+          "options": [
+            {
+              "value": "gas",
+              "label": { "en": "Gas", "fr": "Gaz", "de": "Gas", "es": "Gas" }
+            },
+            {
+              "value": "electricity",
+              "label": {
+                "en": "Electricity",
+                "fr": "Électricité",
+                "de": "Strom",
+                "es": "Electricidad"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Day (YYYY-MM-DD)",
+            "fr": "Jour (AAAA-MM-JJ)",
+            "de": "Tag (JJJJ-MM-TT)",
+            "es": "Día (AAAA-MM-DD)"
+          }
+        },
+        {
+          "key": "kwh",
+          "type": "number",
+          "label": {
+            "en": "Consumption (kWh)",
+            "fr": "Consommation (kWh)",
+            "de": "Verbrauch (kWh)",
+            "es": "Consumo (kWh)"
+          }
+        },
+        {
+          "key": "threshold",
+          "type": "number",
+          "label": {
+            "en": "Threshold (kWh)",
+            "fr": "Seuil (kWh)",
+            "de": "Schwelle (kWh)",
+            "es": "Umbral (kWh)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "connection_failed",
+      "label": {
+        "en": "Customer account unreachable",
+        "fr": "Espace client injoignable",
+        "de": "Kundenkonto nicht erreichbar",
+        "es": "Cuenta de cliente inaccesible"
+      },
+      "description": {
+        "en": "Reading the customer account failed after it had worked.",
+        "fr": "La lecture de l'espace client a échoué alors qu'elle fonctionnait.",
+        "de": "Das Lesen des Kundenkontos ist fehlgeschlagen, nachdem es funktioniert hatte.",
+        "es": "La lectura de la cuenta de cliente ha fallado cuando antes funcionaba."
+      },
+      "fields": [
+        {
+          "key": "reason",
+          "type": "multi_select",
+          "label": {
+            "en": "Reason",
+            "fr": "Cause",
+            "de": "Ursache",
+            "es": "Causa"
+          },
+          "options": [
+            {
+              "value": "auth",
+              "label": {
+                "en": "Sign-in refused",
+                "fr": "Connexion refusée",
+                "de": "Anmeldung abgelehnt",
+                "es": "Inicio de sesión rechazado"
+              }
+            },
+            {
+              "value": "blocked",
+              "label": {
+                "en": "Request blocked by the website",
+                "fr": "Requête bloquée par le site",
+                "de": "Anfrage von der Website blockiert",
+                "es": "Solicitud bloqueada por el sitio"
+              }
+            },
+            {
+              "value": "network",
+              "label": {
+                "en": "Network",
+                "fr": "Réseau",
+                "de": "Netzwerk",
+                "es": "Red"
+              }
+            },
+            {
+              "value": "api",
+              "label": {
+                "en": "Unexpected answer",
+                "fr": "Réponse inattendue",
+                "de": "Unerwartete Antwort",
+                "es": "Respuesta inesperada"
+              }
+            },
+            {
+              "value": "no_contract",
+              "label": {
+                "en": "No contract found",
+                "fr": "Aucun contrat trouvé",
+                "de": "Kein Vertrag gefunden",
+                "es": "Ningún contrato encontrado"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "reason",
+          "type": "string",
+          "label": {
+            "en": "Reason",
+            "fr": "Cause",
+            "de": "Ursache",
+            "es": "Causa"
+          }
+        },
+        {
+          "key": "message",
+          "type": "string",
+          "label": {
+            "en": "Error message",
+            "fr": "Message d'erreur",
+            "de": "Fehlermeldung",
+            "es": "Mensaje de error"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "refresh_now",
+      "label": {
+        "en": "Refresh the Gaz de Bordeaux readings",
+        "fr": "Rafraîchir les relevés Gaz de Bordeaux",
+        "de": "Gaz de Bordeaux Werte aktualisieren",
+        "es": "Actualizar las lecturas de Gaz de Bordeaux"
+      },
+      "description": {
+        "en": "Reads the customer account now instead of waiting for the next refresh.",
+        "fr": "Lit l'espace client tout de suite au lieu d'attendre le prochain rafraîchissement.",
+        "de": "Liest das Kundenkonto sofort, statt auf die nächste Aktualisierung zu warten.",
+        "es": "Lee la cuenta de cliente ahora en lugar de esperar a la próxima actualización."
+      },
+      "timeout_seconds": 120,
+      "outputs": [
+        {
+          "key": "success",
+          "type": "boolean",
+          "label": {
+            "en": "Refresh succeeded",
+            "fr": "Rafraîchissement réussi",
+            "de": "Aktualisierung erfolgreich",
+            "es": "Actualización correcta"
+          }
+        },
+        {
+          "key": "contracts",
+          "type": "number",
+          "label": {
+            "en": "Contracts read",
+            "fr": "Contrats lus",
+            "de": "Gelesene Verträge",
+            "es": "Contratos leídos"
+          }
+        }
+      ]
+    },
+    {
+      "key": "get_consumption",
+      "label": {
+        "en": "Get a Gaz de Bordeaux consumption",
+        "fr": "Lire une consommation Gaz de Bordeaux",
+        "de": "Gaz de Bordeaux Verbrauch abrufen",
+        "es": "Obtener un consumo de Gaz de Bordeaux"
+      },
+      "description": {
+        "en": "Gives the consumption and cost of the last day, the month or the year, for the following actions (e.g. a message).",
+        "fr": "Donne la consommation et le coût du dernier jour, du mois ou de l'année, pour les actions suivantes (ex. un message).",
+        "de": "Liefert Verbrauch und Kosten des letzten Tages, des Monats oder des Jahres für die folgenden Aktionen (z. B. eine Nachricht).",
+        "es": "Da el consumo y el coste del último día, del mes o del año, para las acciones siguientes (p. ej. un mensaje)."
+      },
+      "timeout_seconds": 15,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Contract",
+            "fr": "Contrat",
+            "de": "Vertrag",
+            "es": "Contrato"
+          },
+          "required": true
+        },
+        {
+          "key": "period",
+          "type": "select",
+          "label": {
+            "en": "Period",
+            "fr": "Période",
+            "de": "Zeitraum",
+            "es": "Periodo"
+          },
+          "default": "last_day",
+          "options": [
+            {
+              "value": "last_day",
+              "label": {
+                "en": "Last day read",
+                "fr": "Dernier jour relevé",
+                "de": "Letzter gelesener Tag",
+                "es": "Último día leído"
+              }
+            },
+            {
+              "value": "month",
+              "label": {
+                "en": "This month",
+                "fr": "Ce mois-ci",
+                "de": "Dieser Monat",
+                "es": "Este mes"
+              }
+            },
+            {
+              "value": "year",
+              "label": {
+                "en": "This year",
+                "fr": "Cette année",
+                "de": "Dieses Jahr",
+                "es": "Este año"
+              }
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "key": "kwh",
+          "type": "number",
+          "label": {
+            "en": "Consumption (kWh)",
+            "fr": "Consommation (kWh)",
+            "de": "Verbrauch (kWh)",
+            "es": "Consumo (kWh)"
+          }
+        },
+        {
+          "key": "cost",
+          "type": "number",
+          "label": {
+            "en": "Cost (€)",
+            "fr": "Coût (€)",
+            "de": "Kosten (€)",
+            "es": "Coste (€)"
+          }
+        },
+        {
+          "key": "volume",
+          "type": "number",
+          "label": {
+            "en": "Gas volume (m³)",
+            "fr": "Volume de gaz (m³)",
+            "de": "Gasvolumen (m³)",
+            "es": "Volumen de gas (m³)"
+          }
+        },
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Latest day read (YYYY-MM-DD)",
+            "fr": "Dernier jour relevé (AAAA-MM-JJ)",
+            "de": "Letzter gelesener Tag (JJJJ-MM-TT)",
+            "es": "Último día leído (AAAA-MM-DD)"
+          }
+        },
+        {
+          "key": "available",
+          "type": "boolean",
+          "label": {
+            "en": "Data available",
+            "fr": "Données disponibles",
+            "de": "Daten verfügbar",
+            "es": "Datos disponibles"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "consumption",
+      "label": {
+        "en": "Gaz de Bordeaux consumption",
+        "fr": "Consommation Gaz de Bordeaux",
+        "de": "Gaz de Bordeaux Verbrauch",
+        "es": "Consumo Gaz de Bordeaux"
+      },
+      "description": {
+        "en": "Last day, month and year consumption and cost, with a 30-day chart.",
+        "fr": "Consommation et coût du dernier jour, du mois et de l'année, avec un graphique sur 30 jours.",
+        "de": "Verbrauch und Kosten des letzten Tages, Monats und Jahres, mit 30-Tage-Diagramm.",
+        "es": "Consumo y coste del último día, del mes y del año, con un gráfico de 30 días."
+      },
+      "icon": "bar-chart-2",
+      "action_timeout_seconds": 120,
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Contract",
+            "fr": "Contrat",
+            "de": "Vertrag",
+            "es": "Contrato"
+          },
+          "description": {
+            "en": "Left empty, the widget shows the first contract.",
+            "fr": "Laissé vide, le widget affiche le premier contrat.",
+            "de": "Leer gelassen, zeigt das Widget den ersten Vertrag.",
+            "es": "Si se deja vacío, el widget muestra el primer contrato."
+          }
+        }
+      ]
+    }
+  ]
+}

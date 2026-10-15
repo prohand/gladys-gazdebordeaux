@@ -118,3 +118,29 @@ test('a JSON answer that is not JSON is an "api" error', async () => {
   const client = createClient({ email: EMAIL, password: PASSWORD, fetchImpl });
   await assert.rejects(client.login(), { kind: ERROR_KINDS.API });
 });
+
+test('the contract details come from espaceclient, signed in again once a token expired', async () => {
+  const site = createFakeWebsite();
+  const client = clientOf(site);
+  const first = await client.getContractDetails();
+  assert.deepEqual(
+    first.map(({ summary }) => summary.type),
+    ['gaz', 'elec'],
+  );
+  assert.equal(first[1].details.tarifScale.base.prixConsoUniteWithTaxeTTC, 0.160164);
+  site.espace.tokens.clear();
+  await client.getContractDetails();
+  assert.equal(site.espace.logins, 2);
+  const espace = site.requests.filter((r) => r.host === 'espaceclient.gazdebordeaux.fr');
+  assert.ok(
+    espace.every(({ init }) => init.headers.Origin === 'https://espaceclient.gazdebordeaux.fr'),
+  );
+  assert.equal(site.logins, 0, 'life.gazdebordeaux.fr is not involved');
+});
+
+test('espaceclient refusing the credentials is an auth error', async () => {
+  const site = createFakeWebsite();
+  await assert.rejects(clientOf(site, { password: 'wrong' }).getContractDetails(), {
+    kind: ERROR_KINDS.AUTH,
+  });
+});

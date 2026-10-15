@@ -4,15 +4,31 @@ All notable changes to this integration are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [semantic versioning](https://semver.org/), bumped by the Release workflow.
 
-Describe each change under `## [Unreleased]
-
-## [1.0.1] - 2026-10-15
-
-` as you make it. The Release
+Describe each change under `## [Unreleased]` as you make it. The Release
 workflow moves that section under the version it ships, and the section becomes
 the notes of the version's GitHub Release.
 
 ## [Unreleased]
+
+### Changed
+
+- "My contract prices" now reads the current prices of your contracts on
+  espaceclient.gazdebordeaux.fr (same email and password), as the line
+  "Votre prix actuel" gives them, instead of computing them from the daily
+  amounts (0.16066 €/kWh and 16.01 €/month instead of 0.160164 and 15.87 on
+  a real account). When espaceclient cannot be read, it says where to find
+  them.
+
+### Removed
+
+- The "Price paid" row of the widget, and the price change found in the
+  readings: both were computed, so approximate.
+
+### Fixed
+
+- The Release workflow put the version heading inside the changelog intro.
+
+## [1.0.1] - 2026-10-15
 
 ### Added
 

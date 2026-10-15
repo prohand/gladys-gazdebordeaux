@@ -77,8 +77,8 @@ Neustart.
   Passwort an und listet die gefundenen Verträge.
 - **Jetzt aktualisieren**: liest das Kundenkonto sofort und nennt den letzten
   gelesenen Tag.
-- **Meine Vertragspreise**: berechnet die tatsächlich bezahlten Preise Ihres
-  Stromvertrags (siehe „Energieverträge“).
+- **Meine Vertragspreise**: zeigt die aktuellen Preise Ihrer Verträge, wie
+  espaceclient.gazdebordeaux.fr sie angibt (siehe „Energieverträge“).
 
 ## Szenen
 
@@ -147,40 +147,34 @@ ein. Ihr Angebot steht in Ihrem Kundenkonto, Zeile „Votre tarif“.
 
 ### Ihre Preise: die Schaltfläche „Meine Vertragspreise“
 
-Ein Festpreisangebot behält **den Preis des Abschlusstages**: ein vor zwei
-Jahren geschlossener Vertrag hat nicht die heutigen Preise. Die Schaltfläche
-**Meine Vertragspreise** (Reiter **Konfiguration**) berechnet sie aus **Ihrem**
-Kundenkonto: für jeden Tag nennt Gaz de Bordeaux die kWh und ihre Kosten, die
-Integration leitet daraus den tatsächlich bezahlten kWh-Preis (Hoch- und
-Niedertarif getrennt), die monatliche Grundgebühr, die Leistung und die
-Niedertarifzeiten ab. Beispiel:
+Ein Festpreisangebot behält **den Preis des Abschlusstages**, ein indexiertes
+Angebot (Ecodigo Elec) ändert sich mit Steuern und Markt: Ihr Preis ist nicht
+unbedingt der der heutigen Preisliste. Die Schaltfläche **Meine
+Vertragspreise** (Reiter **Konfiguration**) liest Ihre aktuellen Preise auf
+**espaceclient.gazdebordeaux.fr** (gleiche E-Mail und gleiches Passwort),
+Zeile „Votre prix actuel“ der Seite Ihres Vertrags, und gibt sie unverändert
+an, ohne Berechnung. Beispiel:
 
-> Strom (6 kVA): 0,18373 €/kWh, Grundgebühr 15,87 €/Monat. Berechnet aus den
-> letzten 30 Tagen Ihres Kontos.
+> Strom, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA):
+> 0,160164 €/kWh, Grundgebühr 15,87 €/Monat.
 
-Es sind Bruttopreise (inkl. MwSt.), wie bei Gaz de Bordeaux und in den
-Verträgen von Gladys. Die Website rundet jeden Tag auf den Cent: Die berechnete
-Grundgebühr kann um einen Cent von der Ihres Kundenkontos abweichen.
+Es sind Bruttopreise (inkl. MwSt. und Abgaben: CTA in der Grundgebühr,
+Verbrauchsteuer im kWh-Preis), wie in den Verträgen von Gladys. Übernehmen Sie
+sie in den Vertragsassistenten von Gladys: Gladys erlaubt einer Integration
+nicht, einen Vertrag für Sie auszufüllen.
 
-Übernehmen Sie diese Werte in den Vertragsassistenten von Gladys. Der bezahlte
-Preis wird auch im Widget angezeigt (Zeile **Bezahlter Preis**).
-
-Gladys erlaubt einer Integration nicht, einen Vertrag für Sie auszufüllen:
-deshalb werden sie einmal übernommen, dann bei jeder Preisänderung.
+Kann das Kundenkonto nicht gelesen werden, sagt die Schaltfläche es: Übernehmen
+Sie die Preise dann von der Seite Ihres Vertrags auf
+espaceclient.gazdebordeaux.fr.
 
 ### Wenn sich Ihre Preise ändern
 
 Lassen Sie das **Enddatum** Ihres Gladys-Vertrags leer, solange sich Ihre
 Preise nicht ändern. Sie können sich unterwegs ändern: neue Preisliste
-(NovaFlex, Ende einer Festpreisperiode) oder eine Steuer (Verbrauchsteuer,
-MwSt.), die den Bruttopreis ändert.
-
-Die Schaltfläche **Meine Vertragspreise** erkennt eine solche Änderung in Ihren
-Werten und berechnet die Preise dann nur über die Tage seitdem. Beispiel:
-
-> Strom (6 kVA): 0,17112 €/kWh, Grundgebühr 15,87 €/Monat. Neue Preise seit
-> 01.02.2027: Beenden Sie Ihren Gladys-Vertrag am 31.01.2027 und legen Sie ab
-> 01.02.2027 einen neuen mit diesen Preisen an.
+(NovaFlex, Ecodigo Elec, Ende einer Festpreisperiode) oder eine Steuer
+(Verbrauchsteuer, MwSt.), die den Bruttopreis ändert. Gaz de Bordeaux
+informiert Sie; die Schaltfläche **Meine Vertragspreise** gibt dann die neuen
+Preise an.
 
 1. Setzen Sie beim aktuellen Vertrag das **Enddatum** auf den Tag vor der
    Änderung.
@@ -188,13 +182,8 @@ Werten und berechnet die Preise dann nur über die Tage seitdem. Beispiel:
    den neuen Preisen.
 
 So behalten die vergangenen Tage ihre alten Preise. Ändern Sie nicht die
-Preise des bestehenden Vertrags: Gladys würde die ganze Historie seit
+Preise des bestehenden Vertrags: Gladys würde die gesamte Historie seit
 Vertragsbeginn mit dem neuen Preis neu berechnen.
-
-Wenige Tage nach der Änderung sind die Preise etwas ungenauer (weniger Tage
-für die Berechnung): Klicken Sie ein bis zwei Wochen später erneut und
-korrigieren Sie den neuen Vertrag bei Bedarf. Die Änderung wird nur in den
-gelesenen Tagen erkannt (**Zu importierende Tage**, bis zu 90).
 
 ### Die Standardpreise: die offiziellen Preislisten
 

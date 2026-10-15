@@ -1,13 +1,21 @@
 // -----------------------------------------------------------------------------
-// HTTP client of the Gaz de Bordeaux customer account (life.gazdebordeaux.fr).
+// HTTP client of the Gaz de Bordeaux customer account.
 //
-// There is no public API: these are the JSON endpoints the customer website
-// itself calls, the same ones the community Home Assistant integration uses.
+// There is no public API: these are the JSON endpoints the customer websites
+// themselves call. The consumptions come from life.gazdebordeaux.fr (the same
+// endpoints as the community Home Assistant integration):
 //
 //   POST /api/login_check                 {email, password} -> {token} (JWT)
 //   GET  /api/users/me                    selectedHouse + houses[] (paths)
 //   GET  /api/houses/{uuid}               one contract: contractType.category
 //   GET  /api/houses/{uuid}/consumptions  ?scale=month|year[&startDate&endDate]
+//
+// The current prices of each contract ("Votre prix actuel") come from
+// espaceclient.gazdebordeaux.fr, same email and password:
+//
+//   POST /api/authentication-token        {email, password} -> {token, lifeToken}
+//   GET  /api/me                          contracts[]: { id, type: gaz | elec }
+//   GET  /api/contracts/{id}              offer, power, option, tarifScale
 //
 // What makes it fragile, learned the hard way by the HA integration:
 //   - the website sits behind a filter that answers an HTML page (403, or 200
@@ -26,6 +34,7 @@ import { createLogger } from '@gladysassistant/integration-sdk';
 const logger = createLogger({ name: 'gazdebordeaux' });
 
 export const BASE_URL = 'https://life.gazdebordeaux.fr';
+export const ESPACE_CLIENT_URL = 'https://espaceclient.gazdebordeaux.fr';
 
 export const BROWSER_HEADERS = {
   'User-Agent':
@@ -118,12 +127,6 @@ export function contractFromHouse(path, house) {
     // Shown in the device name when the account holds several contracts of
     // the same energy; any of these may be missing.
     reference: house?.contractNumber ?? house?.reference ?? house?.pdl ?? house?.pce ?? null,
-    // Electricity only, what the customer website shows under "Option
-    // tarifaire": subscribed power (kVA), `HPHC` or base, off-peak hours
-    // (their shape is not documented: kept raw, read by prices.js).
-    power: Number.isFinite(Number(house?.electricityPower)) ? Number(house.electricityPower) : null,
-    priceCategory: typeof house?.priceCategory === 'string' ? house.priceCategory : null,
-    offPeakTimes: house?.offPeakTimes ?? null,
   };
 }
 
@@ -137,20 +140,21 @@ export function createClient({
   timeoutMs = 20_000,
 }) {
   let token = null;
+  let espaceToken = null;
 
-  async function call(method, path, { body, query, auth = true } = {}) {
-    const url = new URL(path, BASE_URL);
+  async function call(method, path, { body, query, bearer = token, base = BASE_URL } = {}) {
+    const url = new URL(path, base);
     for (const [key, value] of Object.entries(query ?? {})) {
       if (value !== undefined && value !== null) {
         url.searchParams.set(key, value);
       }
     }
-    const headers = { ...BROWSER_HEADERS };
+    const headers = { ...BROWSER_HEADERS, Origin: base, Referer: `${base}/` };
     if (body !== undefined) {
       headers['Content-Type'] = 'application/json';
     }
-    if (auth) {
-      headers.Authorization = `Bearer ${token}`;
+    if (bearer) {
+      headers.Authorization = `Bearer ${bearer}`;
     }
 
     // Never log the body of a login: it carries the password.
@@ -204,7 +208,7 @@ export function createClient({
     token = null;
     const answer = await call('POST', '/api/login_check', {
       body: { email, password },
-      auth: false,
+      bearer: null,
     });
     if (typeof answer?.token !== 'string' || !answer.token) {
       throw new GdbError(ERROR_KINDS.AUTH, 'Gaz de Bordeaux gave no session token');
@@ -269,5 +273,60 @@ export function createClient({
     return get(`${path}/consumptions`, { scale, startDate, endDate });
   }
 
-  return { login, getContracts, getConsumptions };
+  async function espaceLogin() {
+    espaceToken = null;
+    const answer = await call('POST', '/api/authentication-token', {
+      body: { email, password },
+      bearer: null,
+      base: ESPACE_CLIENT_URL,
+    });
+    if (typeof answer?.token !== 'string' || !answer.token) {
+      throw new GdbError(ERROR_KINDS.AUTH, 'Gaz de Bordeaux gave no session token');
+    }
+    espaceToken = answer.token;
+    logger.debug('Signed in to espaceclient.gazdebordeaux.fr');
+  }
+
+  async function espaceGet(path) {
+    if (!espaceToken) {
+      await espaceLogin();
+    }
+    try {
+      return await call('GET', path, { bearer: espaceToken, base: ESPACE_CLIENT_URL });
+    } catch (err) {
+      if (err.kind !== ERROR_KINDS.AUTH) {
+        throw err;
+      }
+      await espaceLogin();
+      return call('GET', path, { bearer: espaceToken, base: ESPACE_CLIENT_URL });
+    }
+  }
+
+  /**
+   * Every contract of espaceclient.gazdebordeaux.fr, `{ summary, details }`:
+   * its `/api/me` entry and its `/api/contracts/{id}` resource (read by
+   * prices.js).
+   * @returns {Promise<Array<{ summary: object, details: object }>>}
+   */
+  async function getContractDetails() {
+    const me = await espaceGet('/api/me');
+    const summaries = (Array.isArray(me?.contracts) ? me.contracts : []).filter(
+      (contract) => contract?.id !== undefined && contract?.id !== null,
+    );
+    if (summaries.length === 0) {
+      throw new GdbError(ERROR_KINDS.NO_CONTRACT, 'No contract on this Gaz de Bordeaux account');
+    }
+    const contracts = [];
+    for (const summary of summaries) {
+      const details = await espaceGet(`/api/contracts/${encodeURIComponent(summary.id)}`);
+      // The field names only, as for the houses.
+      logger.debug(
+        `Contract fields: ${Object.keys(details ?? {}).join(', ')}; tarifScale: ${Object.keys(details?.tarifScale ?? {}).join(', ')}`,
+      );
+      contracts.push({ summary, details });
+    }
+    return contracts;
+  }
+
+  return { login, getContracts, getConsumptions, getContractDetails };
 }

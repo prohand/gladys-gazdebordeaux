@@ -1,5 +1,6 @@
 // -----------------------------------------------------------------------------
-// A fake life.gazdebordeaux.fr: the `fetch` the client is given in the tests.
+// A fake life.gazdebordeaux.fr and espaceclient.gazdebordeaux.fr: the `fetch`
+// the client is given in the tests.
 // It answers like the real website (JSON endpoints, 401 on bad credentials or
 // an expired token, the HTML page of its filter when "blocked") and records
 // every request. No network, ever.
@@ -13,20 +14,12 @@ export const GAS_ID = '0b7d4c3e-1111-4a5b-9c8d-00000000a001';
 export const ELEC_ID = '0b7d4c3e-2222-4a5b-9c8d-00000000b002';
 export const TODAY = '2026-10-14';
 
-// The October 2026 NovaFixe Élec prices: what the electricity days are
-// charged at, so the prices computed back from them can be checked.
-export const KWH_PRICE = 0.18373;
-export const PEAK_PRICE = 0.19648;
-export const OFF_PEAK_PRICE = 0.14669;
-export const SUBSCRIPTION_PER_MONTH = 15.87;
-const DAILY_SUBSCRIPTION = (SUBSCRIPTION_PER_MONTH * 12) / 365;
-
 /** `count` days ending the day before `today`, oldest first. */
 export function makeDays(count, { today = TODAY, kwh = (i) => 40 + i, gas = true } = {}) {
   return Array.from({ length: count }, (_, i) => {
     const date = addDays(today, i - count);
     if (gas) {
-      // Gas days: the total price only, no split (like the oldest days).
+      // Gas days carry a volume as well.
       return {
         date,
         kwh: kwh(i),
@@ -36,34 +29,12 @@ export function makeDays(count, { today = TODAY, kwh = (i) => 40 + i, gas = true
         temperature: 12,
       };
     }
-    const consumptionPrice = kwh(i) * KWH_PRICE;
     return {
       date,
       kwh: kwh(i),
       volumeOfEnergy: 0,
-      price: Math.round((consumptionPrice + DAILY_SUBSCRIPTION) * 100) / 100,
-      consumptionPrice,
-      contractPrice: DAILY_SUBSCRIPTION,
+      price: Math.round((kwh(i) * 0.160164 + 0.52) * 100) / 100,
       ratio: 0,
-      temperature: 12,
-    };
-  });
-}
-
-/** Electricity days of a peak/off-peak contract: the kWh and their cost split. */
-export function makePeakOffPeakDays(count, { today = TODAY } = {}) {
-  return Array.from({ length: count }, (_, i) => {
-    const peak = 20 + (i % 5);
-    const offPeak = 12 + (i % 3);
-    return {
-      date: addDays(today, i - count),
-      isHphc: true,
-      consumptionHp: peak,
-      consumptionHc: offPeak,
-      priceHp: peak * PEAK_PRICE,
-      priceHc: offPeak * OFF_PEAK_PRICE,
-      contractPrice: DAILY_SUBSCRIPTION,
-      price: peak * PEAK_PRICE + offPeak * OFF_PEAK_PRICE + DAILY_SUBSCRIPTION,
       temperature: 12,
     };
   });
@@ -71,6 +42,52 @@ export function makePeakOffPeakDays(count, { today = TODAY } = {}) {
 
 const json = (status, body) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+// What `/api/contracts/{id}` gives, trimmed to what the integration reads
+// (shapes taken from the code of the customer website).
+export const ELEC_CONTRACT = {
+  tarif: 'OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE',
+  optionTarif: 'BASE',
+  power: 6,
+  offPeakHours: null,
+  tarifScale: {
+    prixTotalTTCAbo: 15.87,
+    abo: { prixAboTTC: 13.28 },
+    base: { prixConsoUniteWithTaxeTTC: 0.160164 },
+    hp: null,
+    hc: null,
+  },
+};
+export const GAS_CONTRACT = {
+  offer: 'NovaFixe Gaz',
+  tarifScale: { prixTotalTTCAbo: 21.4, prixTotalTTCConso: 0.11872 },
+};
+
+function espaceClient(site, method, pathname, init) {
+  const { espace } = site;
+  if (method === 'POST' && pathname === '/api/authentication-token') {
+    const body = JSON.parse(init.body);
+    if (body.email !== site.email || body.password !== site.password) {
+      return json(401, { message: 'Bad credentials' });
+    }
+    espace.logins += 1;
+    const token = `espace-${espace.logins}`;
+    espace.tokens.add(token);
+    return json(200, { token, lifeToken: `life-${espace.logins}` });
+  }
+  const token = (init.headers?.Authorization ?? '').replace('Bearer ', '');
+  if (!espace.tokens.has(token)) {
+    return json(401, { message: 'Expired token' });
+  }
+  if (pathname === '/api/me') {
+    return json(200, espace.me);
+  }
+  const contract = pathname.match(/^\/api\/contracts\/([^/]+)$/);
+  if (contract && espace.contracts[contract[1]]) {
+    return json(200, espace.contracts[contract[1]]);
+  }
+  return json(404, { message: 'Contract not found' });
+}
 
 export function createFakeWebsite({
   contracts = [
@@ -89,9 +106,6 @@ export function createFakeWebsite({
         {
           id,
           contractType: { category },
-          ...(category === 'electricity'
-            ? { electricityPower: 6, priceCategory: 'BASE', offPeakTimes: null }
-            : {}),
           ...house,
         },
       ]),
@@ -102,6 +116,23 @@ export function createFakeWebsite({
     years: Object.fromEntries(
       contracts.map(({ id }) => [id, { kwh: 4321.5, volumeOfEnergy: 385.8, price: 612.4 }]),
     ),
+    // espaceclient.gazdebordeaux.fr: `/api/me` and `/api/contracts/{id}`.
+    espace: {
+      me: {
+        contracts: contracts.map(({ category }, i) => ({
+          id: 1000 + i,
+          type: category === 'gas' ? 'gaz' : 'elec',
+        })),
+      },
+      contracts: Object.fromEntries(
+        contracts.map(({ category }, i) => [
+          String(1000 + i),
+          category === 'gas' ? GAS_CONTRACT : ELEC_CONTRACT,
+        ]),
+      ),
+      tokens: new Set(),
+      logins: 0,
+    },
     blocked: false,
     down: false,
     tokens: new Set(),
@@ -113,9 +144,9 @@ export function createFakeWebsite({
   site.expireTokens = () => site.tokens.clear();
 
   site.fetch = async (url, init = {}) => {
-    const { pathname, searchParams } = new URL(url);
+    const { host, pathname, searchParams } = new URL(url);
     const method = init.method ?? 'GET';
-    site.requests.push({ method, pathname, query: Object.fromEntries(searchParams), init });
+    site.requests.push({ host, method, pathname, query: Object.fromEntries(searchParams), init });
 
     if (site.down) {
       throw new TypeError('fetch failed');
@@ -125,6 +156,9 @@ export function createFakeWebsite({
         status: 403,
         headers: { 'content-type': 'text/html' },
       });
+    }
+    if (host === 'espaceclient.gazdebordeaux.fr') {
+      return espaceClient(site, method, pathname, init);
     }
 
     if (method === 'POST' && pathname === '/api/login_check') {

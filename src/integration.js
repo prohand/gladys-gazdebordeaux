@@ -14,6 +14,7 @@
 import { createLogger } from '@gladysassistant/integration-sdk';
 import { isConfigured, normalizeConfig } from './config.js';
 import { createAccount } from './gazdebordeaux/account.js';
+import { ERROR_KINDS } from './gazdebordeaux/client.js';
 import { parisDay } from './gazdebordeaux/dates.js';
 import { buildDiscoveredDevices } from './devices/index.js';
 import { buildTransportEntries, publishAll } from './publish.js';
@@ -21,9 +22,9 @@ import {
   contractPricesMessage,
   contractsFoundMessage,
   errorMessage,
+  pricesUnavailableMessage,
   refreshedMessage,
 } from './messages.js';
-import { contractPrices } from './gazdebordeaux/prices.js';
 import { fireConnectionFailed, fireReadingEvents, SCENE_ACTIONS } from './capabilities/scenes.js';
 import { refreshWidgets, WIDGETS } from './capabilities/widget.js';
 import { createFileStore } from './store.js';
@@ -167,17 +168,18 @@ export function createIntegration(
     return ok ? refreshedMessage(account) : errorMessage(error);
   });
 
-  // The prices of the user's own contract, computed from the account (a
-  // fixed-price offer keeps the price of its subscription date, which no
-  // current grid gives): read the account first when nothing was read yet.
+  // The current prices of the user's own contracts, as the customer website
+  // gives them (a fixed-price offer keeps the price of its subscription date,
+  // which no current grid gives). Read on demand: they change rarely.
   gladys.onAction('show_prices', async () => {
-    if (account.state.snapshots.size === 0) {
-      const { ok, error } = await refresh('button');
-      if (!ok) {
-        return errorMessage(error);
-      }
+    try {
+      return contractPricesMessage(await account.readPrices(config));
+    } catch (error) {
+      logger.warn(`Contract prices unavailable: ${error.message}`);
+      return error.kind === ERROR_KINDS.NOT_CONFIGURED
+        ? errorMessage(error)
+        : pricesUnavailableMessage(error);
     }
-    return contractPricesMessage([...account.state.snapshots.values()].map(contractPrices));
   });
 
   // --- Scene actions (Gladys 5.1+) -----------------------------------------

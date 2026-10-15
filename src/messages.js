@@ -4,7 +4,6 @@
 // -----------------------------------------------------------------------------
 
 import { ENERGIES, ERROR_KINDS } from './gazdebordeaux/client.js';
-import { addDays } from './gazdebordeaux/dates.js';
 import { localize, pick } from './i18n.js';
 
 const ERROR_TEXTS = {
@@ -113,55 +112,26 @@ function formatNumber(language, value, digits) {
   }).format(value);
 }
 
-/** "0,18373 €/kWh" in the reader's language. */
+/** "0,160164 €/kWh" in the reader's language, every decimal the website gives. */
 export function kwhPriceText(language, value) {
-  return `${formatNumber(language, value, 5)} €/kWh`;
-}
-
-/** "01/02/2027" in the reader's language: what the contract wizard's date fields show. */
-function formatDay(language, day) {
-  return new Intl.DateTimeFormat(LOCALES[language] ?? 'en-GB', {
-    timeZone: 'UTC',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(new Date(`${day}T12:00:00Z`));
+  return `${formatNumber(language, value, 6)} €/kWh`;
 }
 
 /**
- * What to do when the prices changed on `day`: Gladys prices the days of a
- * contract with its own prices, so a change is a new contract, never an
- * edit (an edit reprices every day since the contract started).
- */
-export function priceChangeText(language, day) {
-  const from = formatDay(language, day);
-  const until = formatDay(language, addDays(day, -1));
-  return pick(language, {
-    en: `New prices since ${from}: end your Gladys contract on ${until} and create a new one from ${from} with these prices`,
-    fr: `Nouveaux prix depuis le ${from} : terminez votre contrat Gladys le ${until} et créez-en un nouveau à partir du ${from} avec ces prix`,
-    de: `Neue Preise seit ${from}: Beenden Sie Ihren Gladys-Vertrag am ${until} und legen Sie ab ${from} einen neuen mit diesen Preisen an`,
-    es: `Nuevos precios desde el ${from}: termine su contrato de Gladys el ${until} y cree uno nuevo a partir del ${from} con estos precios`,
-  });
-}
-
-/**
- * The prices of one contract on one line: what to copy into the Gladys
- * contract wizard.
+ * The current prices of one contract on one line, as the customer website
+ * gives them: what to copy into the Gladys contract wizard.
  * @param {string} language
- * @param {ReturnType<import('./gazdebordeaux/prices.js').contractPrices>} prices
+ * @param {ReturnType<import('./gazdebordeaux/prices.js').currentPrices>} prices
  */
 export function contractPricesLine(language, prices) {
-  const details = [];
-  if (prices.power) {
-    details.push(`${prices.power} kVA`);
-  }
-  if (prices.peakOffPeak && prices.offPeakSlots) {
+  const details = [prices.option, prices.power ? `${prices.power} kVA` : null].filter(Boolean);
+  if (prices.offPeakSlots) {
     details.push(
       `${pick(language, { en: 'off-peak', fr: 'heures creuses', de: 'Niedertarif', es: 'horas valle' })} ${prices.offPeakSlots.map(([start, end]) => `${start}–${end}`).join(', ')}`,
     );
   }
   const values = [];
-  if (prices.peakOffPeak && (prices.peakPrice !== null || prices.offPeakPrice !== null)) {
+  if (prices.peakPrice !== null || prices.offPeakPrice !== null) {
     const [peak, offPeak] = {
       en: ['peak', 'off-peak'],
       fr: ['HP', 'HC'],
@@ -174,7 +144,8 @@ export function contractPricesLine(language, prices) {
     if (prices.offPeakPrice !== null) {
       values.push(`${offPeak} ${kwhPriceText(language, prices.offPeakPrice)}`);
     }
-  } else if (prices.kwhPrice !== null) {
+  }
+  if (prices.kwhPrice !== null) {
     values.push(kwhPriceText(language, prices.kwhPrice));
   }
   if (prices.subscriptionPerMonth !== null) {
@@ -182,40 +153,83 @@ export function contractPricesLine(language, prices) {
       `${pick(language, { en: 'subscription', fr: 'abonnement', de: 'Grundgebühr', es: 'suscripción' })} ${formatNumber(language, prices.subscriptionPerMonth, 2)} €/${pick(language, { en: 'month', fr: 'mois', de: 'Monat', es: 'mes' })}`,
     );
   }
+  if (values.length === 0) {
+    values.push(
+      pick(language, {
+        en: 'no price given by the customer account',
+        fr: "aucun prix donné par l'espace client",
+        de: 'kein Preis im Kundenkonto',
+        es: 'ningún precio en la cuenta de cliente',
+      }),
+    );
+  }
   const name = energyName(language, prices.energy);
-  const head = details.length ? `${name} (${details.join(', ')})` : name;
+  const label = prices.offer ? `${name}, ${prices.offer}` : name;
+  const head = details.length ? `${label} (${details.join(', ')})` : label;
   // French puts a space before the colon.
   const colon = language === 'fr' ? ' : ' : ': ';
   return `${head[0].toUpperCase()}${head.slice(1)}${colon}${values.join(', ')}`;
 }
 
 /**
- * The answer of "My contract prices": one line per contract whose prices the
- * customer account gives, and what to do with them.
- * @param {Array<object>} pricesList the contractPrices() of each contract, nulls included
+ * The answer of "My contract prices": the current prices of every contract,
+ * read on espaceclient.gazdebordeaux.fr, and what to do with them.
+ * @param {Array<ReturnType<import('./gazdebordeaux/prices.js').currentPrices>>} pricesList
  */
 export function contractPricesMessage(pricesList) {
-  const known = pricesList.filter(Boolean);
   return localize((language) => {
-    if (known.length === 0) {
-      return pick(language, {
-        en: 'The customer account does not detail the cost of each day yet: no price to compute. Refresh later.',
-        fr: "L'espace client ne détaille pas encore le coût de chaque jour : aucun prix à calculer. Rafraîchissez plus tard.",
-        de: 'Das Kundenkonto schlüsselt die Kosten pro Tag noch nicht auf: kein Preis berechenbar. Später aktualisieren.',
-        es: 'La cuenta de cliente aún no detalla el coste de cada día: ningún precio que calcular. Actualice más tarde.',
-      });
-    }
-    const lines = known.map((prices) =>
-      prices.changedOn
-        ? `${contractPricesLine(language, prices)}. ${priceChangeText(language, prices.changedOn)}`
-        : contractPricesLine(language, prices),
-    );
+    const lines = pricesList.map((prices) => contractPricesLine(language, prices));
     const footer = pick(language, {
-      en: `Computed from the last ${known[0].days} days of your account. Copy them into the Gladys energy contract.`,
-      fr: `Calculé sur les ${known[0].days} derniers jours de votre compte. Recopiez-les dans le contrat d'énergie Gladys.`,
-      de: `Berechnet aus den letzten ${known[0].days} Tagen Ihres Kontos. Übernehmen Sie sie in den Gladys-Energievertrag.`,
-      es: `Calculado sobre los últimos ${known[0].days} días de su cuenta. Cópielos en el contrato de energía de Gladys.`,
+      en: 'Current prices of your customer account, incl. VAT. Copy them into the Gladys energy contract; when they change, end that contract the day before and create a new one.',
+      fr: "Prix actuels de votre espace client, TTC. Recopiez-les dans le contrat d'énergie Gladys ; quand ils changent, terminez ce contrat la veille et créez-en un nouveau.",
+      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt. Übernehmen Sie sie in den Gladys-Energievertrag; ändern sie sich, beenden Sie diesen Vertrag am Vortag und legen Sie einen neuen an.',
+      es: 'Precios actuales de su cuenta de cliente, IVA incluido. Cópielos en el contrato de energía de Gladys; cuando cambien, termine ese contrato el día anterior y cree uno nuevo.',
     });
     return `${lines.join(' — ')}. ${footer}`;
   });
+}
+
+const PRICES_FAILURE = {
+  [ERROR_KINDS.AUTH]: {
+    en: 'sign-in refused',
+    fr: 'connexion refusée',
+    de: 'Anmeldung abgelehnt',
+    es: 'inicio de sesión rechazado',
+  },
+  [ERROR_KINDS.BLOCKED]: {
+    en: 'request blocked by the website',
+    fr: 'requête bloquée par le site',
+    de: 'Anfrage von der Website blockiert',
+    es: 'solicitud bloqueada por el sitio',
+  },
+  [ERROR_KINDS.NETWORK]: {
+    en: 'website unreachable',
+    fr: 'site injoignable',
+    de: 'Website nicht erreichbar',
+    es: 'sitio inaccesible',
+  },
+  [ERROR_KINDS.NO_CONTRACT]: {
+    en: 'no contract found',
+    fr: 'aucun contrat trouvé',
+    de: 'kein Vertrag gefunden',
+    es: 'ningún contrato encontrado',
+  },
+};
+
+/** The answer of "My contract prices" when espaceclient.gazdebordeaux.fr could not be read. */
+export function pricesUnavailableMessage(error) {
+  const reason = PRICES_FAILURE[error?.kind] ?? {
+    en: 'unexpected answer',
+    fr: 'réponse inattendue',
+    de: 'unerwartete Antwort',
+    es: 'respuesta inesperada',
+  };
+  return localize((language) =>
+    pick(language, {
+      en: `Your prices could not be read on espaceclient.gazdebordeaux.fr (${pick(language, reason)}). They are shown there, on the page of your contract ("Votre prix actuel"): copy them into the Gladys energy contract.`,
+      fr: `Impossible de lire vos prix sur espaceclient.gazdebordeaux.fr (${pick(language, reason)}). Ils y sont affichés, sur la page de votre contrat (« Votre prix actuel ») : recopiez-les dans le contrat d'énergie Gladys.`,
+      de: `Ihre Preise konnten auf espaceclient.gazdebordeaux.fr nicht gelesen werden (${pick(language, reason)}). Sie stehen dort auf der Seite Ihres Vertrags („Votre prix actuel“): übernehmen Sie sie in den Gladys-Energievertrag.`,
+      es: `No se pudieron leer sus precios en espaceclient.gazdebordeaux.fr (${pick(language, reason)}). Se muestran allí, en la página de su contrato («Votre prix actuel»): cópielos en el contrato de energía de Gladys.`,
+    }),
+  );
 }

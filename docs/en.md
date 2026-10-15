@@ -73,8 +73,8 @@ are imported. They are never sent twice, even after a restart.
   lists the contracts found.
 - **Refresh now**: reads the customer account right away and gives the latest
   day read.
-- **My contract prices**: computes the prices actually charged on your
-  electricity contract (see "Energy contracts").
+- **My contract prices**: shows the current prices of your contracts, as
+  espaceclient.gazdebordeaux.fr gives them (see "Energy contracts").
 
 ## Scenes
 
@@ -140,51 +140,39 @@ customer account, line "Votre tarif".
 
 ### Your prices: the "My contract prices" button
 
-A fixed-price offer keeps **the price of its subscription day**: a contract
-signed two years ago does not have today's grid prices. The **My contract
-prices** button (**Configuration** tab) computes them from **your** customer
-account: for each day Gaz de Bordeaux gives the kWh and what they cost, and
-the integration derives the kWh price actually charged (peak and off-peak
-apart), the monthly subscription, the power and the off-peak hours. Example:
+A fixed-price offer keeps **the price of its subscription date**, an indexed
+offer (Ecodigo Elec) moves with taxes and market: your price is not
+necessarily the one of today's grid. The **My contract prices** button
+(**Configuration** tab) reads your current prices on
+**espaceclient.gazdebordeaux.fr** (same email and password), line "Votre prix
+actuel" of the page of your contract, and gives them as they are, without any
+computation. Example:
 
-> Electricity (6 kVA): 0.18373 €/kWh, subscription 15.87 €/month. Computed from
-> the last 30 days of your account.
+> Electricity, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA):
+> 0.160164 €/kWh, subscription 15.87 €/month.
 
-These prices include VAT, like the ones Gaz de Bordeaux shows and the
-contracts Gladys offers. The website rounds each day to the cent: the computed
-subscription may differ by one cent from the one of your customer account.
+These prices include VAT and taxes (CTA in the subscription, excise in the
+kWh), like the contracts Gladys offers. Copy them into the Gladys contract
+wizard: Gladys gives an integration no way to fill a contract in for you.
 
-Copy these values into the Gladys contract wizard. The price charged is also
-shown in the widget (**Price paid** row).
-
-Gladys gives an integration no way to fill a contract in for you: that is why
-they are copied once, then at each price change.
+When the customer account cannot be read, the button says so: copy the prices
+from the page of your contract on espaceclient.gazdebordeaux.fr.
 
 ### When your prices change
 
 Leave the **end date** of your Gladys contract empty while your prices do not
-change. They may change along the way: a new grid (NovaFlex, end of a
-fixed-price period), or a tax (excise, VAT) that changes the price incl. VAT.
-
-The **My contract prices** button finds such a change in your readings and
-then computes the prices over the days since it only. Example:
-
-> Electricity (6 kVA): 0.17112 €/kWh, subscription 15.87 €/month. New prices
-> since 01/02/2027: end your Gladys contract on 31/01/2027 and create a new one
-> from 01/02/2027 with these prices.
+change. They may change along the way: a new grid (NovaFlex, Ecodigo Elec, end
+of a fixed-price period), or a tax (excise, VAT) that changes the price incl.
+VAT. Gaz de Bordeaux tells you; the **My contract prices** button then gives
+the new prices.
 
 1. On the current contract, set the **end date** to the day before the change.
 2. Create a **new contract** starting on the day of the change, with the new
    prices.
 
-The past days thus keep their old prices. Do not edit the prices of the
-existing contract: Gladys would recompute the whole history since the start of
-the contract with the new price.
-
-A few days after the change, the prices are a bit less precise (fewer days to
-compute them from): click again one or two weeks later and correct the new
-contract if needed. The change is only found in the days read (**Days of
-history to import**, up to 90).
+The past days keep their old prices that way. Do not edit the prices of the
+existing contract: Gladys would reprice the whole history since the start of
+the contract.
 
 ### The default prices: the official grids
 

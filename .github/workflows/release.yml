@@ -42,6 +42,11 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          # The tip of the branch, not the commit the run was started on: a
+          # "Re-run" replays the original commit, and once anything landed on
+          # the branch since (a merge, a half-pushed release) its push is
+          # refused as non-fast-forward.
+          ref: ${{ github.ref_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
@@ -108,8 +113,11 @@ jobs:
           git commit -m "chore(release): ${VERSION}"
           git tag -a "v${VERSION}" -m "Release ${VERSION}"
 
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-          git push origin "v${VERSION}"
+          # ONE atomic push for the commit and the tag: both land or neither
+          # does. Two pushes once left main bumped to 1.0.5 without its tag
+          # (GitHub refused the tag, a server-side error), so no image, no
+          # GitHub Release, and the re-run was refused as non-fast-forward.
+          git push --atomic origin "HEAD:${GITHUB_REF_NAME}" "v${VERSION}"
 
   # Build and publish the image for the version we just tagged.
   build:

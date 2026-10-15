@@ -8,8 +8,8 @@
     "de": "Gas- und Stromverbrauch samt Kosten aus Ihrem Gaz de Bordeaux Kundenkonto.",
     "es": "Consumo y coste de gas y electricidad de su cuenta de cliente Gaz de Bordeaux."
   },
-  "version": "1.0.8",
-  "docker_image": "ghcr.io/prohand/gladys-gazdebordeaux:1.0.8",
+  "version": "1.0.9",
+  "docker_image": "ghcr.io/prohand/gladys-gazdebordeaux:1.0.9",
   "gladys_version": ">=5.2.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-gazdebordeaux/main/cover.png",
   "categories": ["energy"],

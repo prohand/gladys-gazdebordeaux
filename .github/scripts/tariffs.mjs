@@ -15,8 +15,8 @@
 // "update" rebuilds `energy_contracts.templates` of the manifest: the default
 // prices are the 6 kVA ones, the other powers are listed in the input
 // descriptions. A template whose prices changed takes the grid date as its
-// `version` (Gladys then offers "update the tariff from the template" to the
-// contracts using it — never a silent change); an unchanged one is kept as
+// `version` (shown by the contract wizard; a contract already created keeps
+// its own prices, Gladys never changes it); an unchanged one is kept as
 // is, so a new monthly grid with the same prices changes nothing. A change
 // also adds a line to CHANGELOG.md.
 //

@@ -37,6 +37,9 @@ the notes of the version's GitHub Release.
   subscription-date price) within a cent of the daily amounts' rounding.
   Offers without a template (Ecodigo Elec, older offers): the docs say how
   to set their contract.
+  A price change found in the readings is given with its day, the prices
+  computed over the days since then, and what to do in Gladys (end the
+  contract the day before, create a new one); the docs explain it.
 - Monthly "Electricity prices" workflow: downloads the official price grids
   and opens a pull request when a price changes.
 - "Test the connection" and "Refresh now" buttons in the configuration screen.

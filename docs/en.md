@@ -158,15 +158,41 @@ Copy these values into the Gladys contract wizard. The price charged is also
 shown in the widget (**Price paid** row).
 
 Gladys gives an integration no way to fill a contract in for you: that is why
-they are copied once (and at each price change, for NovaFlex).
+they are copied once, then at each price change.
+
+### When your prices change
+
+Leave the **end date** of your Gladys contract empty while your prices do not
+change. They may change along the way: a new grid (NovaFlex, end of a
+fixed-price period), or a tax (excise, VAT) that changes the price incl. VAT.
+
+The **My contract prices** button finds such a change in your readings and
+then computes the prices over the days since it only. Example:
+
+> Electricity (6 kVA): 0.17112 €/kWh, subscription 15.87 €/month. New prices
+> since 01/02/2027: end your Gladys contract on 31/01/2027 and create a new one
+> from 01/02/2027 with these prices.
+
+1. On the current contract, set the **end date** to the day before the change.
+2. Create a **new contract** starting on the day of the change, with the new
+   prices.
+
+The past days thus keep their old prices. Do not edit the prices of the
+existing contract: Gladys would recompute the whole history since the start of
+the contract with the new price.
+
+A few days after the change, the prices are a bit less precise (fewer days to
+compute them from): click again one or two weeks later and correct the new
+contract if needed. The change is only found in the days read (**Days of
+history to import**, up to 90).
 
 ### The default prices: the official grids
 
 The values offered by default are those of the **official Gaz de Bordeaux
 price grids** (incl. VAT, here the 1 October 2026 ones). They are downloaded
 every month from gazdebordeaux.fr: when a price changes, a new version of the
-integration offers the new prices (Gladys then asks whether to update your
-contract).
+integration offers the new prices to the contracts created afterwards. A
+contract already created keeps its prices: see **When your prices change**.
 
 | Power  | Subscription / month | NovaFixe: Base kWh | NovaFixe: peak / off-peak | NovaFlex: Base kWh | NovaFlex: peak / off-peak |
 | ------ | -------------------- | ------------------ | ------------------------- | ------------------ | ------------------------- |

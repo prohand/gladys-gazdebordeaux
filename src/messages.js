@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------
 
 import { ENERGIES, ERROR_KINDS } from './gazdebordeaux/client.js';
+import { addDays } from './gazdebordeaux/dates.js';
 import { localize, pick } from './i18n.js';
 
 const ERROR_TEXTS = {
@@ -117,6 +118,32 @@ export function kwhPriceText(language, value) {
   return `${formatNumber(language, value, 5)} €/kWh`;
 }
 
+/** "01/02/2027" in the reader's language: what the contract wizard's date fields show. */
+function formatDay(language, day) {
+  return new Intl.DateTimeFormat(LOCALES[language] ?? 'en-GB', {
+    timeZone: 'UTC',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(new Date(`${day}T12:00:00Z`));
+}
+
+/**
+ * What to do when the prices changed on `day`: Gladys prices the days of a
+ * contract with its own prices, so a change is a new contract, never an
+ * edit (an edit reprices every day since the contract started).
+ */
+export function priceChangeText(language, day) {
+  const from = formatDay(language, day);
+  const until = formatDay(language, addDays(day, -1));
+  return pick(language, {
+    en: `New prices since ${from}: end your Gladys contract on ${until} and create a new one from ${from} with these prices`,
+    fr: `Nouveaux prix depuis le ${from} : terminez votre contrat Gladys le ${until} et créez-en un nouveau à partir du ${from} avec ces prix`,
+    de: `Neue Preise seit ${from}: Beenden Sie Ihren Gladys-Vertrag am ${until} und legen Sie ab ${from} einen neuen mit diesen Preisen an`,
+    es: `Nuevos precios desde el ${from}: termine su contrato de Gladys el ${until} y cree uno nuevo a partir del ${from} con estos precios`,
+  });
+}
+
 /**
  * The prices of one contract on one line: what to copy into the Gladys
  * contract wizard.
@@ -178,7 +205,11 @@ export function contractPricesMessage(pricesList) {
         es: 'La cuenta de cliente aún no detalla el coste de cada día: ningún precio que calcular. Actualice más tarde.',
       });
     }
-    const lines = known.map((prices) => contractPricesLine(language, prices));
+    const lines = known.map((prices) =>
+      prices.changedOn
+        ? `${contractPricesLine(language, prices)}. ${priceChangeText(language, prices.changedOn)}`
+        : contractPricesLine(language, prices),
+    );
     const footer = pick(language, {
       en: `Computed from the last ${known[0].days} days of your account. Copy them into the Gladys energy contract.`,
       fr: `Calculé sur les ${known[0].days} derniers jours de votre compte. Recopiez-les dans le contrat d'énergie Gladys.`,

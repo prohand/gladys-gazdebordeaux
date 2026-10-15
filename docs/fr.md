@@ -168,16 +168,42 @@ Recopiez ces valeurs dans l'assistant de contrat de Gladys. Le prix payé est
 aussi affiché dans le widget (ligne **Prix payé**).
 
 Gladys ne permet pas à une intégration de remplir un contrat à votre place :
-c'est pourquoi il faut les recopier une fois (et à chaque changement de prix,
-pour NovaFlex).
+c'est pourquoi il faut les recopier une fois, puis à chaque changement de prix.
+
+### Quand vos prix changent
+
+Laissez la **date de fin** de votre contrat Gladys vide tant que vos prix ne
+changent pas. Ils peuvent changer en cours de route : nouvelle grille (NovaFlex,
+fin d'une période à prix fixe), ou taxe (accise, TVA) qui change le prix TTC.
+
+Le bouton **Mes prix de contrat** repère ce changement dans vos relevés et
+calcule alors les prix sur les seuls jours depuis. Exemple :
+
+> Électricité (6 kVA) : 0,17112 €/kWh, abonnement 15,87 €/mois. Nouveaux prix
+> depuis le 01/02/2027 : terminez votre contrat Gladys le 31/01/2027 et
+> créez-en un nouveau à partir du 01/02/2027 avec ces prix.
+
+1. Sur le contrat actuel, mettez la **date de fin** à la veille du changement.
+2. Créez un **nouveau contrat** qui démarre le jour du changement, avec les
+   nouveaux prix.
+
+Les jours passés gardent ainsi leurs anciens prix. Ne modifiez pas les prix du
+contrat existant : Gladys recalculerait tout l'historique depuis le début du
+contrat avec le nouveau prix.
+
+Quelques jours après le changement, les prix sont un peu moins précis (moins
+de jours pour les calculer) : cliquez à nouveau une ou deux semaines plus
+tard et corrigez le nouveau contrat si besoin. Le changement n'est repéré que
+dans les jours relevés (**Jours d'historique à importer**, jusqu'à 90).
 
 ### Les prix par défaut : les grilles officielles
 
 Les valeurs proposées par défaut sont celles des **grilles tarifaires
 officielles** de Gaz de Bordeaux (prix TTC, ici celles du 1er octobre 2026).
 Elles sont téléchargées chaque mois sur gazdebordeaux.fr : quand un prix
-change, une nouvelle version de l'intégration propose les nouveaux prix
-(Gladys vous demande alors si vous voulez mettre votre contrat à jour).
+change, une nouvelle version de l'intégration propose les nouveaux prix pour
+les contrats créés ensuite. Un contrat déjà créé garde ses prix : voir **Quand
+vos prix changent**.
 
 | Puissance | Abonnement / mois | NovaFixe : kWh Base | NovaFixe : HP / HC | NovaFlex : kWh Base | NovaFlex : HP / HC |
 | --------- | ----------------- | ------------------- | ------------------ | ------------------- | ------------------ |

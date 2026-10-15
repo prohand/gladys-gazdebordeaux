@@ -166,15 +166,43 @@ Grundgebühr kann um einen Cent von der Ihres Kundenkontos abweichen.
 Preis wird auch im Widget angezeigt (Zeile **Bezahlter Preis**).
 
 Gladys erlaubt einer Integration nicht, einen Vertrag für Sie auszufüllen:
-deshalb werden sie einmal übernommen (und bei NovaFlex bei jeder Preisänderung).
+deshalb werden sie einmal übernommen, dann bei jeder Preisänderung.
+
+### Wenn sich Ihre Preise ändern
+
+Lassen Sie das **Enddatum** Ihres Gladys-Vertrags leer, solange sich Ihre
+Preise nicht ändern. Sie können sich unterwegs ändern: neue Preisliste
+(NovaFlex, Ende einer Festpreisperiode) oder eine Steuer (Verbrauchsteuer,
+MwSt.), die den Bruttopreis ändert.
+
+Die Schaltfläche **Meine Vertragspreise** erkennt eine solche Änderung in Ihren
+Werten und berechnet die Preise dann nur über die Tage seitdem. Beispiel:
+
+> Strom (6 kVA): 0,17112 €/kWh, Grundgebühr 15,87 €/Monat. Neue Preise seit
+> 01.02.2027: Beenden Sie Ihren Gladys-Vertrag am 31.01.2027 und legen Sie ab
+> 01.02.2027 einen neuen mit diesen Preisen an.
+
+1. Setzen Sie beim aktuellen Vertrag das **Enddatum** auf den Tag vor der
+   Änderung.
+2. Legen Sie einen **neuen Vertrag** an, der am Tag der Änderung beginnt, mit
+   den neuen Preisen.
+
+So behalten die vergangenen Tage ihre alten Preise. Ändern Sie nicht die
+Preise des bestehenden Vertrags: Gladys würde die ganze Historie seit
+Vertragsbeginn mit dem neuen Preis neu berechnen.
+
+Wenige Tage nach der Änderung sind die Preise etwas ungenauer (weniger Tage
+für die Berechnung): Klicken Sie ein bis zwei Wochen später erneut und
+korrigieren Sie den neuen Vertrag bei Bedarf. Die Änderung wird nur in den
+gelesenen Tagen erkannt (**Zu importierende Tage**, bis zu 90).
 
 ### Die Standardpreise: die offiziellen Preislisten
 
 Die vorgeschlagenen Standardwerte sind die der **offiziellen Preislisten** von
 Gaz de Bordeaux (brutto, hier die vom 1. Oktober 2026). Sie werden jeden Monat
 von gazdebordeaux.fr geladen: ändert sich ein Preis, bietet eine neue Version
-der Integration die neuen Preise an (Gladys fragt dann, ob Ihr Vertrag
-aktualisiert werden soll).
+der Integration die neuen Preise für danach angelegte Verträge an. Ein bereits
+angelegter Vertrag behält seine Preise: siehe **Wenn sich Ihre Preise ändern**.
 
 | Leistung | Grundgebühr / Monat | NovaFixe: kWh Base | NovaFixe: HT / NT | NovaFlex: kWh Base | NovaFlex: HT / NT |
 | -------- | ------------------- | ------------------ | ----------------- | ------------------ | ----------------- |

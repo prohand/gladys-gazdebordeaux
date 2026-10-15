@@ -174,14 +174,95 @@ export function parseOffPeakTimes(raw) {
   return slots.length > 0 && slots.every(Boolean) ? slots : null;
 }
 
+// -- Price changes ------------------------------------------------------------
+//
+// A price changes (a new grid, a tax): the days before are charged at the old
+// price. Gladys keeps them apart with successive contracts, so the user needs
+// the day the new prices start, and the prices of the days since then only.
+
+/** The latest days the current price is taken from. */
+const REFERENCE_DAYS = 3;
+
+// Whether a day's amount matches a price, within its cent rounding plus 1 %.
+const close = (amount, expected) => Math.abs(amount - expected) <= 2 * HALF_CENT + 0.01 * amount;
+
+// The first day of the latest run of days charged at the current price, or
+// null when no change shows. `priceOf(day)` is the day's own price,
+// `agrees(day, price)` whether the day matches a price. One day off (a
+// pro-rata, a correction) is not a change: two days in a row that match each
+// other but not the current price are.
+function latestChange(series, priceOf, agrees) {
+  if (series.length < REFERENCE_DAYS + 2) {
+    return null;
+  }
+  const reference = median(series.slice(-REFERENCE_DAYS).map(priceOf));
+  let start = series.length - 1;
+  for (let i = series.length - 1; i > 0; i -= 1) {
+    if (agrees(series[i], reference)) {
+      start = i;
+    } else if (
+      !agrees(series[i - 1], reference) &&
+      agrees(series[i - 1], priceOf(series[i])) &&
+      start > i
+    ) {
+      return series[start].date;
+    }
+  }
+  return null;
+}
+
+// The days carrying a cost and a quantity of kWh, for one price.
+const withKwh = (days, costOf, kwhOf) => days.filter((day) => costOf(day) > 0 && kwhOf(day) > 0);
+
+/**
+ * The day the latest price change took effect, among the days read, or null.
+ * @param {Array<object>} days the parsed days, oldest first
+ */
+export function priceChangeDay(days) {
+  const unit = (costOf, kwhOf) =>
+    latestChange(
+      withKwh(days, costOf, kwhOf),
+      (day) => costOf(day) / kwhOf(day),
+      (day, price) => close(costOf(day), price * kwhOf(day)),
+    );
+  // On a peak/off-peak day, cost / kWh blends two prices: not a price.
+  const single = (day) => (day.peakKwh === null && day.offPeakKwh === null ? day.kwh : null);
+  const changes = [
+    unit(energyCostOf, single),
+    unit(
+      (day) => day.peakCost,
+      (day) => day.peakKwh,
+    ),
+    unit(
+      (day) => day.offPeakCost,
+      (day) => day.offPeakKwh,
+    ),
+    // The subscription share depends on the days of the month (or is a
+    // yearly amount over 365 days): compared as a monthly amount, both ways.
+    latestChange(
+      days.filter((day) => day.subscriptionCost > 0),
+      (day) => day.subscriptionCost * daysInMonth(day.date),
+      (day, monthly) =>
+        close(day.subscriptionCost, monthly / daysInMonth(day.date)) ||
+        close(day.subscriptionCost, (monthly * 12) / 365),
+    ),
+  ].filter(Boolean);
+  return changes.length > 0 ? changes.sort().at(-1) : null;
+}
+
 /**
  * The prices of a contract, from its snapshot.
- * @returns {{ energy: string, power: number | null, peakOffPeak: boolean, offPeakSlots: string[][] | null, kwhPrice: number | null, peakPrice: number | null, offPeakPrice: number | null, subscriptionPerMonth: number | null, days: number } | null}
+ * The days since the latest price change only (the last 30 at most): the
+ * prices are those of today, and `changedOn` is the day they started.
+ * @returns {{ energy: string, power: number | null, peakOffPeak: boolean, offPeakSlots: string[][] | null, kwhPrice: number | null, peakPrice: number | null, offPeakPrice: number | null, subscriptionPerMonth: number | null, days: number, changedOn: string | null } | null}
  *   null when no day carries a price
  */
 export function contractPrices(snapshot) {
   const { contract } = snapshot;
-  const days = snapshot.days.slice(-PRICE_SAMPLE_DAYS);
+  const changedOn = priceChangeDay(snapshot.days);
+  const days = snapshot.days
+    .filter((day) => changedOn === null || day.date >= changedOn)
+    .slice(-PRICE_SAMPLE_DAYS);
   const splitDays = days.filter((day) => day.peakKwh !== null || day.offPeakKwh !== null);
   const peakOffPeak = contract.priceCategory
     ? contract.priceCategory.toUpperCase() === 'HPHC'
@@ -208,6 +289,7 @@ export function contractPrices(snapshot) {
     offPeakPrice,
     subscriptionPerMonth: monthlySubscription(days),
     days: days.length,
+    changedOn,
   };
   const known = [kwhPrice, peakPrice, offPeakPrice, prices.subscriptionPerMonth];
   return known.some((value) => value !== null) ? prices : null;

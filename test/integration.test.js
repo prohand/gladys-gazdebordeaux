@@ -175,7 +175,7 @@ test('"My contract prices" gives the prices of espaceclient.gazdebordeaux.fr as 
   assert.equal(answer.success, true);
   assert.match(
     answer.data.message.fr,
-    /\(BASE, 6 kVA\) : 0,160164 €\/kWh, abonnement 15,87 €\/mois/,
+    /\(BASE, 6 kVA\) : 0\.160164 €\/kWh, abonnement 15\.87 €\/mois/,
   );
   assert.match(
     answer.data.message.fr,

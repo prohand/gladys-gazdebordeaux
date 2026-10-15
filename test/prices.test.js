@@ -89,7 +89,7 @@ test('the prices line gives every decimal of the website', () => {
   const prices = currentPrices({ summary: ELEC, details: ELEC_CONTRACT });
   assert.equal(
     contractPricesLine('fr', prices),
-    'Électricité, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA) : 0,160164 €/kWh, abonnement 15,87 €/mois',
+    'Électricité, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA) : 0.160164 €/kWh, abonnement 15.87 €/mois',
   );
   assert.equal(
     contractPricesLine('en', prices),

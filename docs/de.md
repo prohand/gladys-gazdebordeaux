@@ -192,12 +192,16 @@ Zeile „Votre prix actuel“ der Seite Ihres Vertrags, und gibt sie unveränder
 an, ohne Berechnung. Beispiel:
 
 > Strom, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA):
-> 0,160164 €/kWh, Grundgebühr 15,87 €/Monat.
+> 0.160164 €/kWh, Grundgebühr 15.87 €/Monat.
 
 Es sind Bruttopreise (inkl. MwSt. und Abgaben: CTA in der Grundgebühr,
 Verbrauchsteuer im kWh-Preis), wie in den Verträgen von Gladys. Übernehmen
 Sie sie in den Vertragsassistenten von Gladys (Vorlage **Mein Vertrag** oder
-die Ihres Angebots).
+die Ihres Angebots). Geben Sie sie mit **Punkt** ein (15.87), wie die
+Schaltfläche sie schreibt: ein eingefügtes Komma kann vom Feld entfernt werden
+(15,87 wird 1587, eine Grundgebühr von etwa 51 € pro Tag im Energiediagramm).
+Ist das passiert, korrigieren Sie den Preis im Vertrag: das ist ein Tippfehler,
+keine Preisänderung.
 
 Für einen Stromvertrag gibt die Schaltfläche diese Preise auch als
 Gladys-Tarif (JSON) an, bereit zum Einfügen, wo Gladys den Tarif eines

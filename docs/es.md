@@ -189,11 +189,15 @@ prix actuel» de la página de su contrato, y los da tal cual, sin cálculo.
 Ejemplo:
 
 > Electricidad, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA):
-> 0,160164 €/kWh, suscripción 15,87 €/mes.
+> 0.160164 €/kWh, suscripción 15.87 €/mes.
 
 Son precios con IVA e impuestos (CTA en la suscripción, impuesto especial en
 el kWh), como los contratos que ofrece Gladys. Cópielos en el asistente de
-contratos de Gladys (plantilla **Mi contrato**, o la de su oferta).
+contratos de Gladys (plantilla **Mi contrato**, o la de su oferta). Escríbalos
+con **punto** (15.87), como los escribe el botón: el campo puede quitar una coma
+pegada (15,87 pasa a 1587, una suscripción de unos 51 € al día en el gráfico de
+energía). Si ha ocurrido, corrija el precio en el contrato: es una errata, no un
+cambio de precio.
 
 Para un contrato de electricidad, el botón da también estos precios como
 tarifa Gladys (JSON), lista para pegar donde Gladys pide la tarifa de un

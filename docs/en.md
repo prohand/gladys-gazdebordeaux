@@ -187,7 +187,11 @@ computation. Example:
 
 These prices include VAT and taxes (CTA in the subscription, excise in the
 kWh), like the contracts Gladys offers. Copy them into the Gladys contract wizard
-(**My contract** template, or the one of your offer).
+(**My contract** template, or the one of your offer). Type them with a
+decimal **point** (15.87), as the button writes them: a pasted comma can be
+dropped by the field (15,87 becomes 1587, a subscription of about 51 € a day on
+the energy chart). If that happened, correct the price in the contract: that
+is a typo, not a price change.
 
 For an electricity contract, the button also gives these prices as a Gladys
 tariff (JSON), ready to paste where Gladys asks for the tariff of a contract.

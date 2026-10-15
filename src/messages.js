@@ -104,18 +104,22 @@ export function refreshedMessage(account) {
   });
 }
 
-const LOCALES = { en: 'en-GB', fr: 'fr-FR', de: 'de-DE', es: 'es-ES' };
-
-function formatNumber(language, value, digits) {
-  return new Intl.NumberFormat(LOCALES[language] ?? 'en-GB', {
+// The prices of the "My contract prices" answer are typed or pasted into the
+// number fields of the Gladys contract wizard: they take a decimal POINT only.
+// A pasted "15,87" (French or German format) became 1587 there, a subscription
+// of 1587 €/month (51 €/day on the energy chart). So the numbers are written
+// the same way in every language: a point, no thousands separator.
+function formatNumber(value, digits) {
+  return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: Math.min(2, digits),
     maximumFractionDigits: digits,
+    useGrouping: false,
   }).format(value);
 }
 
-/** "0,160164 €/kWh" in the reader's language, every decimal the website gives. */
-export function kwhPriceText(language, value) {
-  return `${formatNumber(language, value, 6)} €/kWh`;
+/** "0.160164 €/kWh", every decimal the website gives, as the wizard takes it. */
+export function kwhPriceText(value) {
+  return `${formatNumber(value, 6)} €/kWh`;
 }
 
 /**
@@ -140,18 +144,18 @@ export function contractPricesLine(language, prices) {
       es: ['punta', 'valle'],
     }[language] ?? ['peak', 'off-peak'];
     if (prices.peakPrice !== null) {
-      values.push(`${peak} ${kwhPriceText(language, prices.peakPrice)}`);
+      values.push(`${peak} ${kwhPriceText(prices.peakPrice)}`);
     }
     if (prices.offPeakPrice !== null) {
-      values.push(`${offPeak} ${kwhPriceText(language, prices.offPeakPrice)}`);
+      values.push(`${offPeak} ${kwhPriceText(prices.offPeakPrice)}`);
     }
   }
   if (prices.kwhPrice !== null) {
-    values.push(kwhPriceText(language, prices.kwhPrice));
+    values.push(kwhPriceText(prices.kwhPrice));
   }
   if (prices.subscriptionPerMonth !== null) {
     values.push(
-      `${pick(language, { en: 'subscription', fr: 'abonnement', de: 'Grundgebühr', es: 'suscripción' })} ${formatNumber(language, prices.subscriptionPerMonth, 2)} €/${pick(language, { en: 'month', fr: 'mois', de: 'Monat', es: 'mes' })}`,
+      `${pick(language, { en: 'subscription', fr: 'abonnement', de: 'Grundgebühr', es: 'suscripción' })} ${formatNumber(prices.subscriptionPerMonth, 2)} €/${pick(language, { en: 'month', fr: 'mois', de: 'Monat', es: 'mes' })}`,
     );
   }
   if (values.length === 0) {
@@ -181,10 +185,10 @@ export function contractPricesMessage(pricesList) {
   return localize((language) => {
     const lines = pricesList.map((prices) => contractPricesLine(language, prices));
     const footer = pick(language, {
-      en: 'Current prices of your customer account, incl. VAT: type them in the Gladys energy contract, template "Gaz de Bordeaux – My contract" (Base or Peak/Off-peak). When they change, end that contract and create a new one with the new prices.',
-      fr: "Prix actuels de votre espace client, TTC : saisissez-les dans le contrat d'énergie Gladys, modèle « Gaz de Bordeaux – Mon contrat » (Base ou Heures creuses). Quand ils changent, terminez ce contrat et créez-en un nouveau avec les nouveaux prix.",
-      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt.: geben Sie sie im Gladys-Energievertrag ein, Vorlage „Gaz de Bordeaux – Mein Vertrag“ (Base oder HT/NT). Ändern sie sich, beenden Sie diesen Vertrag und legen Sie einen neuen mit den neuen Preisen an.',
-      es: 'Precios actuales de su cuenta de cliente, IVA incluido: introdúzcalos en el contrato de energía de Gladys, plantilla «Gaz de Bordeaux – Mi contrato» (Base u Horas valle). Cuando cambien, termine ese contrato y cree otro con los nuevos precios.',
+      en: 'Current prices of your customer account, incl. VAT, written as the Gladys fields take them (decimal point): type them in the Gladys energy contract, template "Gaz de Bordeaux – My contract" (Base or Peak/Off-peak). When they change, end that contract and create a new one with the new prices.',
+      fr: "Prix actuels de votre espace client, TTC, écrits comme les champs de Gladys les attendent (avec un point, pas une virgule) : saisissez-les dans le contrat d'énergie Gladys, modèle « Gaz de Bordeaux – Mon contrat » (Base ou Heures creuses). Quand ils changent, terminez ce contrat et créez-en un nouveau avec les nouveaux prix.",
+      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt., so geschrieben, wie die Gladys-Felder sie erwarten (mit Punkt, nicht Komma): geben Sie sie im Gladys-Energievertrag ein, Vorlage „Gaz de Bordeaux – Mein Vertrag“ (Base oder HT/NT). Ändern sie sich, beenden Sie diesen Vertrag und legen Sie einen neuen mit den neuen Preisen an.',
+      es: 'Precios actuales de su cuenta de cliente, IVA incluido, escritos como los esperan los campos de Gladys (con punto, no coma): introdúzcalos en el contrato de energía de Gladys, plantilla «Gaz de Bordeaux – Mi contrato» (Base u Horas valle). Cuando cambien, termine ese contrato y cree otro con los nuevos precios.',
     });
     const tariffs = pricesList
       .map(tariffOf)

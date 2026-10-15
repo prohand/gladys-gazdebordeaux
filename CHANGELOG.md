@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.8] - 2026-10-15
+
 ### Changed
 
 - "My contract" energy contract template: the one computed by Gladys, now
@@ -131,7 +133,8 @@ the notes of the version's GitHub Release.
   Release, multi-arch build and GitHub Release workflows, Dependabot.
 - `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.7...HEAD
+[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.8...HEAD
+[1.0.8]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.7...v1.0.8
 [1.0.7]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.4...v1.0.5

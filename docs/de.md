@@ -139,6 +139,12 @@ den Preisen von Gaz de Bordeaux berechnet. Eine Vorlage pro Angebot und Option:
 | NovaFixe Bonus Élec | wie NovaFixe, plus 100 € Bonus im ersten Jahr                          | Base, HT/NT |
 | NovaFlex Élec       | an den regulierten Tarif (TRV) gebunden, kWh ohne Steuern 5 % darunter | Base, HT/NT |
 
+**Ihr Angebot ist nicht in der Liste?** (zum Beispiel **Ecodigo Elec** oder ein
+älteres, nicht mehr verkauftes Angebot): Wählen Sie eine Vorlage derselben
+Option (Base oder HT/NT) oder legen Sie den Vertrag in Gladys von Hand an, und
+geben Sie dann die Preise der Schaltfläche **Meine Vertragspreise** (unten)
+ein. Ihr Angebot steht in Ihrem Kundenkonto, Zeile „Votre tarif“.
+
 ### Ihre Preise: die Schaltfläche „Meine Vertragspreise“
 
 Ein Festpreisangebot behält **den Preis des Abschlusstages**: ein vor zwei

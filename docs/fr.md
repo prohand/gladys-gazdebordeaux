@@ -141,6 +141,12 @@ L'intégration ajoute des modèles de contrat à l'assistant de contrat de Glady
 | NovaFixe Bonus Élec | comme NovaFixe, plus 100 € offerts la première année         | Base, Heures creuses |
 | NovaFlex Élec       | indexés sur le tarif réglementé (TRV), kWh HT 5 % en dessous | Base, Heures creuses |
 
+**Votre offre n'est pas dans la liste ?** (par exemple **Ecodigo Elec**, ou une
+ancienne offre qui n'est plus vendue) : prenez un modèle de la même option
+(Base ou Heures creuses), ou créez le contrat à la main dans Gladys, puis
+saisissez les prix donnés par le bouton **Mes prix de contrat** ci-dessous.
+Votre offre est écrite dans votre espace client, ligne « Votre tarif ».
+
 ### Vos prix : le bouton « Mes prix de contrat »
 
 Une offre à prix fixe garde **le prix du jour de la souscription** : un

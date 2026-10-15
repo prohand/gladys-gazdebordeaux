@@ -35,6 +35,8 @@ the notes of the version's GitHub Release.
   subscription, power and off-peak hours of your own contract, incl. VAT,
   computed from the customer account (a fixed price keeps its
   subscription-date price) within a cent of the daily amounts' rounding.
+  Offers without a template (Ecodigo Elec, older offers): the docs say how
+  to set their contract.
 - Monthly "Electricity prices" workflow: downloads the official price grids
   and opens a pull request when a price changes.
 - "Test the connection" and "Refresh now" buttons in the configuration screen.

@@ -132,6 +132,12 @@ electricity at the Gaz de Bordeaux prices. One template per offer and option:
 | NovaFixe Bonus Élec | like NovaFixe, plus €100 off the first year                        | Base, Peak/Off-peak |
 | NovaFlex Élec       | indexed on the regulated tariff (TRV), kWh excl. taxes 5% below it | Base, Peak/Off-peak |
 
+**Your offer is not in the list?** (for example **Ecodigo Elec**, or an older
+offer no longer sold): pick a template of the same option (Base or
+Peak/Off-peak), or create the contract by hand in Gladys, then enter the prices
+given by the **My contract prices** button below. Your offer is written in your
+customer account, line "Votre tarif".
+
 ### Your prices: the "My contract prices" button
 
 A fixed-price offer keeps **the price of its subscription day**: a contract

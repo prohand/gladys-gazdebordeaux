@@ -137,6 +137,12 @@ opción:
 | NovaFixe Bonus Élec | como NovaFixe, más 100 € de regalo el primer año                          | Base, Horas valle |
 | NovaFlex Élec       | indexados a la tarifa regulada (TRV), kWh sin impuestos un 5 % por debajo | Base, Horas valle |
 
+**¿Su oferta no está en la lista?** (por ejemplo **Ecodigo Elec**, o una oferta
+antigua que ya no se vende): elija una plantilla de la misma opción (Base u
+Horas valle), o cree el contrato a mano en Gladys, y luego introduzca los
+precios que da el botón **Mis precios de contrato** (más abajo). Su oferta
+figura en su cuenta de cliente, línea «Votre tarif».
+
 ### Sus precios: el botón «Mis precios de contrato»
 
 Una oferta a precio fijo conserva **el precio del día de la contratación**: un

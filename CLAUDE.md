@@ -106,14 +106,20 @@ There is no public API: the client calls the JSON endpoints the customer website
   `node .github/scripts/tariffs.mjs fetch` (needs `npm install --no-save playwright` and
   `pdftotext`), or `update <dir>` on `grid-<offer>.txt` files. The monthly workflow
   `.github/workflows/tariffs.yml` does it and opens a PR; a template whose prices changed takes the
-  grid date as `version` (Gladys offers the update), an unchanged one is kept as is. When the
+  grid date as `version` (shown by the wizard; Gladys never updates an existing contract: a price
+  change is a new contract, which "My contract prices" tells the user, with its start day), an
+  unchanged one is kept as is. When the
   prices change, also update the price tables of `docs/*.md` and `test/fixtures/grid-*.txt`
   (`test/tariffs.test.js` checks the manifest matches the fixtures). Prices are template `inputs`:
   a fixed-price contract keeps the price of its subscription date. Never rename a template key.
   Electricity only (Gladys contracts do not cover gas). Peak/Off-peak needs half-hourly readings.
-- **Contract prices from the account** (`src/gazdebordeaux/prices.js`): the median over the last
-  30 days of `consumptionPrice / kwh` (or `priceHp / consumptionHp`, `priceHc / consumptionHc`)
-  and of `contractPrice` × 365 / 12; power, option and off-peak hours from the house
+- **Contract prices from the account** (`src/gazdebordeaux/prices.js`): the website rounds every
+  daily amount to the cent and splits the monthly subscription over the days of each month
+  (`contractPrice` = monthly / days of the month): each day bounds the price (± half a cent),
+  the price is the middle of what every day allows (`consumptionPrice / kwh`, or
+  `priceHp / consumptionHp`, `priceHc / consumptionHc`; `contractPrice` × days of the month).
+  Computed over the days since the latest price change (`priceChangeDay`: two days in a row off
+  the price of the latest days), 30 at most; power, option and off-peak hours from the house
   (`electricityPower`, `priceCategory`, `offPeakTimes`). These field names come from the
   customer website's own code, not from a documented API: keep every read null-safe. The house
   field NAMES are logged at debug level to check them on a real account.

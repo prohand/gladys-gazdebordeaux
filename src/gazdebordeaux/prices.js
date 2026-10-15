@@ -9,8 +9,12 @@
 // of the subscription (`contractPrice`). Dividing one by the other gives the
 // kWh price actually charged, whatever the offer and its date.
 //
-// Each price is the median over the last days read (a day with a rounding or
-// a pro-rata does not move it), rounded to 5 decimals like the official grids.
+// The website rounds each day's amounts to the cent: one day's ratio is off by
+// up to a few tenths of a percent (0.1606 instead of 0.160164 on a real
+// account). A day costing 1.28 € thus says the exact cost lies between 1.275
+// and 1.285 €: each day bounds the price, and the prices are the middle of
+// what every day of the last ones allows, rounded to 5 decimals like the
+// official grids.
 // The user copies them into the Gladys contract wizard: Gladys gives an
 // integration no way to fill a contract in.
 // -----------------------------------------------------------------------------
@@ -29,14 +33,74 @@ function median(values) {
   return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
 }
 
-// The unit prices of the days that carry both quantities, or null.
+const sum = (values) => values.reduce((total, value) => total + value, 0);
+
+/** Half a cent: how far a day's amount, rounded to the cent, is from its exact value. */
+const HALF_CENT = 0.005;
+
+// The middle of the values every [low, high] range allows, or null when the
+// ranges have nothing in common.
+function commonMiddle(ranges) {
+  let low = 0;
+  let high = Infinity;
+  for (const [from, to] of ranges) {
+    low = Math.max(low, from);
+    high = Math.min(high, to);
+  }
+  return ranges.length > 0 && low <= high ? (low + high) / 2 : null;
+}
+
+// The kWh price of the days that carry both quantities, or null. A day far
+// from the median price (a pro-rata, or the days before a price change when
+// most days are after it) is left out first. Days that agree on no price
+// (amounts not rounded the way assumed) fall back to total cost / total kWh.
 function unitPrice(days, costOf, kwhOf) {
-  const prices = days
+  const pairs = days
     .map((day) => [costOf(day), kwhOf(day)])
-    .filter(([cost, kwh]) => cost !== null && kwh !== null && cost > 0 && kwh > 0)
-    .map(([cost, kwh]) => cost / kwh);
-  const value = median(prices);
-  return value === null ? null : round(value, 5);
+    .filter(([cost, kwh]) => cost !== null && kwh !== null && cost > 0 && kwh > 0);
+  const reference = median(pairs.map(([cost, kwh]) => cost / kwh));
+  if (reference === null) {
+    return null;
+  }
+  const kept = pairs.filter(
+    ([cost, kwh]) => Math.abs(cost - reference * kwh) <= 2 * HALF_CENT + 0.01 * cost,
+  );
+  const bounded = commonMiddle(
+    kept.map(([cost, kwh]) => [(cost - HALF_CENT) / kwh, (cost + HALF_CENT) / kwh]),
+  );
+  const kwh = sum(kept.map(([, value]) => value));
+  const average = kwh > 0 ? sum(kept.map(([cost]) => cost)) / kwh : reference;
+  return round(bounded ?? average, 5);
+}
+
+const daysInMonth = (day) =>
+  new Date(Date.UTC(Number(day.slice(0, 4)), Number(day.slice(5, 7)), 0)).getUTCDate();
+
+// The monthly subscription, from the daily shares (`contractPrice`) or null.
+//
+// The website splits the monthly amount over the days of each month and
+// rounds each share to the cent: 15.87 €/month is 0.53 € a day in September
+// (30 days) and 0.51 € in October (31 days); "share × 365 / 12" then gives
+// 16.12. Each day bounds the monthly amount within
+// [(share − ½ cent) × days of its month, (share + ½ cent) × days of its month]:
+// the middle of what every day allows is the answer (15.86 here, within a
+// cent). Shares that agree on no amount (a yearly amount spread evenly over
+// 365 days) fall back to the median share × 365 / 12.
+function monthlySubscription(days) {
+  const shares = days.filter((day) => day.subscriptionCost !== null && day.subscriptionCost > 0);
+  if (shares.length === 0) {
+    return null;
+  }
+  const bounded = commonMiddle(
+    shares.map(({ date, subscriptionCost }) => [
+      (subscriptionCost - HALF_CENT) * daysInMonth(date),
+      (subscriptionCost + HALF_CENT) * daysInMonth(date),
+    ]),
+  );
+  if (bounded !== null) {
+    return round(bounded, 2);
+  }
+  return round((median(shares.map((day) => day.subscriptionCost)) * 365) / 12, 2);
 }
 
 // The energy cost of a day: given as is, or the total minus the subscription.
@@ -110,14 +174,95 @@ export function parseOffPeakTimes(raw) {
   return slots.length > 0 && slots.every(Boolean) ? slots : null;
 }
 
+// -- Price changes ------------------------------------------------------------
+//
+// A price changes (a new grid, a tax): the days before are charged at the old
+// price. Gladys keeps them apart with successive contracts, so the user needs
+// the day the new prices start, and the prices of the days since then only.
+
+/** The latest days the current price is taken from. */
+const REFERENCE_DAYS = 3;
+
+// Whether a day's amount matches a price, within its cent rounding plus 1 %.
+const close = (amount, expected) => Math.abs(amount - expected) <= 2 * HALF_CENT + 0.01 * amount;
+
+// The first day of the latest run of days charged at the current price, or
+// null when no change shows. `priceOf(day)` is the day's own price,
+// `agrees(day, price)` whether the day matches a price. One day off (a
+// pro-rata, a correction) is not a change: two days in a row that match each
+// other but not the current price are.
+function latestChange(series, priceOf, agrees) {
+  if (series.length < REFERENCE_DAYS + 2) {
+    return null;
+  }
+  const reference = median(series.slice(-REFERENCE_DAYS).map(priceOf));
+  let start = series.length - 1;
+  for (let i = series.length - 1; i > 0; i -= 1) {
+    if (agrees(series[i], reference)) {
+      start = i;
+    } else if (
+      !agrees(series[i - 1], reference) &&
+      agrees(series[i - 1], priceOf(series[i])) &&
+      start > i
+    ) {
+      return series[start].date;
+    }
+  }
+  return null;
+}
+
+// The days carrying a cost and a quantity of kWh, for one price.
+const withKwh = (days, costOf, kwhOf) => days.filter((day) => costOf(day) > 0 && kwhOf(day) > 0);
+
+/**
+ * The day the latest price change took effect, among the days read, or null.
+ * @param {Array<object>} days the parsed days, oldest first
+ */
+export function priceChangeDay(days) {
+  const unit = (costOf, kwhOf) =>
+    latestChange(
+      withKwh(days, costOf, kwhOf),
+      (day) => costOf(day) / kwhOf(day),
+      (day, price) => close(costOf(day), price * kwhOf(day)),
+    );
+  // On a peak/off-peak day, cost / kWh blends two prices: not a price.
+  const single = (day) => (day.peakKwh === null && day.offPeakKwh === null ? day.kwh : null);
+  const changes = [
+    unit(energyCostOf, single),
+    unit(
+      (day) => day.peakCost,
+      (day) => day.peakKwh,
+    ),
+    unit(
+      (day) => day.offPeakCost,
+      (day) => day.offPeakKwh,
+    ),
+    // The subscription share depends on the days of the month (or is a
+    // yearly amount over 365 days): compared as a monthly amount, both ways.
+    latestChange(
+      days.filter((day) => day.subscriptionCost > 0),
+      (day) => day.subscriptionCost * daysInMonth(day.date),
+      (day, monthly) =>
+        close(day.subscriptionCost, monthly / daysInMonth(day.date)) ||
+        close(day.subscriptionCost, (monthly * 12) / 365),
+    ),
+  ].filter(Boolean);
+  return changes.length > 0 ? changes.sort().at(-1) : null;
+}
+
 /**
  * The prices of a contract, from its snapshot.
- * @returns {{ energy: string, power: number | null, peakOffPeak: boolean, offPeakSlots: string[][] | null, kwhPrice: number | null, peakPrice: number | null, offPeakPrice: number | null, subscriptionPerMonth: number | null, days: number } | null}
+ * The days since the latest price change only (the last 30 at most): the
+ * prices are those of today, and `changedOn` is the day they started.
+ * @returns {{ energy: string, power: number | null, peakOffPeak: boolean, offPeakSlots: string[][] | null, kwhPrice: number | null, peakPrice: number | null, offPeakPrice: number | null, subscriptionPerMonth: number | null, days: number, changedOn: string | null } | null}
  *   null when no day carries a price
  */
 export function contractPrices(snapshot) {
   const { contract } = snapshot;
-  const days = snapshot.days.slice(-PRICE_SAMPLE_DAYS);
+  const changedOn = priceChangeDay(snapshot.days);
+  const days = snapshot.days
+    .filter((day) => changedOn === null || day.date >= changedOn)
+    .slice(-PRICE_SAMPLE_DAYS);
   const splitDays = days.filter((day) => day.peakKwh !== null || day.offPeakKwh !== null);
   const peakOffPeak = contract.priceCategory
     ? contract.priceCategory.toUpperCase() === 'HPHC'
@@ -134,10 +279,6 @@ export function contractPrices(snapshot) {
     (day) => day.offPeakCost,
     (day) => day.offPeakKwh,
   );
-  const dailySubscription = median(
-    days.map((day) => day.subscriptionCost).filter((cost) => cost !== null && cost > 0),
-  );
-
   const prices = {
     energy: contract.energy,
     power: contract.power ?? null,
@@ -146,11 +287,9 @@ export function contractPrices(snapshot) {
     kwhPrice,
     peakPrice,
     offPeakPrice,
-    // A daily share of a yearly subscription: back to the monthly amount
-    // of the grids.
-    subscriptionPerMonth:
-      dailySubscription === null ? null : round((dailySubscription * 365) / 12, 2),
+    subscriptionPerMonth: monthlySubscription(days),
     days: days.length,
+    changedOn,
   };
   const known = [kwhPrice, peakPrice, offPeakPrice, prices.subscriptionPerMonth];
   return known.some((value) => value !== null) ? prices : null;

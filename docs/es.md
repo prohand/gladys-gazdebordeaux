@@ -137,6 +137,12 @@ opción:
 | NovaFixe Bonus Élec | como NovaFixe, más 100 € de regalo el primer año                          | Base, Horas valle |
 | NovaFlex Élec       | indexados a la tarifa regulada (TRV), kWh sin impuestos un 5 % por debajo | Base, Horas valle |
 
+**¿Su oferta no está en la lista?** (por ejemplo **Ecodigo Elec**, o una oferta
+antigua que ya no se vende): elija una plantilla de la misma opción (Base u
+Horas valle), o cree el contrato a mano en Gladys, y luego introduzca los
+precios que da el botón **Mis precios de contrato** (más abajo). Su oferta
+figura en su cuenta de cliente, línea «Votre tarif».
+
 ### Sus precios: el botón «Mis precios de contrato»
 
 Una oferta a precio fijo conserva **el precio del día de la contratación**: un
@@ -150,19 +156,50 @@ valle. Ejemplo:
 > Electricidad (6 kVA): 0,18373 €/kWh, suscripción 15,87 €/mes. Calculado sobre
 > los últimos 30 días de su cuenta.
 
+Son precios con IVA, como los que muestra Gaz de Bordeaux y los contratos
+que ofrece Gladys. El sitio redondea cada día al céntimo: la suscripción
+calculada puede diferir en un céntimo de la de su cuenta de cliente.
+
 Copie estos valores en el asistente de contratos de Gladys. El precio pagado
 también aparece en el widget (fila **Precio pagado**).
 
 Gladys no permite que una integración rellene un contrato por usted: por eso
-se copian una vez (y en cada cambio de precio, para NovaFlex).
+se copian una vez, y luego en cada cambio de precio.
+
+### Cuando cambian sus precios
+
+Deje vacía la **fecha de fin** de su contrato de Gladys mientras sus precios no
+cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, fin de un
+periodo a precio fijo) o un impuesto (impuesto especial, IVA) que cambia el
+precio con IVA.
+
+El botón **Mis precios de contrato** detecta ese cambio en sus lecturas y
+calcula entonces los precios solo sobre los días desde entonces. Ejemplo:
+
+> Electricidad (6 kVA): 0,17112 €/kWh, suscripción 15,87 €/mes. Nuevos precios
+> desde el 01/02/2027: termine su contrato de Gladys el 31/01/2027 y cree uno
+> nuevo a partir del 01/02/2027 con estos precios.
+
+1. En el contrato actual, ponga la **fecha de fin** en la víspera del cambio.
+2. Cree un **nuevo contrato** que empiece el día del cambio, con los nuevos
+   precios.
+
+Así los días pasados conservan sus precios antiguos. No modifique los precios
+del contrato existente: Gladys recalcularía todo el historial desde el inicio
+del contrato con el nuevo precio.
+
+Unos días después del cambio, los precios son algo menos precisos (menos días
+para calcularlos): pulse de nuevo una o dos semanas más tarde y corrija el
+nuevo contrato si hace falta. El cambio solo se detecta en los días leídos
+(**Días de historial a importar**, hasta 90).
 
 ### Los precios por defecto: las tarifas oficiales
 
 Los valores propuestos por defecto son los de las **tarifas oficiales** de Gaz
 de Bordeaux (IVA incluido, aquí las del 1 de octubre de 2026). Se descargan
 cada mes de gazdebordeaux.fr: cuando cambia un precio, una nueva versión de la
-integración propone los nuevos precios (Gladys pregunta entonces si actualizar
-su contrato).
+integración propone los nuevos precios para los contratos creados después. Un
+contrato ya creado conserva sus precios: vea **Cuando cambian sus precios**.
 
 | Potencia | Suscripción / mes | NovaFixe: kWh Base | NovaFixe: punta / valle | NovaFlex: kWh Base | NovaFlex: punta / valle |
 | -------- | ----------------- | ------------------ | ----------------------- | ------------------ | ----------------------- |

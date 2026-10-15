@@ -32,8 +32,14 @@ the notes of the version's GitHub Release.
   Peak/Off-peak, with the official Gaz de Bordeaux prices of 1 October 2026
   as defaults.
 - "My contract prices" button and a "Price paid" widget row: the kWh price,
-  subscription, power and off-peak hours of your own contract, computed from
-  the customer account (a fixed price keeps its subscription-date price).
+  subscription, power and off-peak hours of your own contract, incl. VAT,
+  computed from the customer account (a fixed price keeps its
+  subscription-date price) within a cent of the daily amounts' rounding.
+  Offers without a template (Ecodigo Elec, older offers): the docs say how
+  to set their contract.
+  A price change found in the readings is given with its day, the prices
+  computed over the days since then, and what to do in Gladys (end the
+  contract the day before, create a new one); the docs explain it.
 - Monthly "Electricity prices" workflow: downloads the official price grids
   and opens a pull request when a price changes.
 - "Test the connection" and "Refresh now" buttons in the configuration screen.

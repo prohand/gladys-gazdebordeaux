@@ -139,6 +139,12 @@ den Preisen von Gaz de Bordeaux berechnet. Eine Vorlage pro Angebot und Option:
 | NovaFixe Bonus Élec | wie NovaFixe, plus 100 € Bonus im ersten Jahr                          | Base, HT/NT |
 | NovaFlex Élec       | an den regulierten Tarif (TRV) gebunden, kWh ohne Steuern 5 % darunter | Base, HT/NT |
 
+**Ihr Angebot ist nicht in der Liste?** (zum Beispiel **Ecodigo Elec** oder ein
+älteres, nicht mehr verkauftes Angebot): Wählen Sie eine Vorlage derselben
+Option (Base oder HT/NT) oder legen Sie den Vertrag in Gladys von Hand an, und
+geben Sie dann die Preise der Schaltfläche **Meine Vertragspreise** (unten)
+ein. Ihr Angebot steht in Ihrem Kundenkonto, Zeile „Votre tarif“.
+
 ### Ihre Preise: die Schaltfläche „Meine Vertragspreise“
 
 Ein Festpreisangebot behält **den Preis des Abschlusstages**: ein vor zwei
@@ -152,19 +158,51 @@ Niedertarifzeiten ab. Beispiel:
 > Strom (6 kVA): 0,18373 €/kWh, Grundgebühr 15,87 €/Monat. Berechnet aus den
 > letzten 30 Tagen Ihres Kontos.
 
+Es sind Bruttopreise (inkl. MwSt.), wie bei Gaz de Bordeaux und in den
+Verträgen von Gladys. Die Website rundet jeden Tag auf den Cent: Die berechnete
+Grundgebühr kann um einen Cent von der Ihres Kundenkontos abweichen.
+
 Übernehmen Sie diese Werte in den Vertragsassistenten von Gladys. Der bezahlte
 Preis wird auch im Widget angezeigt (Zeile **Bezahlter Preis**).
 
 Gladys erlaubt einer Integration nicht, einen Vertrag für Sie auszufüllen:
-deshalb werden sie einmal übernommen (und bei NovaFlex bei jeder Preisänderung).
+deshalb werden sie einmal übernommen, dann bei jeder Preisänderung.
+
+### Wenn sich Ihre Preise ändern
+
+Lassen Sie das **Enddatum** Ihres Gladys-Vertrags leer, solange sich Ihre
+Preise nicht ändern. Sie können sich unterwegs ändern: neue Preisliste
+(NovaFlex, Ende einer Festpreisperiode) oder eine Steuer (Verbrauchsteuer,
+MwSt.), die den Bruttopreis ändert.
+
+Die Schaltfläche **Meine Vertragspreise** erkennt eine solche Änderung in Ihren
+Werten und berechnet die Preise dann nur über die Tage seitdem. Beispiel:
+
+> Strom (6 kVA): 0,17112 €/kWh, Grundgebühr 15,87 €/Monat. Neue Preise seit
+> 01.02.2027: Beenden Sie Ihren Gladys-Vertrag am 31.01.2027 und legen Sie ab
+> 01.02.2027 einen neuen mit diesen Preisen an.
+
+1. Setzen Sie beim aktuellen Vertrag das **Enddatum** auf den Tag vor der
+   Änderung.
+2. Legen Sie einen **neuen Vertrag** an, der am Tag der Änderung beginnt, mit
+   den neuen Preisen.
+
+So behalten die vergangenen Tage ihre alten Preise. Ändern Sie nicht die
+Preise des bestehenden Vertrags: Gladys würde die ganze Historie seit
+Vertragsbeginn mit dem neuen Preis neu berechnen.
+
+Wenige Tage nach der Änderung sind die Preise etwas ungenauer (weniger Tage
+für die Berechnung): Klicken Sie ein bis zwei Wochen später erneut und
+korrigieren Sie den neuen Vertrag bei Bedarf. Die Änderung wird nur in den
+gelesenen Tagen erkannt (**Zu importierende Tage**, bis zu 90).
 
 ### Die Standardpreise: die offiziellen Preislisten
 
 Die vorgeschlagenen Standardwerte sind die der **offiziellen Preislisten** von
 Gaz de Bordeaux (brutto, hier die vom 1. Oktober 2026). Sie werden jeden Monat
 von gazdebordeaux.fr geladen: ändert sich ein Preis, bietet eine neue Version
-der Integration die neuen Preise an (Gladys fragt dann, ob Ihr Vertrag
-aktualisiert werden soll).
+der Integration die neuen Preise für danach angelegte Verträge an. Ein bereits
+angelegter Vertrag behält seine Preise: siehe **Wenn sich Ihre Preise ändern**.
 
 | Leistung | Grundgebühr / Monat | NovaFixe: kWh Base | NovaFixe: HT / NT | NovaFlex: kWh Base | NovaFlex: HT / NT |
 | -------- | ------------------- | ------------------ | ----------------- | ------------------ | ----------------- |

@@ -92,4 +92,9 @@ test('a price change is described in the changelog', () => {
     addChangelogLine(withChanged, 'New prices.'),
     '## [Unreleased]\n\n### Changed\n\n- Something.\n- New prices.\n\n### Fixed\n\n- Bug.\n\n[Unreleased]: x\n',
   );
+  const quoted = 'Changes go under `## [Unreleased]`.\n\n## [Unreleased]\n';
+  assert.equal(
+    addChangelogLine(quoted, 'New prices.'),
+    'Changes go under `## [Unreleased]`.\n\n## [Unreleased]\n\n### Changed\n\n- New prices.\n',
+  );
 });

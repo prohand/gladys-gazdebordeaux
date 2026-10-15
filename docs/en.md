@@ -151,8 +151,11 @@ apart), the monthly subscription, the power and the off-peak hours. Example:
 > the last 30 days of your account.
 
 These prices include VAT, like the ones Gaz de Bordeaux shows and the
-contracts Gladys offers. The website rounds each day to the cent: the computed
-subscription may differ by one cent from the one of your customer account.
+contracts Gladys offers. The website rounds each day to the cent: the kWh
+price is right within a few millionths, but the subscription may differ by a
+few cents (up to about fifteen) when the daily share is the same every day.
+If they differ, prefer the subscription of your customer account ("Votre prix
+actuel").
 
 Copy these values into the Gladys contract wizard. The price charged is also
 shown in the widget (**Price paid** row).
@@ -163,8 +166,8 @@ they are copied once, then at each price change.
 ### When your prices change
 
 Leave the **end date** of your Gladys contract empty while your prices do not
-change. They may change along the way: a new grid (NovaFlex, end of a
-fixed-price period), or a tax (excise, VAT) that changes the price incl. VAT.
+change. They may change along the way: a new grid (NovaFlex, Ecodigo
+Elec, end of a fixed-price period), or a tax (excise, VAT) that changes the price incl. VAT.
 
 The **My contract prices** button finds such a change in your readings and
 then computes the prices over the days since it only. Example:

@@ -27,7 +27,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
  */
 export function rollChangelog(text, version, date) {
   const heading = '## [Unreleased]';
-  const start = text.indexOf(heading);
+  // The heading line itself: the prose above it may quote `## [Unreleased]`.
+  const start = text.search(/^## \[Unreleased\][ \t]*$/m);
   if (start === -1 || text.includes(`## [${version}]`)) {
     return text;
   }

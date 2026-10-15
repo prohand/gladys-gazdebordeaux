@@ -46,6 +46,29 @@ test('a later release compares with the previous tag', () => {
   assert.match(after, new RegExp(`\\[1\\.0\\.1\\]: ${REPO}/compare/v1\\.0\\.0\\.\\.\\.v1\\.0\\.1`));
 });
 
+// Release 1.0.1 put its heading in the middle of the intro sentence, which
+// quotes the heading: only a heading line is the section.
+test('a heading quoted in the intro is not the section', () => {
+  const before = [
+    '# Changelog',
+    '',
+    'Describe each change under `## [Unreleased]` as you make it.',
+    '',
+    '## [Unreleased]',
+    '',
+    '- Fix.',
+    '',
+    `[Unreleased]: ${REPO}/commits/main`,
+    '',
+  ].join('\n');
+  const after = rollChangelog(before, '1.0.0', '2026-10-14');
+  assert.match(
+    after,
+    /under `## \[Unreleased\]` as you make it\.\n\n## \[Unreleased\]\n\n## \[1\.0\.0\]/,
+  );
+  assert.match(after, /## \[1\.0\.0\] - 2026-10-14\n\n- Fix\./);
+});
+
 test('the changelog of the repository has an Unreleased section the workflow can roll', async () => {
   const changelog = await readFile(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
   assert.match(changelog, /^## \[Unreleased\]$/m);

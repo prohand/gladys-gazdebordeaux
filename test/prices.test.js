@@ -51,10 +51,8 @@ test('a day with a pro-rata does not move the price', () => {
   assert.equal(prices.changedOn, null, 'one day off is not a change');
 });
 
-// A real account (October 2026): 0.160164 €/kWh and 15.87 €/month, every
-// daily amount rounded to the cent, the subscription split over the days of
-// each month (0.53 € in September, 0.51 € in October). The median of the
-// daily ratios and "share × 365 / 12" gave 0.1606 and 16.12.
+// Every daily amount rounded to the cent, the subscription split over the
+// days of each month (0.53 € in September, 0.51 € in October).
 test('amounts rounded to the cent still give the prices of the contract', () => {
   const cents = (value) => Math.round(value * 100) / 100;
   const days = Array.from({ length: 28 }, (_, i) => {
@@ -71,6 +69,30 @@ test('amounts rounded to the cent still give the prices of the contract', () => 
     `subscription ${prices.subscriptionPerMonth}`,
   );
   assert.equal(prices.changedOn, null, 'a share that follows the days of the month is no change');
+});
+
+// A real account (Ecodigo Elec, October 2026): 0.160164 €/kWh and 15.87 €/month
+// since 1 October (0.52 € a day: spread over the year), more before. A 1 %
+// tolerance saw no change and blended both prices into 0.16066 and 16.01.
+test('a price change smaller than the 1 % of the amounts is found', () => {
+  const cents = (value) => Math.round(value * 100) / 100;
+  const days = Array.from({ length: 28 }, (_, i) => {
+    const date = addDays('2026-09-15', i);
+    const [kwhPrice, monthly] = date < '2026-10-01' ? [0.1612, 16.12] : [0.160164, 15.87];
+    const kwh = 4 + ((i * 7) % 9) + ((i * 13) % 10) / 10;
+    const share = cents((monthly * 12) / 365);
+    const consumptionPrice = cents(kwh * kwhPrice);
+    return { date, kwh, consumptionPrice, contractPrice: share, price: consumptionPrice + share };
+  });
+  const prices = contractPrices(snapshotOf(BASE, days));
+  assert.equal(prices.changedOn, '2026-10-01');
+  assert.equal(prices.days, 12);
+  assert.ok(Math.abs(prices.kwhPrice - 0.160164) <= 0.00003, `kWh price ${prices.kwhPrice}`);
+  // 0.52 € a day only says 15.66 to 15.97 €/month.
+  assert.ok(
+    Math.abs(prices.subscriptionPerMonth - 15.87) <= 0.15,
+    `subscription ${prices.subscriptionPerMonth}`,
+  );
 });
 
 test('a subscription spread evenly over the year comes back as its monthly amount', () => {

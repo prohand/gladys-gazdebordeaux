@@ -159,8 +159,10 @@ Niedertarifzeiten ab. Beispiel:
 > letzten 30 Tagen Ihres Kontos.
 
 Es sind Bruttopreise (inkl. MwSt.), wie bei Gaz de Bordeaux und in den
-Verträgen von Gladys. Die Website rundet jeden Tag auf den Cent: Die berechnete
-Grundgebühr kann um einen Cent von der Ihres Kundenkontos abweichen.
+Verträgen von Gladys. Die Website rundet jeden Tag auf den Cent: Der kWh-Preis
+stimmt auf wenige Millionstel, die Grundgebühr kann aber um einige Cent (bis
+etwa fünfzehn) abweichen, wenn der Tagesanteil jeden Tag gleich ist. Weichen
+sie ab, nehmen Sie die Grundgebühr Ihres Kundenkontos („Votre prix actuel“).
 
 Übernehmen Sie diese Werte in den Vertragsassistenten von Gladys. Der bezahlte
 Preis wird auch im Widget angezeigt (Zeile **Bezahlter Preis**).
@@ -172,7 +174,7 @@ deshalb werden sie einmal übernommen, dann bei jeder Preisänderung.
 
 Lassen Sie das **Enddatum** Ihres Gladys-Vertrags leer, solange sich Ihre
 Preise nicht ändern. Sie können sich unterwegs ändern: neue Preisliste
-(NovaFlex, Ende einer Festpreisperiode) oder eine Steuer (Verbrauchsteuer,
+(NovaFlex, Ecodigo Elec, Ende einer Festpreisperiode) oder eine Steuer (Verbrauchsteuer,
 MwSt.), die den Bruttopreis ändert.
 
 Die Schaltfläche **Meine Vertragspreise** erkennt eine solche Änderung in Ihren

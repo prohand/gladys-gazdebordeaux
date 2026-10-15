@@ -365,7 +365,8 @@ export function updateManifest(manifest, grids) {
 /** CHANGELOG.md with one more line under `## [Unreleased]` / `### Changed`. */
 export function addChangelogLine(text, line) {
   const heading = '## [Unreleased]';
-  const start = text.indexOf(heading);
+  // The heading line itself: the prose above it may quote `## [Unreleased]`.
+  const start = text.search(/^## \[Unreleased\][ \t]*$/m);
   if (start === -1) {
     return text;
   }

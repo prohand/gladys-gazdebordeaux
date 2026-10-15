@@ -161,8 +161,11 @@ la puissance et les heures creuses. Exemple :
 > les 30 derniers jours de votre compte.
 
 Ce sont des prix **TTC**, comme ceux affichés par Gaz de Bordeaux et comme
-les contrats proposés par Gladys. Le site arrondit chaque jour au centime :
-l'abonnement calculé peut différer d'un centime de celui de votre espace client.
+les contrats proposés par Gladys. Le site arrondit chaque jour au centime : le prix du
+kWh est juste à quelques millionièmes près, mais l'abonnement peut différer de
+quelques centimes (jusqu'à une quinzaine) quand la part par jour est la même
+chaque jour. En cas d'écart, préférez l'abonnement indiqué dans votre espace
+client (« Votre prix actuel »).
 
 Recopiez ces valeurs dans l'assistant de contrat de Gladys. Le prix payé est
 aussi affiché dans le widget (ligne **Prix payé**).
@@ -174,7 +177,7 @@ c'est pourquoi il faut les recopier une fois, puis à chaque changement de prix.
 
 Laissez la **date de fin** de votre contrat Gladys vide tant que vos prix ne
 changent pas. Ils peuvent changer en cours de route : nouvelle grille (NovaFlex,
-fin d'une période à prix fixe), ou taxe (accise, TVA) qui change le prix TTC.
+Ecodigo Elec, fin d'une période à prix fixe), ou taxe (accise, TVA) qui change le prix TTC.
 
 Le bouton **Mes prix de contrat** repère ce changement dans vos relevés et
 calcule alors les prix sur les seuls jours depuis. Exemple :

@@ -4,15 +4,22 @@ All notable changes to this integration are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [semantic versioning](https://semver.org/), bumped by the Release workflow.
 
-Describe each change under `## [Unreleased]
-
-## [1.0.1] - 2026-10-15
-
-` as you make it. The Release
+Describe each change under `## [Unreleased]` as you make it. The Release
 workflow moves that section under the version it ships, and the section becomes
 the notes of the version's GitHub Release.
 
 ## [Unreleased]
+
+### Fixed
+
+- "My contract prices": a price change of less than 1 % (an indexed offer
+  such as Ecodigo Elec, a tax) is now found, using the cent rounding of each
+  day; the prices of the days before no longer blend in (0.16066 €/kWh and
+  16.01 €/month instead of 0.160164 and 15.87 on a real account). The docs
+  say the subscription may be a few cents off.
+- The Release workflow put the version heading inside the changelog intro.
+
+## [1.0.1] - 2026-10-15
 
 ### Added
 

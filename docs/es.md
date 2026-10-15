@@ -157,8 +157,11 @@ valle. Ejemplo:
 > los últimos 30 días de su cuenta.
 
 Son precios con IVA, como los que muestra Gaz de Bordeaux y los contratos
-que ofrece Gladys. El sitio redondea cada día al céntimo: la suscripción
-calculada puede diferir en un céntimo de la de su cuenta de cliente.
+que ofrece Gladys. El sitio redondea cada día al céntimo: el precio del
+kWh es exacto a pocas millonésimas, pero la suscripción puede diferir en
+algunos céntimos (hasta unos quince) cuando la parte diaria es la misma cada
+día. Si difieren, use la suscripción de su cuenta de cliente («Votre prix
+actuel»).
 
 Copie estos valores en el asistente de contratos de Gladys. El precio pagado
 también aparece en el widget (fila **Precio pagado**).
@@ -169,7 +172,7 @@ se copian una vez, y luego en cada cambio de precio.
 ### Cuando cambian sus precios
 
 Deje vacía la **fecha de fin** de su contrato de Gladys mientras sus precios no
-cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, fin de un
+cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, Ecodigo Elec, fin de un
 periodo a precio fijo) o un impuesto (impuesto especial, IVA) que cambia el
 precio con IVA.
 

@@ -213,6 +213,22 @@ el kWh), como los contratos que ofrece Gladys. Con la plantilla **Mi
 contrato** la integración los aplica ella misma; con otra plantilla, cópielos
 en el asistente de contratos de Gladys.
 
+Para un contrato de electricidad, el botón da también estos precios como
+tarifa Gladys (JSON), lista para pegar donde Gladys pide la tarifa de un
+contrato. Un contrato **Mi contrato** no tiene ninguna en Gladys (la
+integración lo calcula): este JSON es el que hay que usar. En Horas valle se
+añade una regla de horas valle con sus horarios (si espaceclient los da).
+
+```json
+{
+  "tariff_version": 1,
+  "components": [
+    { "key": "energy", "kind": "consumption", "rules": [], "fallback": { "price": 0.160164 } },
+    { "key": "subscription", "kind": "fixed", "amount": 15.87, "per": "month" }
+  ]
+}
+```
+
 Si la cuenta de cliente no se puede leer, el botón lo indica: copie entonces
 los precios de la página de su contrato en espaceclient.gazdebordeaux.fr.
 

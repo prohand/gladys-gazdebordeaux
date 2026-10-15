@@ -214,6 +214,22 @@ Verbrauchsteuer im kWh-Preis), wie in den Verträgen von Gladys. Mit der
 Vorlage **Mein Vertrag** wendet die Integration sie selbst an; mit einer
 anderen Vorlage übernehmen Sie sie in den Vertragsassistenten von Gladys.
 
+Für einen Stromvertrag gibt die Schaltfläche diese Preise auch als
+Gladys-Tarif (JSON) an, bereit zum Einfügen, wo Gladys den Tarif eines
+Vertrags verlangt. Ein Vertrag **Mein Vertrag** hat in Gladys keinen (die
+Integration berechnet ihn): dieses JSON ist zu verwenden. Bei HT/NT kommt eine
+Niedertarif-Regel mit Ihren Zeiten hinzu (wenn espaceclient sie angibt).
+
+```json
+{
+  "tariff_version": 1,
+  "components": [
+    { "key": "energy", "kind": "consumption", "rules": [], "fallback": { "price": 0.160164 } },
+    { "key": "subscription", "kind": "fixed", "amount": 15.87, "per": "month" }
+  ]
+}
+```
+
 Kann das Kundenkonto nicht gelesen werden, sagt die Schaltfläche es: Übernehmen
 Sie die Preise dann von der Seite Ihres Vertrags auf
 espaceclient.gazdebordeaux.fr.

@@ -5,6 +5,7 @@
 
 import { ENERGIES, ERROR_KINDS } from './gazdebordeaux/client.js';
 import { localize, pick } from './i18n.js';
+import { tariffOf } from './capabilities/energy.js';
 
 const ERROR_TEXTS = {
   [ERROR_KINDS.NOT_CONFIGURED]: {
@@ -185,7 +186,18 @@ export function contractPricesMessage(pricesList) {
       de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt. Wählen Sie im Gladys-Energievertrag die Vorlage „Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)“: die Integration wendet diese Preise selbst an (kWh und Grundgebühr), auch wenn sie sich ändern: nichts einzugeben. Oder übernehmen Sie sie in eine andere Vorlage.',
       es: 'Precios actuales de su cuenta de cliente, IVA incluido. En el contrato de energía de Gladys, elija la plantilla «Gaz de Bordeaux – Mi contrato (precios de la cuenta)»: la integración aplica ella misma estos precios (kWh y suscripción), incluso cuando cambian: nada que introducir. O cópielos en otra plantilla.',
     });
-    return `${lines.join(' — ')}. ${footer}`;
+    const tariffs = pricesList
+      .map(tariffOf)
+      .filter(Boolean)
+      .map((tariff) =>
+        pick(language, {
+          en: `Gladys tariff (JSON): ${JSON.stringify(tariff)}`,
+          fr: `Tarif Gladys (JSON) : ${JSON.stringify(tariff)}`,
+          de: `Gladys-Tarif (JSON): ${JSON.stringify(tariff)}`,
+          es: `Tarifa Gladys (JSON): ${JSON.stringify(tariff)}`,
+        }),
+      );
+    return [`${lines.join(' — ')}. ${footer}`, ...tariffs].join(' ');
   });
 }
 

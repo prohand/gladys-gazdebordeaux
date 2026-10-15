@@ -10,6 +10,13 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- "My contract prices" button: the prices of an electricity contract are also
+  given as a Gladys tariff (JSON: kWh price, subscription, off-peak hours on
+  Peak/Off-peak), ready to paste into a contract. A "My contract" contract has
+  no tariff in Gladys, the integration prices it.
+
 ## [1.0.6] - 2026-10-15
 
 - Maintenance release, no functional change.

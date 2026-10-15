@@ -206,6 +206,22 @@ kWh), like the contracts Gladys offers. With the **My contract** template the
 integration applies them itself; with another template, copy them into the
 Gladys contract wizard.
 
+For an electricity contract, the button also gives these prices as a Gladys
+tariff (JSON), ready to paste where Gladys asks for the tariff of a contract.
+A **My contract** contract has none in Gladys (the integration prices it):
+this JSON is the one to use. Peak/Off-peak adds an off-peak rule with your
+hours (when espaceclient gives them).
+
+```json
+{
+  "tariff_version": 1,
+  "components": [
+    { "key": "energy", "kind": "consumption", "rules": [], "fallback": { "price": 0.160164 } },
+    { "key": "subscription", "kind": "fixed", "amount": 15.87, "per": "month" }
+  ]
+}
+```
+
 When the customer account cannot be read, the button says so: copy the prices
 from the page of your contract on espaceclient.gazdebordeaux.fr.
 

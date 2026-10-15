@@ -217,6 +217,23 @@ dans le kWh), comme les contrats proposés par Gladys. Avec le modèle **Mon
 contrat**, l'intégration les applique elle-même ; avec un autre modèle,
 recopiez-les dans l'assistant de contrat de Gladys.
 
+Pour un contrat d'électricité, le bouton donne aussi ces prix sous forme de
+tarif Gladys (JSON), prêt à coller là où Gladys demande le tarif d'un
+contrat. Un contrat **Mon contrat** n'en a pas dans Gladys (c'est
+l'intégration qui le chiffre) : c'est ce JSON qu'il faut utiliser. En Heures
+creuses, une règle heures creuses est ajoutée avec vos horaires (si l'espace
+client les donne).
+
+```json
+{
+  "tariff_version": 1,
+  "components": [
+    { "key": "energy", "kind": "consumption", "rules": [], "fallback": { "price": 0.160164 } },
+    { "key": "subscription", "kind": "fixed", "amount": 15.87, "per": "month" }
+  ]
+}
+```
+
 Si l'espace client ne peut pas être lu, le bouton le dit : les prix sont alors
 à recopier depuis la page de votre contrat sur espaceclient.gazdebordeaux.fr.
 

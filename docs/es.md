@@ -195,6 +195,32 @@ en el asistente.
 - Se admite un contrato de electricidad por cuenta de cliente (el primero, si
   hay varios).
 
+### Variante: «Mi contrato (calculado por Gladys)»
+
+La plantilla **Gaz de Bordeaux – Mi contrato (calculado por Gladys)** usa los
+mismos precios, pero es Gladys quien calcula el coste, con una tarifa real
+(visible en el JSON del contrato):
+
+- Cada día, la integración publica el precio del kWh de su cuenta de cliente
+  en un calendario de precios (`gazdebordeaux-kwh-price`), hasta 7 días por
+  adelantado. La tarifa lo lee (`price_from_calendar`).
+- Un cambio de precio se aplica desde el día en que se lee: no hay que crear
+  otro contrato.
+- A introducir: la **suscripción al mes** y un **precio del kWh de reserva**,
+  que da el botón **Mis precios de contrato**.
+
+Límites:
+
+- La suscripción es un número fijo de la tarifa: cuando cambia, corríjala en
+  el contrato.
+- El precio de reserva solo sirve para los días que la integración no ha
+  publicado (parada más de 7 días).
+- Horas valle: un precio medio por día, según la parte de horas valle, incluso
+  con lecturas cada media hora.
+- Una vez creado el contrato, pulse **Mis precios de contrato** (o espere a la
+  próxima actualización): el calendario se remonta entonces al inicio del
+  contrato.
+
 ### Sus precios: el botón «Mis precios de contrato»
 
 Una oferta a precio fijo conserva **el precio del día de la contratación**,

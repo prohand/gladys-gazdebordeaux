@@ -32,7 +32,12 @@ import {
   SCENE_ACTIONS,
 } from './capabilities/scenes.js';
 import { refreshWidgets, WIDGETS } from './capabilities/widget.js';
-import { currentPrice, priceIntervals, recordPriceHistory } from './capabilities/energy.js';
+import {
+  currentPrice,
+  priceIntervals,
+  publishPriceCalendar,
+  recordPriceHistory,
+} from './capabilities/energy.js';
 import { createFileStore } from './store.js';
 
 const logger = createLogger({ name: 'integration' });
@@ -119,6 +124,11 @@ export function createIntegration(
     await publishAll(gladys, account, { store, today: today(), sleep });
     await fireReadingEvents(gladys, account, { store, config });
     await checkPrices();
+    // From the prices kept, even when espaceclient failed: the calendar
+    // stays 7 days ahead.
+    await publishPriceCalendar(gladys, { store, today: today() }).catch((err) =>
+      logger.warn(`Price calendar not published: ${err.message}`),
+    );
     await publishTransports();
     refreshWidgets(gladys);
     return { ok: true };
@@ -207,6 +217,10 @@ export function createIntegration(
       const prices = await account.readPrices(config);
       await loadStore();
       await recordPriceHistory(prices, { store, today: today() });
+      // A contract just created on the calendar template is fed at once.
+      await publishPriceCalendar(gladys, { store, today: today() }).catch((err) =>
+        logger.warn(`Price calendar not published: ${err.message}`),
+      );
       return contractPricesMessage(prices);
     } catch (error) {
       logger.warn(`Contract prices unavailable: ${error.message}`);

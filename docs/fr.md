@@ -199,6 +199,32 @@ modèle dans l'assistant.
 - Un seul contrat d'électricité par espace client est pris en charge (le
   premier, s'il y en a plusieurs).
 
+### Variante : « Mon contrat (calculé par Gladys) »
+
+Le modèle **Gaz de Bordeaux – Mon contrat (calculé par Gladys)** utilise les
+mêmes prix, mais c'est Gladys qui calcule le coût, avec un vrai tarif (visible
+dans le JSON du contrat) :
+
+- Chaque jour, l'intégration publie le prix du kWh de votre espace client dans
+  un calendrier de prix (`gazdebordeaux-kwh-price`), jusqu'à 7 jours à
+  l'avance. Le tarif le lit (`price_from_calendar`).
+- Un changement de prix s'applique dès le jour où il est lu : pas de nouveau
+  contrat à créer.
+- À saisir : l'**abonnement par mois** et un **prix du kWh de secours**,
+  donnés par le bouton **Mes prix de contrat**.
+
+Limites :
+
+- L'abonnement est un nombre fixe du tarif : quand il change, corrigez-le dans
+  le contrat.
+- Le prix de secours ne sert que pour les jours que l'intégration n'a pas
+  publiés (arrêtée plus de 7 jours).
+- Heures creuses : un prix moyen par jour, selon la part d'heures creuses,
+  même avec une consommation à la demi-heure.
+- Une fois le contrat créé, cliquez sur **Mes prix de contrat** (ou attendez
+  le prochain rafraîchissement) : le calendrier remonte alors au début du
+  contrat.
+
 ### Vos prix : le bouton « Mes prix de contrat »
 
 Une offre à prix fixe garde **le prix du jour de la souscription**, une offre

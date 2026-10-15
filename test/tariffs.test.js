@@ -79,6 +79,7 @@ test('a new price changes that offer only, versioned with the grid date', () => 
   assert.equal(versions['novaflex-elec-base'], '2026-11-01');
   assert.equal(versions['novafixe-elec-base'], '2026-10-01', 'same prices, same version');
   assert.ok(versions['espaceclient-elec'], 'the delegated template is kept');
+  assert.ok(versions['espaceclient-elec-rules'], 'the calendar template is kept');
 });
 
 test('a price change is described in the changelog', () => {

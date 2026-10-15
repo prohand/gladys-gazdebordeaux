@@ -12,6 +12,10 @@ the notes of the version's GitHub Release.
 
 ### Added
 
+- Energy contract template "Gaz de Bordeaux – My contract (computed by
+  Gladys)": the kWh price of the customer account is published every day in a
+  price calendar and Gladys computes the cost itself, with a real tariff. The
+  subscription and a fallback kWh price are typed in the contract.
 - "My contract prices" button: the prices of an electricity contract are also
   given as a Gladys tariff (JSON: kWh price, subscription, off-peak hours on
   Peak/Off-peak), ready to paste into a contract. A "My contract" contract has

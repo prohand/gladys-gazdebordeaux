@@ -188,6 +188,30 @@ wizard.
 - One electricity contract per customer account is supported (the first one,
   when there are several).
 
+### Variant: "My contract (computed by Gladys)"
+
+The **Gaz de Bordeaux – My contract (computed by Gladys)** template uses the
+same prices, but Gladys computes the cost itself, with a real tariff (shown in
+the JSON of the contract):
+
+- Every day, the integration publishes the kWh price of your customer account
+  in a price calendar (`gazdebordeaux-kwh-price`), up to 7 days ahead. The
+  tariff reads it (`price_from_calendar`).
+- A price change applies from the day it is read: no new contract to create.
+- To type: the **subscription per month** and a **fallback kWh price**, given
+  by the **My contract prices** button.
+
+Limits:
+
+- The subscription is a fixed number of the tariff: when it changes, update it
+  in the contract.
+- The fallback price only applies to the days the integration has not
+  published (stopped for more than 7 days).
+- Peak/Off-peak: one average price per day, by the share of off-peak hours,
+  even with half-hourly readings.
+- Once the contract is created, click **My contract prices** (or wait for the
+  next refresh): the calendar then goes back to the start of the contract.
+
 ### Your prices: the "My contract prices" button
 
 A fixed-price offer keeps **the price of its subscription date**, an indexed

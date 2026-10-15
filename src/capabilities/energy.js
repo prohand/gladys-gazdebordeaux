@@ -24,12 +24,30 @@
 import { createLogger } from '@gladysassistant/integration-sdk';
 import { ENERGIES } from '../gazdebordeaux/client.js';
 import { parseOffPeakTimes } from '../gazdebordeaux/prices.js';
-import { addDays, firstOfMonth, TIME_ZONE } from '../gazdebordeaux/dates.js';
+import { addDays, daysBetween, firstOfMonth, TIME_ZONE } from '../gazdebordeaux/dates.js';
 
 const logger = createLogger({ name: 'energy' });
 
 /** The key of the delegated template in the manifest (never renamed). */
 export const DELEGATED_TEMPLATE = 'espaceclient-elec';
+
+/**
+ * The key of the `rules` template that reads the kWh price from
+ * PRICE_CALENDAR (never renamed): the core prices it itself.
+ */
+export const CALENDAR_TEMPLATE = 'espaceclient-elec-rules';
+
+/**
+ * The daily price calendar fed with the kWh price of the user's own
+ * contract. Calendar keys usually carry no provider name (any provider may
+ * feed a spot calendar); this one IS the price of a Gaz de Bordeaux account.
+ */
+export const PRICE_CALENDAR = 'gazdebordeaux-kwh-price';
+
+// The window the core accepts: 5 years back (a day of margin), 7 days ahead.
+const CALENDAR_DAYS_BACK = 5 * 365 - 1;
+const CALENDAR_DAYS_AHEAD = 7;
+const CALENDAR_ENTRIES_PER_CALL = 2000;
 
 const HISTORY_KEY = 'price-history';
 const DAY_MINUTES = 24 * 60;
@@ -165,7 +183,7 @@ export async function recordPriceHistory(pricesList, { store, today }) {
 
 // The price history of the electricity contract. Several electricity
 // contracts on one account: the first one (logged).
-function electricityHistory(store) {
+function electricityHistory(store, { quiet = false } = {}) {
   const contracts = Object.entries(store.get(HISTORY_KEY)).filter(
     ([, contract]) => contract.energy === ENERGIES.ELECTRICITY && contract.entries?.length > 0,
   );
@@ -174,7 +192,7 @@ function electricityHistory(store) {
       'The prices of the electricity contract were never read on espaceclient.gazdebordeaux.fr',
     );
   }
-  if (contracts.length > 1) {
+  if (contracts.length > 1 && !quiet) {
     logger.warn(
       `${contracts.length} electricity contracts on espaceclient: the prices of the first one are used`,
     );
@@ -356,4 +374,73 @@ export function currentPrice({ contract }, { store, now }) {
     label: offPeak ? LABELS.offPeak : LABELS.peak,
     next_label: offPeak ? LABELS.peak : LABELS.offPeak,
   };
+}
+
+/**
+ * The kWh price of a whole local day: the base price, or the peak and
+ * off-peak prices weighted by the off-peak share of the day (consumption
+ * assumed even over the day, like a daily reading of the delegated template).
+ * Null when the day cannot be priced (peak/off-peak without its hours).
+ */
+export function dayPrice(entry, day, { inputs, timeZone = TIME_ZONE } = {}) {
+  let hp;
+  try {
+    hp = peakOffPeakOf(entry, inputs);
+  } catch {
+    return null;
+  }
+  if (!hp) {
+    return entry.kwhPrice;
+  }
+  const duration = dayMinutes(day, timeZone);
+  const share = offPeakMinutes(0, duration, hp.slots) / duration;
+  return round(share * hp.offPeak + (1 - share) * hp.peak);
+}
+
+/**
+ * Feed PRICE_CALENDAR, read by the CALENDAR_TEMPLATE contracts: one price per
+ * day from the earliest contract start (or the first price read) to 7 days
+ * ahead, each day with the prices kept for it (a day before the first read
+ * takes the first prices). Upserted: an unchanged day writes nothing, a
+ * changed one makes the core recompute its costs. Nothing before a first
+ * read: the contract then applies its fallback price.
+ * @param {object} gladys
+ * @param {{ store: object, today: string }} options
+ * @returns {Promise<number>} the days published
+ */
+export async function publishPriceCalendar(gladys, { store, today }) {
+  let entries;
+  try {
+    entries = electricityHistory(store, { quiet: true });
+  } catch {
+    return 0;
+  }
+  // An older Gladys lists no contract: the calendar is fed all the same.
+  const contracts = (await gladys.getEnergyContracts().catch(() => [])).filter(
+    (contract) => contract.template_key === CALENDAR_TEMPLATE,
+  );
+  const inputs = contracts.find((contract) => contract.inputs?.off_peak_slots)?.inputs;
+  const oldest = addDays(today, -CALENDAR_DAYS_BACK);
+  let from = [entries[0].from, ...contracts.map((contract) => contract.valid_from)]
+    .filter(Boolean)
+    .sort()[0];
+  if (from < oldest) {
+    from = oldest;
+  }
+  const days = daysBetween(from, today) + CALENDAR_DAYS_AHEAD + 1;
+  const prices = [];
+  for (let i = 0; i < days; i += 1) {
+    const day = addDays(from, i);
+    const price = dayPrice(entryAt(entries, day), day, { inputs });
+    if (price !== null) {
+      prices.push({ date: day, price });
+    }
+  }
+  for (let i = 0; i < prices.length; i += CALENDAR_ENTRIES_PER_CALL) {
+    await gladys.publishEnergyCalendar(
+      PRICE_CALENDAR,
+      prices.slice(i, i + CALENDAR_ENTRIES_PER_CALL),
+    );
+  }
+  return prices.length;
 }

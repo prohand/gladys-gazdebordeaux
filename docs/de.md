@@ -196,6 +196,32 @@ Assistenten aus der Vorlage.
   Ihre Niedertarifzeiten nicht an, tragen Sie sie im Vertrag ein.
 - Ein Stromvertrag pro Kundenkonto wird unterstützt (bei mehreren der erste).
 
+### Variante: „Mein Vertrag (von Gladys berechnet)“
+
+Die Vorlage **Gaz de Bordeaux – Mein Vertrag (von Gladys berechnet)** nutzt
+dieselben Preise, aber Gladys berechnet die Kosten selbst, mit einem echten
+Tarif (im JSON des Vertrags sichtbar):
+
+- Täglich veröffentlicht die Integration den kWh-Preis Ihres Kundenkontos in
+  einem Preiskalender (`gazdebordeaux-kwh-price`), bis zu 7 Tage im Voraus.
+  Der Tarif liest ihn (`price_from_calendar`).
+- Eine Preisänderung gilt ab dem Tag, an dem sie gelesen wird: kein neuer
+  Vertrag nötig.
+- Einzugeben: die **Grundgebühr pro Monat** und ein **Ersatz-kWh-Preis**, die
+  die Schaltfläche **Meine Vertragspreise** nennt.
+
+Grenzen:
+
+- Die Grundgebühr ist eine feste Zahl des Tarifs: ändert sie sich, passen Sie
+  sie im Vertrag an.
+- Der Ersatzpreis gilt nur für Tage, die die Integration nicht veröffentlicht
+  hat (mehr als 7 Tage gestoppt).
+- HT/NT: ein Durchschnittspreis pro Tag nach dem Anteil der
+  Niedertarifstunden, auch mit halbstündlichen Werten.
+- Nach dem Anlegen des Vertrags auf **Meine Vertragspreise** klicken (oder die
+  nächste Aktualisierung abwarten): der Kalender reicht dann bis zum
+  Vertragsbeginn zurück.
+
 ### Ihre Preise: die Schaltfläche „Meine Vertragspreise“
 
 Ein Festpreisangebot behält **den Preis des Abschlusstages**, ein indexiertes

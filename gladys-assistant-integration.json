@@ -1409,35 +1409,17 @@
           "es": "Gaz de Bordeaux – Mi contrato (precios de la cuenta)"
         },
         "description": {
-          "en": "The kWh prices of YOUR electricity contract, read by the integration on espaceclient.gazdebordeaux.fr (\"Votre prix actuel\"): nothing to type but the subscription. Base or Peak/Off-peak, any offer (Ecodigo, NovaFixe…). When your prices change, the new ones apply from the day they are read: no new contract to create.",
-          "fr": "Les prix du kWh de VOTRE contrat d'électricité, lus par l'intégration sur espaceclient.gazdebordeaux.fr (« Votre prix actuel ») : seul l'abonnement est à saisir. Base ou Heures creuses, toute offre (Ecodigo, NovaFixe…). Quand vos prix changent, les nouveaux s'appliquent dès le jour où ils sont lus : pas de nouveau contrat à créer.",
-          "de": "Die kWh-Preise IHRES Stromvertrags, von der Integration auf espaceclient.gazdebordeaux.fr gelesen („Votre prix actuel“): nur die Grundgebühr ist einzugeben. Base oder HT/NT, jedes Angebot (Ecodigo, NovaFixe…). Ändern sich Ihre Preise, gelten die neuen ab dem Tag, an dem sie gelesen werden: kein neuer Vertrag nötig.",
-          "es": "Los precios del kWh de SU contrato de electricidad, leídos por la integración en espaceclient.gazdebordeaux.fr («Votre prix actuel»): solo hay que introducir la suscripción. Base u Horas valle, cualquier oferta (Ecodigo, NovaFixe…). Cuando sus precios cambian, los nuevos se aplican desde el día en que se leen: no hay que crear otro contrato."
+          "en": "The prices of YOUR electricity contract, read by the integration on espaceclient.gazdebordeaux.fr (\"Votre prix actuel\"): kWh and subscription, Base or Peak/Off-peak, any offer (Ecodigo, NovaFixe…). Nothing to type: the integration computes the whole cost. When your prices change, the new ones apply from the day they are read: no new contract to create.",
+          "fr": "Les prix de VOTRE contrat d'électricité, lus par l'intégration sur espaceclient.gazdebordeaux.fr (« Votre prix actuel ») : kWh et abonnement, Base ou Heures creuses, toute offre (Ecodigo, NovaFixe…). Rien à saisir : l'intégration calcule tout le coût. Quand vos prix changent, les nouveaux s'appliquent dès le jour où ils sont lus : pas de nouveau contrat à créer.",
+          "de": "Die Preise IHRES Stromvertrags, von der Integration auf espaceclient.gazdebordeaux.fr gelesen („Votre prix actuel“): kWh und Grundgebühr, Base oder HT/NT, jedes Angebot (Ecodigo, NovaFixe…). Nichts einzugeben: die Integration berechnet die gesamten Kosten. Ändern sich Ihre Preise, gelten die neuen ab dem Tag, an dem sie gelesen werden: kein neuer Vertrag nötig.",
+          "es": "Los precios de SU contrato de electricidad, leídos por la integración en espaceclient.gazdebordeaux.fr («Votre prix actuel»): kWh y suscripción, Base u Horas valle, cualquier oferta (Ecodigo, NovaFixe…). Nada que introducir: la integración calcula todo el coste. Cuando sus precios cambian, los nuevos se aplican desde el día en que se leen: no hay que crear otro contrato."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "delegated",
-        "version": "1",
+        "version": "2",
         "inputs": [
-          {
-            "key": "subscription_per_month",
-            "type": "number",
-            "unit": "EUR/month",
-            "required": true,
-            "label": {
-              "en": "Subscription per month (incl. VAT)",
-              "fr": "Abonnement par mois (TTC)",
-              "de": "Grundgebühr pro Monat (inkl. MwSt.)",
-              "es": "Suscripción al mes (IVA incl.)"
-            },
-            "description": {
-              "en": "Given by the \"My contract prices\" button of the integration.",
-              "fr": "Donné par le bouton « Mes prix de contrat » de l'intégration.",
-              "de": "Von der Schaltfläche „Meine Vertragspreise“ der Integration angezeigt.",
-              "es": "Lo da el botón «Mis precios de contrato» de la integración."
-            }
-          },
           {
             "key": "off_peak_slots",
             "type": "time_intervals",
@@ -1455,19 +1437,7 @@
               "es": "Solo Horas valle, y solo si el botón «Mis precios de contrato» no las muestra: las horas leídas en su cuenta de cliente tienen prioridad."
             }
           }
-        ],
-        "tariff": {
-          "tariff_version": 1,
-          "components": [
-            {
-              "key": "subscription",
-              "kind": "fixed",
-              "label": "Abonnement",
-              "amount": "{{input:subscription_per_month}}",
-              "per": "month"
-            }
-          ]
-        }
+        ]
       }
     ]
   }

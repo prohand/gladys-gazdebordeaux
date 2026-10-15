@@ -132,10 +132,14 @@ There is no public API: the client calls the JSON endpoints the customer website
   website's own code, not from a documented API: keep every read null-safe; their NAMES are
   logged at debug level to check them on a real account.
 - **"My contract" template** (`espaceclient-elec`, `pricing_mode: "delegated"`, hand-written,
-  kept as is by `tariffs.mjs`): only the subscription is a `fixed` component (the core's); the
-  kWh is priced by `onEnergyPrice` / `onEnergyCurrent` (`src/capabilities/energy.js`) from the
-  store `price-history` (espaceclient electricity prices with the day they were first read),
-  never by calling the website: a retry must get the same answer. A day before the first read
+  kept as is by `tariffs.mjs`): no `tariff`, no required input — Gladys gives an integration no
+  way to pre-fill the wizard, so the integration prices EVERY cost: `onEnergyPrice` returns
+  `components: { energy, subscription }`, the subscription spread over the interval's share of
+  the local month's minutes (as the core spreads a monthly `fixed` component). A contract of
+  template version 1 carries `inputs.subscription_per_month` (a core `fixed` component): then
+  the subscription is NOT added. Prices come from the store `price-history` (espaceclient
+  electricity prices with the day they were first read, subscription included), never from
+  the website: a retry must get the same answer. A day before the first read
   takes the first prices; a whole-day interval (local midnight, kWh / max power > 1 h) on
   Peak/Off-peak is split by its off-peak minutes. Prices never read = throw (no cost, the core
   retries), never a zero.

@@ -166,18 +166,17 @@ test('every consumption component has a price for any hour (a fallback)', () => 
   }
 });
 
-test('the "My contract" template only asks the subscription, the integration prices the kWh', () => {
-  // A delegated template carries `fixed` components only: the energy is ours.
+test('the "My contract" template asks nothing: the integration prices every cost', () => {
+  // No tariff: no `fixed` component for the core, the subscription is ours too.
+  assert.equal(delegated.tariff, undefined);
   assert.deepEqual(
-    delegated.tariff.components.map((c) => [c.kind, c.per, c.amount]),
-    [['fixed', 'month', '{{input:subscription_per_month}}']],
+    delegated.inputs.filter((input) => input.required),
+    [],
+    'nothing to type in the wizard',
   );
-  const required = delegated.inputs.filter((input) => input.required).map((input) => input.key);
-  assert.deepEqual(required, ['subscription_per_month']);
-  assert.equal(
-    delegated.inputs.some((input) => input.default !== undefined),
-    false,
-    'no default: the user types the subscription of their own contract',
+  assert.ok(
+    delegated.inputs.every((input) => input.key !== 'subscription_per_month'),
+    'the key stays reserved: contracts of version 1 carry it',
   );
 });
 

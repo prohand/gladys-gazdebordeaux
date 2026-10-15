@@ -10,6 +10,14 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- "My contract" energy contract template: nothing to type any more. The
+  integration now also gives Gladys the subscription read on espaceclient
+  (spread over the month like Gladys does), so the wizard asks for no price.
+  A contract created with the first version keeps its typed subscription,
+  counted once.
+
 ## [1.0.4] - 2026-10-15
 
 ### Added

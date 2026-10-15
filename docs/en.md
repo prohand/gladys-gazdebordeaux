@@ -159,15 +159,24 @@ The **Gaz de Bordeaux – My contract (customer account prices)** template uses
 
 1. In Gladys, **Energy** → the contract of the Gaz de Bordeaux electricity
    meter, pick this template.
-2. Type only the **subscription per month** (given by the **My contract
-   prices** button).
-3. That's all: the integration gives Gladys the kWh price, Base or
-   Peak/Off-peak, for every offer (Ecodigo, NovaFixe, NovaFlex…).
+2. Nothing to type: the integration gives Gladys the whole cost, kWh (Base
+   or Peak/Off-peak) and subscription, for every offer (Ecodigo, NovaFixe,
+   NovaFlex…).
+
+The wizard shows no price and an empty tariff (`"components": []`): that is
+normal, the prices stay on the integration side. The **subscribed power**
+field is optional (information only): the **My contract prices** button gives
+it if you want to fill it in. Gladys gives an integration no way to fill the
+wizard in for you.
 
 When your prices change, the integration sees it at the next refresh: the new
 prices apply from that day, the past days keep the old ones. **No new contract
-to create** for the kWh price (only the subscription, typed by hand, needs an
-update if it changes).
+to create.**
+
+A contract created with the first version of this template (with a
+"Subscription per month" field) keeps working: the subscription typed there
+is counted once. To drop it, update the contract from the template in the
+wizard.
 
 - The integration must be running: Gladys asks it the price. When it is
   stopped, the costs are computed when it is back.

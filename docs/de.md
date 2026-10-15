@@ -156,10 +156,36 @@ den Preisen von Gaz de Bordeaux berechnet. Eine Vorlage pro Angebot und Option:
 | NovaFlex Élec       | an den regulierten Tarif (TRV) gebunden, kWh ohne Steuern 5 % darunter | Base, HT/NT |
 
 **Ihr Angebot ist nicht in der Liste?** (zum Beispiel **Ecodigo Elec** oder ein
-älteres, nicht mehr verkauftes Angebot): Wählen Sie eine Vorlage derselben
-Option (Base oder HT/NT) oder legen Sie den Vertrag in Gladys von Hand an, und
-geben Sie dann die Preise der Schaltfläche **Meine Vertragspreise** (unten)
-ein. Ihr Angebot steht in Ihrem Kundenkonto, Zeile „Votre tarif“.
+älteres, nicht mehr verkauftes Angebot): Wählen Sie die Vorlage **Mein
+Vertrag** (unten), sie passt zu jedem Angebot. Ihr Angebot steht in Ihrem
+Kundenkonto, Zeile „Votre tarif“.
+
+### Am einfachsten: die Vorlage „Mein Vertrag“
+
+Die Vorlage **Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)** nutzt
+**Ihre eigenen Preise**, die die Integration auf
+**espaceclient.gazdebordeaux.fr** liest (Zeile „Votre prix actuel“):
+
+1. Wählen Sie in Gladys unter **Energie** → Vertrag des Gaz de Bordeaux
+   Stromzählers diese Vorlage.
+2. Geben Sie nur die **Grundgebühr pro Monat** ein (von der Schaltfläche
+   **Meine Vertragspreise** angezeigt).
+3. Fertig: Die Integration gibt Gladys den kWh-Preis, Base oder HT/NT, für
+   jedes Angebot (Ecodigo, NovaFixe, NovaFlex…).
+
+Ändern sich Ihre Preise, bemerkt die Integration es bei der nächsten
+Aktualisierung: Die neuen Preise gelten ab diesem Tag, vergangene Tage behalten
+die alten. **Kein neuer Vertrag nötig** für den kWh-Preis (nur die von Hand
+eingegebene Grundgebühr ist anzupassen, wenn sie sich ändert).
+
+- Die Integration muss laufen: Gladys fragt sie nach dem Preis. Ist sie
+  gestoppt, werden die Kosten bei ihrer Rückkehr berechnet.
+- Tage vor dem ersten Lesen der Preise erhalten die ersten gelesenen Preise.
+- **HT/NT** nur mit Tageswerten: Ein Tag wird nach seinem Anteil an
+  Niedertarifstunden (8 von 24) aufgeteilt, eine Schätzung. Mit
+  Halbstundenwerten (Linky) ist die Berechnung genau. Gibt das Kundenkonto
+  Ihre Niedertarifzeiten nicht an, tragen Sie sie im Vertrag ein.
+- Ein Stromvertrag pro Kundenkonto wird unterstützt (bei mehreren der erste).
 
 ### Ihre Preise: die Schaltfläche „Meine Vertragspreise“
 
@@ -175,9 +201,9 @@ an, ohne Berechnung. Beispiel:
 > 0,160164 €/kWh, Grundgebühr 15,87 €/Monat.
 
 Es sind Bruttopreise (inkl. MwSt. und Abgaben: CTA in der Grundgebühr,
-Verbrauchsteuer im kWh-Preis), wie in den Verträgen von Gladys. Übernehmen Sie
-sie in den Vertragsassistenten von Gladys: Gladys erlaubt einer Integration
-nicht, einen Vertrag für Sie auszufüllen.
+Verbrauchsteuer im kWh-Preis), wie in den Verträgen von Gladys. Mit der
+Vorlage **Mein Vertrag** wendet die Integration sie selbst an; mit einer
+anderen Vorlage übernehmen Sie sie in den Vertragsassistenten von Gladys.
 
 Kann das Kundenkonto nicht gelesen werden, sagt die Schaltfläche es: Übernehmen
 Sie die Preise dann von der Seite Ihres Vertrags auf
@@ -185,8 +211,9 @@ espaceclient.gazdebordeaux.fr.
 
 ### Wenn sich Ihre Preise ändern
 
-Lassen Sie das **Enddatum** Ihres Gladys-Vertrags leer, solange sich Ihre
-Preise nicht ändern. Sie können sich unterwegs ändern: neue Preisliste
+Mit der Vorlage **Mein Vertrag** ist für den kWh-Preis nichts zu tun (siehe
+oben). Mit einer anderen Vorlage: Lassen Sie das **Enddatum** Ihres
+Gladys-Vertrags leer, solange sich Ihre Preise nicht ändern. Sie können sich unterwegs ändern: neue Preisliste
 (NovaFlex, Ecodigo Elec, Ende einer Festpreisperiode) oder eine Steuer
 (Verbrauchsteuer, MwSt.), die den Bruttopreis ändert. Gaz de Bordeaux informiert Sie, ebenso der Szenen-Auslöser **Vertragspreise geändert**; die Schaltfläche **Meine Vertragspreise** gibt dann die neuen Preise an.
 
@@ -229,7 +256,8 @@ die Preise von NovaFixe Élec.
 - **HT/NT** braucht einen **halbstündlichen** Verbrauch (ein Linky-Zähler, der
   von einer anderen Integration alle 30 Minuten gelesen wird). Mit dem
   Tagesverbrauch allein kann Gladys nicht wissen, welche kWh im Niedertarif
-  lagen: verwenden Sie diese Vorlage dann nicht.
+  lagen: verwenden Sie diese Vorlage dann nicht (die Vorlage **Mein Vertrag**
+  gibt eine Schätzung).
 - **Gas ist nicht betroffen**: die Energieverträge von Gladys gelten nur für
   Strom. Die Gaskosten bleiben die von Gaz de Bordeaux gelieferten (Funktionen
   „Kosten des gelesenen Tages“, „Monatskosten“…).

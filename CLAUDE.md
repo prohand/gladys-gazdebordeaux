@@ -12,7 +12,8 @@ password and publishes, per contract, the daily consumption, cost and gas volume
 and year totals. Gladys 5.1+ adds scene triggers (new daily reading, high consumption, account
 unreachable, contract prices changed), scene actions (refresh, get a consumption) and a "consumption" widget; Gladys 5.2+
 adds electricity contract templates (three offers × Base, Peak/Off-peak) to the contract wizard,
-declared in the manifest `energy_contracts` (the core rule engine prices them), and the
+declared in the manifest `energy_contracts` (the core rule engine prices them), plus the
+delegated "My contract" template the integration prices itself with the user's own prices; the
 "My contract prices" button gives the current prices of the user's own contracts, read on
 espaceclient.gazdebordeaux.fr.
 
@@ -55,6 +56,7 @@ src/devices/contract.js      the device of a contract: features, dated states, t
 src/devices/index.js         discovery payload, contract lookup, "is it created?"
 src/capabilities/scenes.js   scene triggers fired after a refresh, scene action handlers
 src/capabilities/widget.js   dashboard widget content + its Refresh action
+src/capabilities/energy.js   the delegated "My contract" template: kWh priced from the prices kept
 docs/{en,fr,de,es}.md        user documentation, re-hosted by Gladys (keep the four in sync)
 test/                        node --test, against the SDK fake Gladys + test/helpers/fakeWebsite.js
 .github/scripts/changelog-release.mjs  changelog roll of the Release workflow (tested)
@@ -129,6 +131,14 @@ There is no public API: the client calls the JSON endpoints the customer website
   nothing. The widget matches them to its contract by energy (the two websites share no id). These field names come from the
   website's own code, not from a documented API: keep every read null-safe; their NAMES are
   logged at debug level to check them on a real account.
+- **"My contract" template** (`espaceclient-elec`, `pricing_mode: "delegated"`, hand-written,
+  kept as is by `tariffs.mjs`): only the subscription is a `fixed` component (the core's); the
+  kWh is priced by `onEnergyPrice` / `onEnergyCurrent` (`src/capabilities/energy.js`) from the
+  store `price-history` (espaceclient electricity prices with the day they were first read),
+  never by calling the website: a retry must get the same answer. A day before the first read
+  takes the first prices; a whole-day interval (local midnight, kWh / max power > 1 h) on
+  Peak/Off-peak is split by its off-peak minutes. Prices never read = throw (no cost, the core
+  retries), never a zero.
 - **Widget budget**: 8 components at most (4 tiles + chart + status + button today);
   `test/widget.test.js` runs `validateWidgetContent` in the four languages.
 

@@ -46,9 +46,11 @@ for the endpoints and their quirks.
   reads the PDF). The [Electricity prices](.github/workflows/tariffs.yml) workflow runs it every
   month and opens a pull request when a price changed.
 - **Old prices**: a fixed-price offer keeps the price of its subscription date, which no current grid
-  gives. The integration computes it from the customer's own account (the kWh and their cost, day by
-  day: [`src/gazdebordeaux/prices.js`](./src/gazdebordeaux/prices.js)) and shows it on the
-  **My contract prices** button and in the widget, to copy into the Gladys contract wizard.
+  gives. The integration reads it on the customer's own account
+  ([`src/gazdebordeaux/prices.js`](./src/gazdebordeaux/prices.js)), shows it on the
+  **My contract prices** button and in the widget, and publishes the kWh price every day in a price
+  calendar read by the **My contract** template ([`src/capabilities/energy.js`](./src/capabilities/energy.js)):
+  only the subscription is typed.
 
 ### Readings
 

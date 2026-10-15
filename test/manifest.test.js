@@ -99,7 +99,6 @@ const templates = manifest.energy_contracts?.templates ?? [];
 const ruleTemplates = templates.filter(
   (template) => template.pricing_mode === 'rules' && template.key !== CALENDAR_TEMPLATE,
 );
-const delegated = templates.find((template) => template.key === 'espaceclient-elec');
 const calendarTemplate = templates.find((template) => template.key === CALENDAR_TEMPLATE);
 
 // Every `{{input:<key>}}` placeholder of a tariff.
@@ -123,7 +122,11 @@ test('the contract templates are French electricity offers, the grid ones priced
   const keys = templates.map((template) => template.key);
   assert.equal(new Set(keys).size, keys.length, 'template keys are unique');
   assert.equal(ruleTemplates.length, 6);
-  assert.equal(delegated?.pricing_mode, 'delegated', 'the "My contract" template');
+  assert.equal(
+    templates.find((template) => template.key === 'espaceclient-elec'),
+    undefined,
+    'the delegated template is gone',
+  );
   for (const template of templates) {
     assert.match(template.key, /^[a-z0-9][a-z0-9-]{0,63}$/);
     assert.equal(template.country, 'FR');
@@ -170,21 +173,7 @@ test('every consumption component has a price for any hour (a fallback)', () => 
   }
 });
 
-test('the "My contract" template asks nothing: the integration prices every cost', () => {
-  // No tariff: no `fixed` component for the core, the subscription is ours too.
-  assert.equal(delegated.tariff, undefined);
-  assert.deepEqual(
-    delegated.inputs.filter((input) => input.required),
-    [],
-    'nothing to type in the wizard',
-  );
-  assert.ok(
-    delegated.inputs.every((input) => input.key !== 'subscription_per_month'),
-    'the key stays reserved: contracts of version 1 carry it',
-  );
-});
-
-test('the "computed by Gladys" template reads the kWh price from the calendar it declares', () => {
+test('the "My contract" template reads the kWh price from the calendar it declares', () => {
   assert.equal(calendarTemplate?.pricing_mode, 'rules');
   assert.deepEqual(calendarTemplate.calendars, [PRICE_CALENDAR]);
   assert.deepEqual(calendarTemplate.tariff.calendars, [PRICE_CALENDAR]);
@@ -192,20 +181,21 @@ test('the "computed by Gladys" template reads the kWh price from the calendar it
     { key: PRICE_CALENDAR, granularity: 'day', timezone: 'Europe/Paris', currency: 'EUR' },
   ]);
   const [energy, subscription] = calendarTemplate.tariff.components;
-  assert.deepEqual(
-    energy.rules.map((rule) => rule.price_from_calendar),
-    [PRICE_CALENDAR],
-  );
-  assert.equal(energy.rules[0].when, undefined, 'every day reads the calendar');
-  assert.equal(energy.fallback.price, '{{input:kwh_price}}', 'a day not published');
+  assert.deepEqual(energy.rules, [], 'every day reads the calendar');
+  assert.equal(energy.fallback.price_from_calendar, PRICE_CALENDAR);
   assert.equal(subscription.amount, '{{input:subscription_per_month}}');
   assert.equal(subscription.per, 'month');
   const inputs = calendarTemplate.inputs.map((input) => input.key);
   for (const key of placeholdersOf(calendarTemplate.tariff)) {
     assert.ok(inputs.includes(key), `{{input:${key}}} is not declared`);
   }
-  // Prices of the user's own contract: no grid default to suggest.
+  // Prices of the user's own contract: no grid default to suggest, and only
+  // the subscription to type (a `fixed` amount cannot read a calendar).
   assert.ok(calendarTemplate.inputs.every((input) => input.default === undefined));
+  assert.deepEqual(
+    calendarTemplate.inputs.filter((input) => input.required).map((input) => input.key),
+    ['subscription_per_month'],
+  );
 });
 
 test('the off-peak hours default to 8 hours a day, as Enedis sets them', () => {

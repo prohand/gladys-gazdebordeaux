@@ -155,62 +155,34 @@ tarif".
 
 The **Gaz de Bordeaux – My contract (customer account prices)** template uses
 **your own prices**, the ones the integration reads on
-**espaceclient.gazdebordeaux.fr** (line "Votre prix actuel"):
+**espaceclient.gazdebordeaux.fr** (line "Votre prix actuel"), for every offer
+(Ecodigo, NovaFixe, NovaFlex…):
 
 1. In Gladys, **Energy** → the contract of the Gaz de Bordeaux electricity
    meter, pick this template.
-2. Nothing to type: the integration gives Gladys the whole cost, kWh (Base
-   or Peak/Off-peak) and subscription, for every offer (Ecodigo, NovaFixe,
-   NovaFlex…).
+2. Type the **subscription per month**, given by the **My contract prices**
+   button. That is all: the kWh price is not typed.
+3. Click **My contract prices** (or wait for the next refresh): the
+   integration fills the price calendar from the start of the contract.
 
-The wizard shows no price and an empty tariff (`"components": []`): that is
-normal, the prices stay on the integration side. The **subscribed power**
-field is optional (information only): the **My contract prices** button gives
-it if you want to fill it in. Gladys gives an integration no way to fill the
-wizard in for you.
+How it works: every day, the integration publishes the kWh price of your
+customer account in a price calendar (`gazdebordeaux-kwh-price`), up to 7 days
+ahead, and the tariff of the contract reads it (`price_from_calendar`). Gladys
+computes the cost itself. The JSON of the contract shows this calendar, not
+the number: the prices of each day are in the calendar.
 
-When your prices change, the integration sees it at the next refresh: the new
-prices apply from that day, the past days keep the old ones. **No new contract
-to create.**
-
-A contract created with the first version of this template (with a
-"Subscription per month" field) keeps working: the subscription typed there
-is counted once. To drop it, update the contract from the template in the
-wizard.
-
-- The integration must be running: Gladys asks it the price. When it is
-  stopped, the costs are computed when it is back.
+- A **kWh price change** applies from the day it is read: nothing to do.
+- A **subscription change**: create a new contract (see "When your prices
+  change"). Gladys gives an integration no way to fill in or change a
+  contract.
 - The days before the first read of the prices take the first prices read.
-- **Peak/Off-peak** with daily readings only: a day is split by its share of
-  off-peak hours (8 out of 24), an estimate. With half-hourly readings
-  (Linky), the cost is exact. If the customer account does not give your
-  off-peak hours, type them in the contract.
+- **Peak/Off-peak**: one average price per day, by the share of off-peak
+  hours (8 out of 24), as the readings are daily. If the customer account does
+  not give your off-peak hours, type them in the contract.
+- The calendar is fed 7 days ahead: if the integration is stopped longer, the
+  following days get their price when it is back.
 - One electricity contract per customer account is supported (the first one,
   when there are several).
-
-### Variant: "My contract (computed by Gladys)"
-
-The **Gaz de Bordeaux – My contract (computed by Gladys)** template uses the
-same prices, but Gladys computes the cost itself, with a real tariff (shown in
-the JSON of the contract):
-
-- Every day, the integration publishes the kWh price of your customer account
-  in a price calendar (`gazdebordeaux-kwh-price`), up to 7 days ahead. The
-  tariff reads it (`price_from_calendar`).
-- A price change applies from the day it is read: no new contract to create.
-- To type: the **subscription per month** and a **fallback kWh price**, given
-  by the **My contract prices** button.
-
-Limits:
-
-- The subscription is a fixed number of the tariff: when it changes, update it
-  in the contract.
-- The fallback price only applies to the days the integration has not
-  published (stopped for more than 7 days).
-- Peak/Off-peak: one average price per day, by the share of off-peak hours,
-  even with half-hourly readings.
-- Once the contract is created, click **My contract prices** (or wait for the
-  next refresh): the calendar then goes back to the start of the contract.
 
 ### Your prices: the "My contract prices" button
 
@@ -226,14 +198,14 @@ computation. Example:
 > 0.160164 €/kWh, subscription 15.87 €/month.
 
 These prices include VAT and taxes (CTA in the subscription, excise in the
-kWh), like the contracts Gladys offers. With the **My contract** template the
-integration applies them itself; with another template, copy them into the
-Gladys contract wizard.
+kWh), like the contracts Gladys offers. With the **My contract** template only the
+subscription is typed; with another template, copy them into the Gladys
+contract wizard.
 
 For an electricity contract, the button also gives these prices as a Gladys
 tariff (JSON), ready to paste where Gladys asks for the tariff of a contract.
-A **My contract** contract has none in Gladys (the integration prices it):
-this JSON is the one to use. Peak/Off-peak adds an off-peak rule with your
+Its prices are fixed: for a template
+whose prices you type. Peak/Off-peak adds an off-peak rule with your
 hours (when espaceclient gives them).
 
 ```json
@@ -251,8 +223,8 @@ from the page of your contract on espaceclient.gazdebordeaux.fr.
 
 ### When your prices change
 
-With the **My contract** template, nothing to do for the kWh price (see
-above). With another template: leave the **end date** of your Gladys contract
+With the **My contract** template, the kWh price follows by itself (see
+above): only a subscription change needs the steps below. With any template: leave the **end date** of your Gladys contract
 empty while your prices do not change. They may change along the way: a new grid (NovaFlex, Ecodigo Elec, end
 of a fixed-price period), or a tax (excise, VAT) that changes the price incl.
 VAT. Gaz de Bordeaux tells you, and so does the **Contract prices changed** scene trigger; the **My contract prices** button then gives the new prices.

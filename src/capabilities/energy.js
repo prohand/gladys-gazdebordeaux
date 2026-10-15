@@ -1,35 +1,25 @@
 // -----------------------------------------------------------------------------
-// The "My Gaz de Bordeaux contract" energy contract template (manifest
-// `energy_contracts`, `pricing_mode: "delegated"`): Gladys asks the
-// integration the cost of the kWh, and the integration answers with the
-// prices of the user's own contract, as espaceclient.gazdebordeaux.fr gives
-// them. The integration prices EVERY cost, the subscription included (the
-// template has no `fixed` component): Gladys gives an integration no way to
-// fill a contract in, so the user types nothing. A price change needs no new
-// contract: every day is priced with the prices read for that day.
-//
-// The subscription is spread like the core spreads a monthly `fixed`
-// component: the share of the month's minutes the interval covers.
+// The "My contract" energy contract template (manifest `energy_contracts`,
+// `espaceclient-elec-rules`, `pricing_mode: "rules"`): the core rule engine
+// prices it, the kWh price read in the daily price calendar the integration
+// feeds with the prices of the user's own contract, as
+// espaceclient.gazdebordeaux.fr gives them. Only the subscription is typed:
+// a `fixed` amount cannot come from a calendar.
 //
 // The prices of each espaceclient contract are kept in the store with the day
-// they were first read (`price-history`): a retry of the core must get the
-// same answer, and a past day keeps the prices it had. A day before the first
-// read takes the first prices read (the best known).
+// they were first read (`price-history`): a past day keeps the prices it had,
+// a day before the first read takes the first prices read (the best known).
 //
-// Peak/off-peak with daily readings: a day is split by the share of its hours
-// in off-peak, as if the consumption were even over the day (an estimate; a
-// half-hourly meter is priced exactly).
+// Peak/off-peak: a day is priced by the share of its hours in off-peak, as if
+// the consumption were even over the day (the readings are daily).
 // -----------------------------------------------------------------------------
 
 import { createLogger } from '@gladysassistant/integration-sdk';
 import { ENERGIES } from '../gazdebordeaux/client.js';
 import { parseOffPeakTimes } from '../gazdebordeaux/prices.js';
-import { addDays, daysBetween, firstOfMonth, TIME_ZONE } from '../gazdebordeaux/dates.js';
+import { addDays, daysBetween, TIME_ZONE } from '../gazdebordeaux/dates.js';
 
 const logger = createLogger({ name: 'energy' });
-
-/** The key of the delegated template in the manifest (never renamed). */
-export const DELEGATED_TEMPLATE = 'espaceclient-elec';
 
 /**
  * The key of the `rules` template that reads the kWh price from
@@ -51,13 +41,10 @@ const CALENDAR_ENTRIES_PER_CALL = 2000;
 
 const HISTORY_KEY = 'price-history';
 const DAY_MINUTES = 24 * 60;
-const HALF_HOUR_MINUTES = 30;
 
 const LABELS = {
-  base: 'Base',
   peak: 'Heures pleines',
   offPeak: 'Heures creuses',
-  mixed: 'Heures pleines / creuses',
 };
 
 const PRICED_FIELDS = [
@@ -113,13 +100,9 @@ function localMidnight(day, timeZone) {
 const minutesBetween = (from, to, timeZone) =>
   Math.round((localMidnight(to, timeZone) - localMidnight(from, timeZone)) / 60_000);
 
-// The minutes of the local day and of the local month of `day` (DST included).
+// The minutes of the local day `day` (DST included).
 function dayMinutes(day, timeZone) {
   return minutesBetween(day, addDays(day, 1), timeZone);
-}
-function monthMinutes(day, timeZone) {
-  const first = firstOfMonth(day);
-  return minutesBetween(first, firstOfMonth(addDays(first, 32)), timeZone);
 }
 
 const minuteOf = (time) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
@@ -181,23 +164,18 @@ export async function recordPriceHistory(pricesList, { store, today }) {
   }
 }
 
-// The price history of the electricity contract. Several electricity
-// contracts on one account: the first one (logged).
-function electricityHistory(store, { quiet = false } = {}) {
+// The price history of the electricity contract, null before a first read.
+// Several electricity contracts on one account: the first one.
+function electricityHistory(store) {
   const contracts = Object.entries(store.get(HISTORY_KEY)).filter(
     ([, contract]) => contract.energy === ENERGIES.ELECTRICITY && contract.entries?.length > 0,
   );
-  if (contracts.length === 0) {
-    throw new Error(
-      'The prices of the electricity contract were never read on espaceclient.gazdebordeaux.fr',
-    );
-  }
-  if (contracts.length > 1 && !quiet) {
-    logger.warn(
+  if (contracts.length > 1) {
+    logger.debug(
       `${contracts.length} electricity contracts on espaceclient: the prices of the first one are used`,
     );
   }
-  return contracts.sort(([a], [b]) => a.localeCompare(b))[0][1].entries;
+  return contracts.sort(([a], [b]) => a.localeCompare(b))[0]?.[1].entries ?? null;
 }
 
 // The prices that applied on `day`: the last entry from that day or before,
@@ -222,24 +200,10 @@ function peakOffPeakOf(entry, inputs) {
 
 const round = (value) => Math.round(value * 1e6) / 1e6;
 
-// The monthly subscription of an entry; an entry read before the subscription
-// was kept takes the first one known. Null when espaceclient never gave it.
-function subscriptionOf(entry, entries) {
-  return (
-    entry.subscriptionPerMonth ??
-    entries.find((e) => e.subscriptionPerMonth != null)?.subscriptionPerMonth ??
-    null
-  );
-}
-
-// A contract made from the first version of the template carries the
-// subscription as an input, which the core adds itself: never twice.
-const coreAddsSubscription = (contract) => contract?.inputs?.subscription_per_month != null;
-
 /**
  * The prices read on espaceclient as a Gladys tariff (the `rules` grammar of
  * the contract templates, values as the website gives them): what the user
- * pastes into a contract, as the core keeps no tariff for a delegated one.
+ * pastes into a contract of another template (fixed prices).
  * Null for gas (Gladys contracts are electricity only) and when a price, or
  * the off-peak hours of a peak/off-peak contract, is missing.
  * @param {ReturnType<import('../gazdebordeaux/prices.js').currentPrices>} prices
@@ -284,102 +248,9 @@ export function tariffOf(prices) {
 }
 
 /**
- * The cost of every interval of an `energy-contract.price` request: the kWh
- * and the share of the subscription (`components`: `energy`, `subscription`).
- * An interval starting at local midnight that carries a whole day (its kWh
- * over its peak power is more than an hour: the core derives that power from
- * the kWh and the length) is a day; any other a half-hour.
- * @param {import('@gladysassistant/integration-sdk').EnergyPriceRequest} request
- * @param {{ store: object }} options
- */
-export function priceIntervals({ contract, intervals }, { store }) {
-  const entries = electricityHistory(store);
-  const timeZone = contract?.timezone || TIME_ZONE;
-  const withSubscription = !coreAddsSubscription(contract);
-  let subscriptionMissing = false;
-  const costs = intervals.map(({ starts_at, kwh, max_power_kw }) => {
-    const { day, minute } = localTime(new Date(starts_at), timeZone);
-    const entry = entryAt(entries, day);
-    const wholeDay = minute === 0 && (!(max_power_kw > 0) || kwh / max_power_kw > 1);
-    const duration = wholeDay ? dayMinutes(day, timeZone) : HALF_HOUR_MINUTES;
-
-    let energy;
-    let label;
-    const hp = peakOffPeakOf(entry, contract?.inputs);
-    if (hp) {
-      const share = offPeakMinutes(minute, duration, hp.slots) / duration;
-      label = share === 1 ? LABELS.offPeak : share === 0 ? LABELS.peak : LABELS.mixed;
-      energy = kwh * (share * hp.offPeak + (1 - share) * hp.peak);
-    } else {
-      if (entry.kwhPrice === null) {
-        throw new Error(`No kWh price for ${day}`);
-      }
-      label = LABELS.base;
-      energy = kwh * entry.kwhPrice;
-    }
-
-    const components = { energy: round(energy) };
-    if (withSubscription) {
-      const perMonth = subscriptionOf(entry, entries);
-      if (perMonth === null) {
-        subscriptionMissing = true;
-      } else {
-        components.subscription = round((perMonth * duration) / monthMinutes(day, timeZone));
-      }
-    }
-    const cost = round(Object.values(components).reduce((sum, value) => sum + value, 0));
-    return { starts_at, cost, components, label };
-  });
-  if (subscriptionMissing) {
-    logger.warn('Subscription not given by espaceclient: only the kWh are priced');
-  }
-  return costs;
-}
-
-/**
- * The price of the kWh now, and when it changes (`energy-contract.current`).
- * @param {import('@gladysassistant/integration-sdk').EnergyCurrentRequest} request
- * @param {{ store: object, now: Date }} options
- */
-export function currentPrice({ contract }, { store, now }) {
-  const entries = electricityHistory(store);
-  const timeZone = contract?.timezone || TIME_ZONE;
-  const { day, minute } = localTime(now, timeZone);
-  const entry = entryAt(entries, day);
-  const hp = peakOffPeakOf(entry, contract?.inputs);
-  if (!hp) {
-    return { price: entry.kwhPrice, valid_until: null, label: LABELS.base };
-  }
-  const offPeak = isOffPeak(minute, hp.slots);
-  let minutes = 1;
-  while (
-    minutes < DAY_MINUTES &&
-    isOffPeak((minute + minutes) % DAY_MINUTES, hp.slots) === offPeak
-  ) {
-    minutes += 1;
-  }
-  if (minutes === DAY_MINUTES) {
-    // Off-peak all day long (or never): no change ahead.
-    return {
-      price: offPeak ? hp.offPeak : hp.peak,
-      valid_until: null,
-      label: offPeak ? LABELS.offPeak : LABELS.peak,
-    };
-  }
-  const startOfMinute = Math.floor(now.getTime() / 60_000) * 60_000;
-  return {
-    price: offPeak ? hp.offPeak : hp.peak,
-    valid_until: new Date(startOfMinute + minutes * 60_000).toISOString(),
-    next_price: offPeak ? hp.peak : hp.offPeak,
-    label: offPeak ? LABELS.offPeak : LABELS.peak,
-    next_label: offPeak ? LABELS.peak : LABELS.offPeak,
-  };
-}
-
-/**
  * The kWh price of a whole local day: the base price, or the peak and
  * off-peak prices weighted by the off-peak share of the day (consumption
- * assumed even over the day, like a daily reading of the delegated template).
+ * assumed even over the day: the readings are daily).
  * Null when the day cannot be priced (peak/off-peak without its hours).
  */
 export function dayPrice(entry, day, { inputs, timeZone = TIME_ZONE } = {}) {
@@ -403,16 +274,14 @@ export function dayPrice(entry, day, { inputs, timeZone = TIME_ZONE } = {}) {
  * ahead, each day with the prices kept for it (a day before the first read
  * takes the first prices). Upserted: an unchanged day writes nothing, a
  * changed one makes the core recompute its costs. Nothing before a first
- * read: the contract then applies its fallback price.
+ * read: the contract prices nothing until the first one.
  * @param {object} gladys
  * @param {{ store: object, today: string }} options
  * @returns {Promise<number>} the days published
  */
 export async function publishPriceCalendar(gladys, { store, today }) {
-  let entries;
-  try {
-    entries = electricityHistory(store, { quiet: true });
-  } catch {
+  const entries = electricityHistory(store);
+  if (!entries) {
     return 0;
   }
   // An older Gladys lists no contract: the calendar is fed all the same.

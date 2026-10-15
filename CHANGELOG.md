@@ -10,6 +10,19 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- "My contract" energy contract template: the one computed by Gladys, now
+  named "Gaz de Bordeaux – My contract (customer account prices)". The kWh
+  price is no longer typed (no fallback price): it comes every day from the
+  price calendar the integration feeds. Only the subscription is typed.
+
+### Removed
+
+- The "My contract" template priced by the integration (delegated). Its
+  contracts get no new cost: create a contract with the "My contract"
+  template above, from the day after the end of the old one.
+
 ## [1.0.7] - 2026-10-15
 
 ### Added

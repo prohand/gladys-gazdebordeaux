@@ -195,11 +195,15 @@ contrat** (onglet **Configuration**) lit vos prix actuels sur
 sans calcul. Exemple :
 
 > Électricité, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA) :
-> 0,160164 €/kWh, abonnement 15,87 €/mois.
+> 0.160164 €/kWh, abonnement 15.87 €/mois.
 
 Ce sont des prix **TTC** (taxes comprises : CTA dans l'abonnement, accise
 dans le kWh), comme les contrats proposés par Gladys. Recopiez-les dans l'assistant de
-contrat de Gladys (modèle **Mon contrat**, ou celui de votre offre).
+contrat de Gladys (modèle **Mon contrat**, ou celui de votre offre). Saisissez-les
+avec un **point** (15.87), comme le bouton les écrit : une virgule collée peut
+être supprimée par le champ (15,87 devient 1587, soit un abonnement d'environ
+51 € par jour sur le graphique d'énergie). Si c'est arrivé, corrigez le prix
+dans le contrat : c'est une faute de frappe, pas un changement de prix.
 
 Pour un contrat d'électricité, le bouton donne aussi ces prix sous forme de
 tarif Gladys (JSON), prêt à coller là où Gladys demande le tarif d'un

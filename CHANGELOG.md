@@ -10,6 +10,14 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Fixed
+
+- "My contract prices" button: the prices are written with a decimal point in
+  every language (0.160164 €/kWh, 15.87 €/month), as the number fields of the
+  Gladys contract wizard take them. A "15,87" pasted there could become 1587: a
+  subscription of about 51 € a day on the energy chart. If your chart shows
+  that, correct the subscription in your contract.
+
 ## [1.0.9] - 2026-10-15
 
 ### Changed

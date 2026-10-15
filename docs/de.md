@@ -152,6 +152,10 @@ Niedertarifzeiten ab. Beispiel:
 > Strom (6 kVA): 0,18373 €/kWh, Grundgebühr 15,87 €/Monat. Berechnet aus den
 > letzten 30 Tagen Ihres Kontos.
 
+Es sind Bruttopreise (inkl. MwSt.), wie bei Gaz de Bordeaux und in den
+Verträgen von Gladys. Die Website rundet jeden Tag auf den Cent: Die berechnete
+Grundgebühr kann um einen Cent von der Ihres Kundenkontos abweichen.
+
 Übernehmen Sie diese Werte in den Vertragsassistenten von Gladys. Der bezahlte
 Preis wird auch im Widget angezeigt (Zeile **Bezahlter Preis**).
 

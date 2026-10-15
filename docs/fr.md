@@ -154,6 +154,10 @@ la puissance et les heures creuses. Exemple :
 > Électricité (6 kVA) : 0,18373 €/kWh, abonnement 15,87 €/mois. Calculé sur
 > les 30 derniers jours de votre compte.
 
+Ce sont des prix **TTC**, comme ceux affichés par Gaz de Bordeaux et comme
+les contrats proposés par Gladys. Le site arrondit chaque jour au centime :
+l'abonnement calculé peut différer d'un centime de celui de votre espace client.
+
 Recopiez ces valeurs dans l'assistant de contrat de Gladys. Le prix payé est
 aussi affiché dans le widget (ligne **Prix payé**).
 

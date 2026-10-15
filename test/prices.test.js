@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { contractPrices, parseOffPeakTimes } from '../src/gazdebordeaux/prices.js';
+import { addDays } from '../src/gazdebordeaux/dates.js';
 import { parseDaily } from '../src/gazdebordeaux/readings.js';
 import { contractPricesLine, contractPricesMessage } from '../src/messages.js';
 import {
@@ -41,10 +42,36 @@ test('a peak/off-peak contract gets both prices and its off-peak hours', () => {
   assert.deepEqual(prices.offPeakSlots, [['22:00', '06:00']]);
 });
 
-test('a day with a pro-rata or a rounding does not move the price (median)', () => {
+test('a day with a pro-rata does not move the price', () => {
   const days = makeDays(10, { gas: false });
   days[3].consumptionPrice *= 3;
   assert.equal(contractPrices(snapshotOf(BASE, days)).kwhPrice, KWH_PRICE);
+});
+
+// A real account (October 2026): 0.160164 €/kWh and 15.87 €/month, every
+// daily amount rounded to the cent, the subscription split over the days of
+// each month (0.53 € in September, 0.51 € in October). The median of the
+// daily ratios and "share × 365 / 12" gave 0.1606 and 16.12.
+test('amounts rounded to the cent still give the prices of the contract', () => {
+  const cents = (value) => Math.round(value * 100) / 100;
+  const days = Array.from({ length: 28 }, (_, i) => {
+    const date = addDays('2026-09-16', i);
+    const kwh = 4 + ((i * 7) % 9) + 0.3;
+    const share = cents(15.87 / (date.startsWith('2026-09') ? 30 : 31));
+    const consumptionPrice = cents(kwh * 0.160164);
+    return { date, kwh, consumptionPrice, contractPrice: share, price: consumptionPrice + share };
+  });
+  const prices = contractPrices(snapshotOf(BASE, days));
+  assert.ok(Math.abs(prices.kwhPrice - 0.160164) <= 0.00001, `kWh price ${prices.kwhPrice}`);
+  assert.ok(
+    Math.abs(prices.subscriptionPerMonth - 15.87) <= 0.02,
+    `subscription ${prices.subscriptionPerMonth}`,
+  );
+});
+
+test('a subscription spread evenly over the year comes back as its monthly amount', () => {
+  const days = makeDays(40, { gas: false }).map((day) => ({ ...day, contractPrice: 0.52 }));
+  assert.equal(contractPrices(snapshotOf(BASE, days)).subscriptionPerMonth, 15.82);
 });
 
 test('without the cost detail (gas, old days), there is no price to give', () => {

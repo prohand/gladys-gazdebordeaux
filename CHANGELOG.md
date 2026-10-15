@@ -32,8 +32,9 @@ the notes of the version's GitHub Release.
   Peak/Off-peak, with the official Gaz de Bordeaux prices of 1 October 2026
   as defaults.
 - "My contract prices" button and a "Price paid" widget row: the kWh price,
-  subscription, power and off-peak hours of your own contract, computed from
-  the customer account (a fixed price keeps its subscription-date price).
+  subscription, power and off-peak hours of your own contract, incl. VAT,
+  computed from the customer account (a fixed price keeps its
+  subscription-date price) within a cent of the daily amounts' rounding.
 - Monthly "Electricity prices" workflow: downloads the official price grids
   and opens a pull request when a price changes.
 - "Test the connection" and "Refresh now" buttons in the configuration screen.

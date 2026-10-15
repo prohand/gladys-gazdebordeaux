@@ -150,6 +150,10 @@ valle. Ejemplo:
 > Electricidad (6 kVA): 0,18373 €/kWh, suscripción 15,87 €/mes. Calculado sobre
 > los últimos 30 días de su cuenta.
 
+Son precios con IVA, como los que muestra Gaz de Bordeaux y los contratos
+que ofrece Gladys. El sitio redondea cada día al céntimo: la suscripción
+calculada puede diferir en un céntimo de la de su cuenta de cliente.
+
 Copie estos valores en el asistente de contratos de Gladys. El precio pagado
 también aparece en el widget (fila **Precio pagado**).
 

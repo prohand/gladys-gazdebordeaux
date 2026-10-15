@@ -417,7 +417,8 @@ async function downloadGrids(directory) {
       await page.keyboard.press('Tab');
       await page.waitForFunction(
         () => {
-          const city = document.querySelector(
+          // Runs in the browser page, where `document` exists.
+          const city = globalThis.document.querySelector(
             'form.webform-submission-tariff-simulation-form select[name=city]',
           );
           return city && !city.disabled && city.options.length > 1;

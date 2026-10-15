@@ -144,6 +144,10 @@ apart), the monthly subscription, the power and the off-peak hours. Example:
 > Electricity (6 kVA): 0.18373 €/kWh, subscription 15.87 €/month. Computed from
 > the last 30 days of your account.
 
+These prices include VAT, like the ones Gaz de Bordeaux shows and the
+contracts Gladys offers. The website rounds each day to the cent: the computed
+subscription may differ by one cent from the one of your customer account.
+
 Copy these values into the Gladys contract wizard. The price charged is also
 shown in the widget (**Price paid** row).
 

@@ -47,10 +47,9 @@ for the endpoints and their quirks.
   month and opens a pull request when a price changed.
 - **Old prices**: a fixed-price offer keeps the price of its subscription date, which no current grid
   gives. The integration reads it on the customer's own account
-  ([`src/gazdebordeaux/prices.js`](./src/gazdebordeaux/prices.js)), shows it on the
-  **My contract prices** button and in the widget, and publishes the kWh price every day in a price
-  calendar read by the **My contract** template ([`src/capabilities/energy.js`](./src/capabilities/energy.js)):
-  only the subscription is typed.
+  ([`src/gazdebordeaux/prices.js`](./src/gazdebordeaux/prices.js)) and shows it on the
+  **My contract prices** button and in the widget, to type into the **My contract** templates (Base,
+  Peak/Off-peak) of the Gladys contract wizard.
 
 ### Readings
 

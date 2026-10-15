@@ -10,6 +10,20 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- "My contract" energy contract templates: the prices are typed in the
+  contract again ("kWh price", subscription), as with the other templates, so
+  they show in the contract settings and in its JSON. Two templates: Base and
+  Peak/Off-peak. The "My contract prices" button gives the values to type; a
+  price change means a new contract ("Contract prices changed" scene
+  trigger). A contract created with the previous version reads a price
+  calendar that is no longer fed: create a new one.
+
+### Removed
+
+- The daily price calendar of the "My contract" template.
+
 ## [1.0.8] - 2026-10-15
 
 ### Changed

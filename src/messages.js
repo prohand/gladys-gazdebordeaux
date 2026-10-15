@@ -181,10 +181,10 @@ export function contractPricesMessage(pricesList) {
   return localize((language) => {
     const lines = pricesList.map((prices) => contractPricesLine(language, prices));
     const footer = pick(language, {
-      en: 'Current prices of your customer account, incl. VAT. In the Gladys energy contract, choose the template "Gaz de Bordeaux – My contract (customer account prices)" and type the subscription: the integration publishes the kWh price every day, Gladys computes the cost. Or copy them into another template.',
-      fr: "Prix actuels de votre espace client, TTC. Dans le contrat d'énergie Gladys, choisissez le modèle « Gaz de Bordeaux – Mon contrat (prix de l'espace client) » et saisissez l'abonnement : l'intégration publie chaque jour le prix du kWh, Gladys calcule le coût. Ou recopiez-les dans un autre modèle.",
-      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt. Wählen Sie im Gladys-Energievertrag die Vorlage „Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)“ und geben Sie die Grundgebühr ein: die Integration veröffentlicht täglich den kWh-Preis, Gladys berechnet die Kosten. Oder übernehmen Sie sie in eine andere Vorlage.',
-      es: 'Precios actuales de su cuenta de cliente, IVA incluido. En el contrato de energía de Gladys, elija la plantilla «Gaz de Bordeaux – Mi contrato (precios de la cuenta)» e introduzca la suscripción: la integración publica cada día el precio del kWh, Gladys calcula el coste. O cópielos en otra plantilla.',
+      en: 'Current prices of your customer account, incl. VAT: type them in the Gladys energy contract, template "Gaz de Bordeaux – My contract" (Base or Peak/Off-peak). When they change, end that contract and create a new one with the new prices.',
+      fr: "Prix actuels de votre espace client, TTC : saisissez-les dans le contrat d'énergie Gladys, modèle « Gaz de Bordeaux – Mon contrat » (Base ou Heures creuses). Quand ils changent, terminez ce contrat et créez-en un nouveau avec les nouveaux prix.",
+      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt.: geben Sie sie im Gladys-Energievertrag ein, Vorlage „Gaz de Bordeaux – Mein Vertrag“ (Base oder HT/NT). Ändern sie sich, beenden Sie diesen Vertrag und legen Sie einen neuen mit den neuen Preisen an.',
+      es: 'Precios actuales de su cuenta de cliente, IVA incluido: introdúzcalos en el contrato de energía de Gladys, plantilla «Gaz de Bordeaux – Mi contrato» (Base u Horas valle). Cuando cambien, termine ese contrato y cree otro con los nuevos precios.',
     });
     const tariffs = pricesList
       .map(tariffOf)

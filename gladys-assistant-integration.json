@@ -1403,24 +1403,41 @@
       {
         "key": "espaceclient-elec-rules",
         "name": {
-          "en": "Gaz de Bordeaux – My contract (customer account prices)",
-          "fr": "Gaz de Bordeaux – Mon contrat (prix de l'espace client)",
-          "de": "Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)",
-          "es": "Gaz de Bordeaux – Mi contrato (precios de la cuenta)"
+          "en": "Gaz de Bordeaux – My contract – Base",
+          "fr": "Gaz de Bordeaux – Mon contrat – Base",
+          "de": "Gaz de Bordeaux – Mein Vertrag – Base",
+          "es": "Gaz de Bordeaux – Mi contrato – Base"
         },
         "description": {
-          "en": "The kWh price of YOUR electricity contract (\"Votre prix actuel\" of espaceclient.gazdebordeaux.fr), any offer, Base or Peak/Off-peak: the integration publishes it every day in a price calendar, Gladys computes the cost. Only the subscription is typed (\"My contract prices\" button gives it). A kWh price change applies from the day it is read; a subscription change is typed in the contract. Peak/Off-peak: an average of the day by its off-peak hours.",
-          "fr": "Le prix du kWh de VOTRE contrat d'électricité (« Votre prix actuel » de espaceclient.gazdebordeaux.fr), toute offre, Base ou Heures creuses : l'intégration le publie chaque jour dans un calendrier de prix, Gladys calcule le coût. Seul l'abonnement est à saisir (le bouton « Mes prix de contrat » le donne). Un changement du prix du kWh s'applique dès sa lecture ; un changement d'abonnement se saisit dans le contrat. Heures creuses : une moyenne du jour.",
-          "de": "Der kWh-Preis IHRES Stromvertrags („Votre prix actuel“ auf espaceclient.gazdebordeaux.fr), jedes Angebot, Base oder HT/NT: die Integration veröffentlicht ihn täglich in einem Preiskalender, Gladys berechnet die Kosten. Nur die Grundgebühr ist einzugeben (Schaltfläche „Meine Vertragspreise“). Eine kWh-Preisänderung gilt ab dem Lesetag; eine neue Grundgebühr wird im Vertrag eingegeben. HT/NT: ein Tagesmittel.",
-          "es": "El precio del kWh de SU contrato de electricidad («Votre prix actuel» de espaceclient.gazdebordeaux.fr), cualquier oferta, Base u Horas valle: la integración lo publica cada día en un calendario de precios, Gladys calcula el coste. Solo se introduce la suscripción (la da el botón «Mis precios de contrato»). Un cambio del precio del kWh se aplica desde su lectura; un cambio de suscripción se introduce en el contrato. Horas valle: una media del día."
+          "en": "The prices of YOUR electricity contract, any offer (Ecodigo, NovaFixe, NovaFlex…), Base option: type the prices the \"My contract prices\" button gives (\"Votre prix actuel\" of espaceclient.gazdebordeaux.fr). When they change (\"Contract prices changed\" scene trigger), end this contract and create a new one with the new prices.",
+          "fr": "Les prix de VOTRE contrat d'électricité, toute offre (Ecodigo, NovaFixe, NovaFlex…), option Base : saisissez les prix donnés par le bouton « Mes prix de contrat » (« Votre prix actuel » de espaceclient.gazdebordeaux.fr). Quand ils changent (déclencheur « Prix du contrat modifiés »), terminez ce contrat et créez-en un nouveau avec les nouveaux prix.",
+          "de": "Die Preise IHRES Stromvertrags, jedes Angebot (Ecodigo, NovaFixe, NovaFlex…), Option Base: geben Sie die Preise der Schaltfläche „Meine Vertragspreise“ ein („Votre prix actuel“ auf espaceclient.gazdebordeaux.fr). Ändern sie sich (Auslöser „Vertragspreise geändert“), beenden Sie diesen Vertrag und legen Sie einen neuen mit den neuen Preisen an.",
+          "es": "Los precios de SU contrato de electricidad, cualquier oferta (Ecodigo, NovaFixe, NovaFlex…), opción Base: introduzca los precios que da el botón «Mis precios de contrato» («Votre prix actuel» de espaceclient.gazdebordeaux.fr). Cuando cambian (disparador «Precios del contrato cambiados»), termine este contrato y cree otro con los nuevos precios."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "rules",
-        "version": "2",
-        "calendars": ["gazdebordeaux-kwh-price"],
+        "version": "3",
         "inputs": [
+          {
+            "key": "kwh_price",
+            "type": "number",
+            "unit": "EUR/kWh",
+            "required": true,
+            "label": {
+              "en": "kWh price (incl. VAT)",
+              "fr": "Prix du kWh (TTC)",
+              "de": "kWh-Preis (inkl. MwSt.)",
+              "es": "Precio del kWh (IVA incl.)"
+            },
+            "description": {
+              "en": "Given by the \"My contract prices\" button (\"Votre prix actuel\" of your customer account).",
+              "fr": "Donné par le bouton « Mes prix de contrat » (« Votre prix actuel » de votre espace client).",
+              "de": "Nennt die Schaltfläche „Meine Vertragspreise“ („Votre prix actuel“ Ihres Kundenkontos).",
+              "es": "Lo da el botón «Mis precios de contrato» («Votre prix actuel» de su cuenta de cliente)."
+            }
+          },
           {
             "key": "subscription_per_month",
             "type": "number",
@@ -1433,41 +1450,22 @@
               "es": "Suscripción al mes (IVA incl.)"
             },
             "description": {
-              "en": "Given by the \"My contract prices\" button.",
-              "fr": "Donné par le bouton « Mes prix de contrat ».",
-              "de": "Nennt die Schaltfläche „Meine Vertragspreise“.",
-              "es": "Lo da el botón «Mis precios de contrato»."
-            }
-          },
-          {
-            "key": "off_peak_slots",
-            "type": "time_intervals",
-            "required": false,
-            "label": {
-              "en": "Off-peak hours (if not read)",
-              "fr": "Heures creuses (si non lues)",
-              "de": "Niedertarifzeiten (falls nicht gelesen)",
-              "es": "Horas valle (si no se leen)"
-            },
-            "description": {
-              "en": "Peak/Off-peak only, and only if the \"My contract prices\" button does not show them: the hours read on your customer account come first.",
-              "fr": "Heures creuses seulement, et seulement si le bouton « Mes prix de contrat » ne les affiche pas : les heures lues sur votre espace client passent avant.",
-              "de": "Nur HT/NT, und nur wenn die Schaltfläche „Meine Vertragspreise“ sie nicht anzeigt: die im Kundenkonto gelesenen Zeiten haben Vorrang.",
-              "es": "Solo Horas valle, y solo si el botón «Mis precios de contrato» no las muestra: las horas leídas en su cuenta de cliente tienen prioridad."
+              "en": "Given by the \"My contract prices\" button (\"Votre prix actuel\" of your customer account).",
+              "fr": "Donné par le bouton « Mes prix de contrat » (« Votre prix actuel » de votre espace client).",
+              "de": "Nennt die Schaltfläche „Meine Vertragspreise“ („Votre prix actuel“ Ihres Kundenkontos).",
+              "es": "Lo da el botón «Mis precios de contrato» («Votre prix actuel» de su cuenta de cliente)."
             }
           }
         ],
         "tariff": {
           "tariff_version": 1,
-          "calendars": ["gazdebordeaux-kwh-price"],
           "components": [
             {
               "key": "energy",
               "kind": "consumption",
-              "rules": [],
+              "label": "Base",
               "fallback": {
-                "label": "Prix de l'espace client",
-                "price_from_calendar": "gazdebordeaux-kwh-price"
+                "price": "{{input:kwh_price}}"
               }
             },
             {
@@ -1479,14 +1477,128 @@
             }
           ]
         }
-      }
-    ],
-    "calendars": [
+      },
       {
-        "key": "gazdebordeaux-kwh-price",
-        "granularity": "day",
+        "key": "espaceclient-elec-peak-off-peak-rules",
+        "name": {
+          "en": "Gaz de Bordeaux – My contract – Peak/Off-peak",
+          "fr": "Gaz de Bordeaux – Mon contrat – Heures creuses",
+          "de": "Gaz de Bordeaux – Mein Vertrag – HT/NT",
+          "es": "Gaz de Bordeaux – Mi contrato – Horas valle"
+        },
+        "description": {
+          "en": "The prices of YOUR electricity contract, any offer (Ecodigo, NovaFixe, NovaFlex…), Peak/Off-peak option (needs half-hourly readings): type the prices the \"My contract prices\" button gives (\"Votre prix actuel\" of espaceclient.gazdebordeaux.fr). When they change (\"Contract prices changed\" scene trigger), end this contract and create a new one with the new prices.",
+          "fr": "Les prix de VOTRE contrat d'électricité, toute offre (Ecodigo, NovaFixe, NovaFlex…), option Heures creuses (consommation à la demi-heure nécessaire) : saisissez les prix donnés par le bouton « Mes prix de contrat » (« Votre prix actuel » de espaceclient.gazdebordeaux.fr). Quand ils changent (déclencheur « Prix du contrat modifiés »), terminez ce contrat et créez-en un nouveau avec les nouveaux prix.",
+          "de": "Die Preise IHRES Stromvertrags, jedes Angebot (Ecodigo, NovaFixe, NovaFlex…), Option HT/NT (halbstündliche Werte nötig): geben Sie die Preise der Schaltfläche „Meine Vertragspreise“ ein („Votre prix actuel“ auf espaceclient.gazdebordeaux.fr). Ändern sie sich (Auslöser „Vertragspreise geändert“), beenden Sie diesen Vertrag und legen Sie einen neuen mit den neuen Preisen an.",
+          "es": "Los precios de SU contrato de electricidad, cualquier oferta (Ecodigo, NovaFixe, NovaFlex…), opción Horas valle (lecturas cada media hora necesarias): introduzca los precios que da el botón «Mis precios de contrato» («Votre prix actuel» de espaceclient.gazdebordeaux.fr). Cuando cambian (disparador «Precios del contrato cambiados»), termine este contrato y cree otro con los nuevos precios."
+        },
+        "country": "FR",
+        "currency": "EUR",
         "timezone": "Europe/Paris",
-        "currency": "EUR"
+        "pricing_mode": "rules",
+        "version": "1",
+        "inputs": [
+          {
+            "key": "peak_price",
+            "type": "number",
+            "unit": "EUR/kWh",
+            "required": true,
+            "label": {
+              "en": "Peak kWh price (incl. VAT)",
+              "fr": "Prix du kWh heures pleines (TTC)",
+              "de": "kWh-Preis Hochtarif (inkl. MwSt.)",
+              "es": "Precio del kWh punta (IVA incl.)"
+            },
+            "description": {
+              "en": "Given by the \"My contract prices\" button (\"Votre prix actuel\" of your customer account).",
+              "fr": "Donné par le bouton « Mes prix de contrat » (« Votre prix actuel » de votre espace client).",
+              "de": "Nennt die Schaltfläche „Meine Vertragspreise“ („Votre prix actuel“ Ihres Kundenkontos).",
+              "es": "Lo da el botón «Mis precios de contrato» («Votre prix actuel» de su cuenta de cliente)."
+            }
+          },
+          {
+            "key": "off_peak_price",
+            "type": "number",
+            "unit": "EUR/kWh",
+            "required": true,
+            "label": {
+              "en": "Off-peak kWh price (incl. VAT)",
+              "fr": "Prix du kWh heures creuses (TTC)",
+              "de": "kWh-Preis Niedertarif (inkl. MwSt.)",
+              "es": "Precio del kWh valle (IVA incl.)"
+            },
+            "description": {
+              "en": "Given by the \"My contract prices\" button (\"Votre prix actuel\" of your customer account).",
+              "fr": "Donné par le bouton « Mes prix de contrat » (« Votre prix actuel » de votre espace client).",
+              "de": "Nennt die Schaltfläche „Meine Vertragspreise“ („Votre prix actuel“ Ihres Kundenkontos).",
+              "es": "Lo da el botón «Mis precios de contrato» («Votre prix actuel» de su cuenta de cliente)."
+            }
+          },
+          {
+            "key": "off_peak_slots",
+            "type": "time_intervals",
+            "required": true,
+            "label": {
+              "en": "Off-peak hours",
+              "fr": "Heures creuses",
+              "de": "Niedertarifzeiten",
+              "es": "Horas valle"
+            },
+            "description": {
+              "en": "Given by the \"My contract prices\" button when your customer account shows them, and on your invoice.",
+              "fr": "Données par le bouton « Mes prix de contrat » quand votre espace client les affiche, et sur votre facture.",
+              "de": "Nennt die Schaltfläche „Meine Vertragspreise“, wenn Ihr Kundenkonto sie zeigt, und Ihre Rechnung.",
+              "es": "Las da el botón «Mis precios de contrato» cuando su cuenta de cliente las muestra, y su factura."
+            }
+          },
+          {
+            "key": "subscription_per_month",
+            "type": "number",
+            "unit": "EUR/month",
+            "required": true,
+            "label": {
+              "en": "Subscription per month (incl. VAT)",
+              "fr": "Abonnement par mois (TTC)",
+              "de": "Grundgebühr pro Monat (inkl. MwSt.)",
+              "es": "Suscripción al mes (IVA incl.)"
+            },
+            "description": {
+              "en": "Given by the \"My contract prices\" button (\"Votre prix actuel\" of your customer account).",
+              "fr": "Donné par le bouton « Mes prix de contrat » (« Votre prix actuel » de votre espace client).",
+              "de": "Nennt die Schaltfläche „Meine Vertragspreise“ („Votre prix actuel“ Ihres Kundenkontos).",
+              "es": "Lo da el botón «Mis precios de contrato» («Votre prix actuel» de su cuenta de cliente)."
+            }
+          }
+        ],
+        "tariff": {
+          "tariff_version": 1,
+          "components": [
+            {
+              "key": "energy",
+              "kind": "consumption",
+              "rules": [
+                {
+                  "label": "Heures creuses",
+                  "when": {
+                    "time": "{{input:off_peak_slots}}"
+                  },
+                  "price": "{{input:off_peak_price}}"
+                }
+              ],
+              "fallback": {
+                "label": "Heures pleines",
+                "price": "{{input:peak_price}}"
+              }
+            },
+            {
+              "key": "subscription",
+              "kind": "fixed",
+              "label": "Abonnement",
+              "amount": "{{input:subscription_per_month}}",
+              "per": "month"
+            }
+          ]
+        }
       }
     ]
   }

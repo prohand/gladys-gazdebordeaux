@@ -12,7 +12,7 @@ import { DEFAULT_CONFIG } from '../src/config.js';
 import { LANGUAGES } from '../src/i18n.js';
 import { SCENE_ACTIONS, SCENE_TRIGGER_KEYS } from '../src/capabilities/scenes.js';
 import { WIDGETS } from '../src/capabilities/widget.js';
-import { CALENDAR_TEMPLATE, PRICE_CALENDAR } from '../src/capabilities/energy.js';
+import { MY_CONTRACT_TEMPLATES } from '../src/capabilities/energy.js';
 import { createIntegration } from '../src/integration.js';
 import { createMemoryStore } from '../src/store.js';
 
@@ -97,9 +97,10 @@ test('declaring scene triggers, scene actions and widgets requires Gladys >= 5.1
 const templates = manifest.energy_contracts?.templates ?? [];
 // The templates of the official grids, priced by the core rule engine.
 const ruleTemplates = templates.filter(
-  (template) => template.pricing_mode === 'rules' && template.key !== CALENDAR_TEMPLATE,
+  (template) => template.pricing_mode === 'rules' && !MY_CONTRACT_TEMPLATES.includes(template.key),
 );
-const calendarTemplate = templates.find((template) => template.key === CALENDAR_TEMPLATE);
+// The hand-written "My contract" ones: the user's own prices, typed.
+const myTemplates = MY_CONTRACT_TEMPLATES.map((key) => templates.find((t) => t.key === key));
 
 // Every `{{input:<key>}}` placeholder of a tariff.
 function placeholdersOf(node, found = new Set()) {
@@ -139,7 +140,7 @@ test('the contract templates are French electricity offers, the grid ones priced
 });
 
 test('every tariff placeholder names a declared input, and every input is used', () => {
-  for (const template of ruleTemplates) {
+  for (const template of [...ruleTemplates, ...myTemplates]) {
     const inputs = template.inputs.map((input) => input.key);
     const used = placeholdersOf(template.tariff);
     for (const key of used) {
@@ -173,29 +174,21 @@ test('every consumption component has a price for any hour (a fallback)', () => 
   }
 });
 
-test('the "My contract" template reads the kWh price from the calendar it declares', () => {
-  assert.equal(calendarTemplate?.pricing_mode, 'rules');
-  assert.deepEqual(calendarTemplate.calendars, [PRICE_CALENDAR]);
-  assert.deepEqual(calendarTemplate.tariff.calendars, [PRICE_CALENDAR]);
-  assert.deepEqual(manifest.energy_contracts.calendars, [
-    { key: PRICE_CALENDAR, granularity: 'day', timezone: 'Europe/Paris', currency: 'EUR' },
-  ]);
-  const [energy, subscription] = calendarTemplate.tariff.components;
-  assert.deepEqual(energy.rules, [], 'every day reads the calendar');
-  assert.equal(energy.fallback.price_from_calendar, PRICE_CALENDAR);
-  assert.equal(subscription.amount, '{{input:subscription_per_month}}');
-  assert.equal(subscription.per, 'month');
-  const inputs = calendarTemplate.inputs.map((input) => input.key);
-  for (const key of placeholdersOf(calendarTemplate.tariff)) {
-    assert.ok(inputs.includes(key), `{{input:${key}}} is not declared`);
-  }
-  // Prices of the user's own contract: no grid default to suggest, and only
-  // the subscription to type (a `fixed` amount cannot read a calendar).
-  assert.ok(calendarTemplate.inputs.every((input) => input.default === undefined));
-  assert.deepEqual(
-    calendarTemplate.inputs.filter((input) => input.required).map((input) => input.key),
-    ['subscription_per_month'],
+test('the "My contract" templates take the tariff of a grid template, without its prices', () => {
+  const grids = ['novafixe-elec-base', 'novafixe-elec-peak-off-peak'].map((key) =>
+    templates.find((t) => t.key === key),
   );
+  myTemplates.forEach((template, i) => {
+    assert.equal(template?.pricing_mode, 'rules', MY_CONTRACT_TEMPLATES[i]);
+    assert.deepEqual(template.tariff, grids[i].tariff, 'the same tariff, numbers in the JSON');
+    assert.deepEqual(
+      template.inputs.map((input) => [input.key, input.required]),
+      grids[i].inputs.map((input) => [input.key, input.required]),
+    );
+    // The prices of the user's own contract: no grid default to suggest.
+    assert.ok(template.inputs.every((input) => input.default === undefined));
+  });
+  assert.equal(manifest.energy_contracts.calendars, undefined, 'no price calendar any more');
 });
 
 test('the off-peak hours default to 8 hours a day, as Enedis sets them', () => {

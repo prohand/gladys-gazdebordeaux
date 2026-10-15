@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.10] - 2026-10-15
+
 ### Fixed
 
 - "My contract prices" button: the prices are written with a decimal point in
@@ -157,7 +159,8 @@ the notes of the version's GitHub Release.
   Release, multi-arch build and GitHub Release workflows, Dependabot.
 - `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.9...HEAD
+[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.10...HEAD
+[1.0.10]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.9...v1.0.10
 [1.0.9]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.8...v1.0.9
 [1.0.8]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.7...v1.0.8
 [1.0.7]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.6...v1.0.7

@@ -169,15 +169,24 @@ Le modèle **Gaz de Bordeaux – Mon contrat (prix de l'espace client)** utilise
 
 1. Dans Gladys, **Énergie** → contrat du compteur électrique Gaz de Bordeaux,
    choisissez ce modèle.
-2. Saisissez seulement l'**abonnement par mois** (donné par le bouton **Mes
-   prix de contrat**).
-3. C'est tout : l'intégration donne à Gladys le prix du kWh, Base ou Heures
-   creuses, pour toutes les offres (Ecodigo, NovaFixe, NovaFlex…).
+2. Rien à saisir : l'intégration donne à Gladys tout le coût, kWh (Base ou
+   Heures creuses) et abonnement, pour toutes les offres (Ecodigo, NovaFixe,
+   NovaFlex…).
+
+L'assistant n'affiche aucun prix et un tarif vide (`"components": []`) :
+c'est normal, les prix restent du côté de l'intégration. Le champ **puissance
+souscrite** est facultatif (pour information) : le bouton **Mes prix de
+contrat** la donne si vous voulez la remplir. Gladys ne permet pas à une
+intégration de remplir l'assistant à votre place.
 
 Quand vos prix changent, l'intégration le voit au rafraîchissement suivant :
 les nouveaux prix s'appliquent à partir de ce jour, les jours passés gardent
-les anciens. **Pas de nouveau contrat à créer** pour le prix du kWh (seul
-l'abonnement, saisi à la main, est à mettre à jour s'il change).
+les anciens. **Pas de nouveau contrat à créer.**
+
+Un contrat créé avec la première version de ce modèle (avec un champ
+« Abonnement par mois ») continue de marcher : l'abonnement saisi y est
+compté une seule fois. Pour l'enlever, mettez le contrat à jour depuis le
+modèle dans l'assistant.
 
 - Il faut que l'intégration tourne : Gladys lui demande le prix. Si elle est
   arrêtée, les coûts sont calculés à son retour.

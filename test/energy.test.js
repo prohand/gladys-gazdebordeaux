@@ -18,7 +18,7 @@ import { setup } from './helpers/setup.js';
 const CONTRACT = {
   id: 'c1',
   template_key: 'espaceclient-elec',
-  inputs: { subscription_per_month: 15.87 },
+  inputs: {},
   currency: 'EUR',
   timezone: 'Europe/Paris',
   billing_period_start_day: 1,
@@ -165,6 +165,51 @@ test('the current price says when it changes', async () => {
   });
 });
 
+test('the subscription is spread over the minutes of the month, like the core does', async () => {
+  const store = await storeWith(['2026-10-01', { ...BASE, subscriptionPerMonth: 30 }]);
+  const [day, halfHour] = priceIntervals(
+    {
+      contract: CONTRACT,
+      intervals: [
+        { starts_at: LOCAL_MIDNIGHT, kwh: 0, max_power_kw: 0 },
+        { starts_at: '2026-10-14T10:00:00.000Z', kwh: 1, max_power_kw: 2 },
+      ],
+    },
+    { store },
+  );
+  const octoberMinutes = 31 * 1440 + 60;
+  assert.equal(day.components.subscription, Math.round(((30 * 1440) / octoberMinutes) * 1e6) / 1e6);
+  assert.equal(
+    halfHour.components.subscription,
+    Math.round(((30 * 30) / octoberMinutes) * 1e6) / 1e6,
+  );
+  assert.equal(halfHour.cost, Math.round((0.160164 + (30 * 30) / octoberMinutes) * 1e6) / 1e6);
+
+  // A contract of the first template version: the core adds its subscription input.
+  const old = { ...CONTRACT, inputs: { subscription_per_month: 30 } };
+  const [oldDay] = priceIntervals(
+    { contract: old, intervals: [{ starts_at: LOCAL_MIDNIGHT, kwh: 10, max_power_kw: 10 / 24 }] },
+    { store },
+  );
+  assert.deepEqual(oldDay.components, { energy: 1.60164 });
+  assert.equal(oldDay.cost, 1.60164);
+});
+
+test('prices kept before the subscription was: the first subscription known', async () => {
+  const store = await storeWith(
+    ['2026-10-01', BASE],
+    ['2026-10-10', { ...BASE, subscriptionPerMonth: 15.87 }],
+  );
+  const [cost] = priceIntervals(
+    {
+      contract: CONTRACT,
+      intervals: [{ starts_at: '2026-10-04T22:00:00.000Z', kwh: 0, max_power_kw: 0 }],
+    },
+    { store },
+  );
+  assert.ok(cost.components.subscription > 0);
+});
+
 test('Gladys prices the template with the prices read at the refresh', async (t) => {
   const { gladys } = await setup(t);
   const ack = await gladys.fake.energyPrice({
@@ -174,7 +219,16 @@ test('Gladys prices the template with the prices read at the refresh', async (t)
     intervals: [{ starts_at: LOCAL_MIDNIGHT, kwh: 10, max_power_kw: 10 / 24 }],
   });
   assert.equal(ack.success, true);
-  assert.deepEqual(ack.data.costs, [{ starts_at: LOCAL_MIDNIGHT, cost: 1.60164, label: 'Base' }]);
+  // October 2026 in Paris: 31 days + the hour of the autumn DST change.
+  const subscription = Math.round(((15.87 * 1440) / (31 * 1440 + 60)) * 1e6) / 1e6;
+  assert.deepEqual(ack.data.costs, [
+    {
+      starts_at: LOCAL_MIDNIGHT,
+      cost: Math.round((1.60164 + subscription) * 1e6) / 1e6,
+      components: { energy: 1.60164, subscription },
+      label: 'Base',
+    },
+  ]);
 
   const current = await gladys.fake.energyCurrent({
     contract: CONTRACT,

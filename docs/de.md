@@ -168,15 +168,24 @@ Die Vorlage **Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)** nutzt
 
 1. Wählen Sie in Gladys unter **Energie** → Vertrag des Gaz de Bordeaux
    Stromzählers diese Vorlage.
-2. Geben Sie nur die **Grundgebühr pro Monat** ein (von der Schaltfläche
-   **Meine Vertragspreise** angezeigt).
-3. Fertig: Die Integration gibt Gladys den kWh-Preis, Base oder HT/NT, für
-   jedes Angebot (Ecodigo, NovaFixe, NovaFlex…).
+2. Nichts einzugeben: Die Integration gibt Gladys die gesamten Kosten, kWh
+   (Base oder HT/NT) und Grundgebühr, für jedes Angebot (Ecodigo, NovaFixe,
+   NovaFlex…).
+
+Der Assistent zeigt keinen Preis und einen leeren Tarif (`"components": []`):
+das ist normal, die Preise bleiben bei der Integration. Das Feld **vertragliche
+Leistung** ist optional (nur zur Information): die Schaltfläche **Meine
+Vertragspreise** nennt sie, wenn Sie es ausfüllen möchten. Gladys erlaubt
+einer Integration nicht, den Assistenten für Sie auszufüllen.
 
 Ändern sich Ihre Preise, bemerkt die Integration es bei der nächsten
 Aktualisierung: Die neuen Preise gelten ab diesem Tag, vergangene Tage behalten
-die alten. **Kein neuer Vertrag nötig** für den kWh-Preis (nur die von Hand
-eingegebene Grundgebühr ist anzupassen, wenn sie sich ändert).
+die alten. **Kein neuer Vertrag nötig.**
+
+Ein mit der ersten Version dieser Vorlage angelegter Vertrag (mit einem Feld
+„Grundgebühr pro Monat“) funktioniert weiter: die dort eingegebene Grundgebühr
+wird einmal gezählt. Um sie zu entfernen, aktualisieren Sie den Vertrag im
+Assistenten aus der Vorlage.
 
 - Die Integration muss laufen: Gladys fragt sie nach dem Preis. Ist sie
   gestoppt, werden die Kosten bei ihrer Rückkehr berechnet.

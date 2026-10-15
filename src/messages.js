@@ -180,10 +180,10 @@ export function contractPricesMessage(pricesList) {
   return localize((language) => {
     const lines = pricesList.map((prices) => contractPricesLine(language, prices));
     const footer = pick(language, {
-      en: 'Current prices of your customer account, incl. VAT. In the Gladys energy contract, choose the template "Gaz de Bordeaux – My contract (customer account prices)": the integration applies these prices itself, even when they change; only the subscription is to be typed. Or copy them into another template.',
-      fr: "Prix actuels de votre espace client, TTC. Dans le contrat d'énergie Gladys, choisissez le modèle « Gaz de Bordeaux – Mon contrat (prix de l'espace client) » : l'intégration y applique elle-même ces prix, même quand ils changent ; seul l'abonnement est à saisir. Ou recopiez-les dans un autre modèle.",
-      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt. Wählen Sie im Gladys-Energievertrag die Vorlage „Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)“: die Integration wendet diese Preise selbst an, auch wenn sie sich ändern; nur die Grundgebühr ist einzugeben. Oder übernehmen Sie sie in eine andere Vorlage.',
-      es: 'Precios actuales de su cuenta de cliente, IVA incluido. En el contrato de energía de Gladys, elija la plantilla «Gaz de Bordeaux – Mi contrato (precios de la cuenta)»: la integración aplica ella misma estos precios, incluso cuando cambian; solo hay que introducir la suscripción. O cópielos en otra plantilla.',
+      en: 'Current prices of your customer account, incl. VAT. In the Gladys energy contract, choose the template "Gaz de Bordeaux – My contract (customer account prices)": the integration applies these prices itself (kWh and subscription), even when they change: nothing to type. Or copy them into another template.',
+      fr: "Prix actuels de votre espace client, TTC. Dans le contrat d'énergie Gladys, choisissez le modèle « Gaz de Bordeaux – Mon contrat (prix de l'espace client) » : l'intégration y applique elle-même ces prix (kWh et abonnement), même quand ils changent : rien à saisir. Ou recopiez-les dans un autre modèle.",
+      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt. Wählen Sie im Gladys-Energievertrag die Vorlage „Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)“: die Integration wendet diese Preise selbst an (kWh und Grundgebühr), auch wenn sie sich ändern: nichts einzugeben. Oder übernehmen Sie sie in eine andere Vorlage.',
+      es: 'Precios actuales de su cuenta de cliente, IVA incluido. En el contrato de energía de Gladys, elija la plantilla «Gaz de Bordeaux – Mi contrato (precios de la cuenta)»: la integración aplica ella misma estos precios (kWh y suscripción), incluso cuando cambian: nada que introducir. O cópielos en otra plantilla.',
     });
     return `${lines.join(' — ')}. ${footer}`;
   });

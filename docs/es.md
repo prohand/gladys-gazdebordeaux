@@ -165,15 +165,24 @@ propios precios**, los que la integración lee en
 
 1. En Gladys, **Energía** → contrato del contador eléctrico Gaz de Bordeaux,
    elija esta plantilla.
-2. Introduzca solo la **suscripción al mes** (la da el botón **Mis precios de
-   contrato**).
-3. Nada más: la integración da a Gladys el precio del kWh, Base u Horas valle,
-   para todas las ofertas (Ecodigo, NovaFixe, NovaFlex…).
+2. Nada que introducir: la integración da a Gladys todo el coste, kWh (Base u
+   Horas valle) y suscripción, para todas las ofertas (Ecodigo, NovaFixe,
+   NovaFlex…).
+
+El asistente no muestra ningún precio y una tarifa vacía (`"components": []`):
+es normal, los precios quedan del lado de la integración. El campo **potencia
+contratada** es opcional (solo informativo): el botón **Mis precios de
+contrato** la da si quiere rellenarlo. Gladys no permite que una integración
+rellene el asistente por usted.
 
 Cuando sus precios cambian, la integración lo ve en la siguiente
 actualización: los nuevos precios se aplican desde ese día, los días pasados
-conservan los antiguos. **No hay que crear otro contrato** por el precio del
-kWh (solo la suscripción, introducida a mano, se actualiza si cambia).
+conservan los antiguos. **No hay que crear otro contrato.**
+
+Un contrato creado con la primera versión de esta plantilla (con un campo
+«Suscripción al mes») sigue funcionando: la suscripción introducida allí se
+cuenta una sola vez. Para quitarla, actualice el contrato desde la plantilla
+en el asistente.
 
 - La integración debe estar en marcha: Gladys le pide el precio. Si está
   parada, los costes se calculan a su vuelta.

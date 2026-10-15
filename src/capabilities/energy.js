@@ -3,8 +3,13 @@
 // `energy_contracts`, `pricing_mode: "delegated"`): Gladys asks the
 // integration the cost of the kWh, and the integration answers with the
 // prices of the user's own contract, as espaceclient.gazdebordeaux.fr gives
-// them. The user types no kWh price, and a price change needs no new
+// them. The integration prices EVERY cost, the subscription included (the
+// template has no `fixed` component): Gladys gives an integration no way to
+// fill a contract in, so the user types nothing. A price change needs no new
 // contract: every day is priced with the prices read for that day.
+//
+// The subscription is spread like the core spreads a monthly `fixed`
+// component: the share of the month's minutes the interval covers.
 //
 // The prices of each espaceclient contract are kept in the store with the day
 // they were first read (`price-history`): a retry of the core must get the
@@ -19,7 +24,7 @@
 import { createLogger } from '@gladysassistant/integration-sdk';
 import { ENERGIES } from '../gazdebordeaux/client.js';
 import { parseOffPeakTimes } from '../gazdebordeaux/prices.js';
-import { TIME_ZONE } from '../gazdebordeaux/dates.js';
+import { addDays, firstOfMonth, TIME_ZONE } from '../gazdebordeaux/dates.js';
 
 const logger = createLogger({ name: 'energy' });
 
@@ -37,7 +42,13 @@ const LABELS = {
   mixed: 'Heures pleines / creuses',
 };
 
-const PRICED_FIELDS = ['kwhPrice', 'peakPrice', 'offPeakPrice', 'offPeakSlots'];
+const PRICED_FIELDS = [
+  'kwhPrice',
+  'peakPrice',
+  'offPeakPrice',
+  'offPeakSlots',
+  'subscriptionPerMonth',
+];
 
 const formatters = new Map();
 
@@ -67,6 +78,30 @@ function localTime(date, timeZone) {
     day: `${parts.year}-${parts.month}-${parts.day}`,
     minute: Number(parts.hour) * 60 + Number(parts.minute),
   };
+}
+
+// The UTC instant (ms) of the local midnight starting `day` in `timeZone`.
+function localMidnight(day, timeZone) {
+  const wall = Date.parse(`${day}T00:00:00Z`);
+  const offsetAt = (time) => {
+    const local = localTime(new Date(time), timeZone);
+    return Date.parse(`${local.day}T00:00:00Z`) + local.minute * 60_000 - time;
+  };
+  // Twice: the offset at the guess may differ from the one at midnight (DST).
+  const guess = wall - offsetAt(wall);
+  return wall - offsetAt(guess);
+}
+
+const minutesBetween = (from, to, timeZone) =>
+  Math.round((localMidnight(to, timeZone) - localMidnight(from, timeZone)) / 60_000);
+
+// The minutes of the local day and of the local month of `day` (DST included).
+function dayMinutes(day, timeZone) {
+  return minutesBetween(day, addDays(day, 1), timeZone);
+}
+function monthMinutes(day, timeZone) {
+  const first = firstOfMonth(day);
+  return minutesBetween(first, firstOfMonth(addDays(first, 32)), timeZone);
 }
 
 const minuteOf = (time) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
@@ -169,8 +204,23 @@ function peakOffPeakOf(entry, inputs) {
 
 const round = (value) => Math.round(value * 1e6) / 1e6;
 
+// The monthly subscription of an entry; an entry read before the subscription
+// was kept takes the first one known. Null when espaceclient never gave it.
+function subscriptionOf(entry, entries) {
+  return (
+    entry.subscriptionPerMonth ??
+    entries.find((e) => e.subscriptionPerMonth != null)?.subscriptionPerMonth ??
+    null
+  );
+}
+
+// A contract made from the first version of the template carries the
+// subscription as an input, which the core adds itself: never twice.
+const coreAddsSubscription = (contract) => contract?.inputs?.subscription_per_month != null;
+
 /**
- * The cost of every interval of an `energy-contract.price` request.
+ * The cost of every interval of an `energy-contract.price` request: the kWh
+ * and the share of the subscription (`components`: `energy`, `subscription`).
  * An interval starting at local midnight that carries a whole day (its kWh
  * over its peak power is more than an hour: the core derives that power from
  * the kWh and the length) is a day; any other a half-hour.
@@ -180,23 +230,45 @@ const round = (value) => Math.round(value * 1e6) / 1e6;
 export function priceIntervals({ contract, intervals }, { store }) {
   const entries = electricityHistory(store);
   const timeZone = contract?.timezone || TIME_ZONE;
-  return intervals.map(({ starts_at, kwh, max_power_kw }) => {
+  const withSubscription = !coreAddsSubscription(contract);
+  let subscriptionMissing = false;
+  const costs = intervals.map(({ starts_at, kwh, max_power_kw }) => {
     const { day, minute } = localTime(new Date(starts_at), timeZone);
     const entry = entryAt(entries, day);
+    const wholeDay = minute === 0 && (!(max_power_kw > 0) || kwh / max_power_kw > 1);
+    const duration = wholeDay ? dayMinutes(day, timeZone) : HALF_HOUR_MINUTES;
+
+    let energy;
+    let label;
     const hp = peakOffPeakOf(entry, contract?.inputs);
-    if (!hp) {
+    if (hp) {
+      const share = offPeakMinutes(minute, duration, hp.slots) / duration;
+      label = share === 1 ? LABELS.offPeak : share === 0 ? LABELS.peak : LABELS.mixed;
+      energy = kwh * (share * hp.offPeak + (1 - share) * hp.peak);
+    } else {
       if (entry.kwhPrice === null) {
         throw new Error(`No kWh price for ${day}`);
       }
-      return { starts_at, cost: round(kwh * entry.kwhPrice), label: LABELS.base };
+      label = LABELS.base;
+      energy = kwh * entry.kwhPrice;
     }
-    const wholeDay = minute === 0 && (!(max_power_kw > 0) || kwh / max_power_kw > 1);
-    const duration = wholeDay ? DAY_MINUTES : HALF_HOUR_MINUTES;
-    const share = offPeakMinutes(minute, duration, hp.slots) / duration;
-    const label = share === 1 ? LABELS.offPeak : share === 0 ? LABELS.peak : LABELS.mixed;
-    const cost = kwh * (share * hp.offPeak + (1 - share) * hp.peak);
-    return { starts_at, cost: round(cost), label };
+
+    const components = { energy: round(energy) };
+    if (withSubscription) {
+      const perMonth = subscriptionOf(entry, entries);
+      if (perMonth === null) {
+        subscriptionMissing = true;
+      } else {
+        components.subscription = round((perMonth * duration) / monthMinutes(day, timeZone));
+      }
+    }
+    const cost = round(Object.values(components).reduce((sum, value) => sum + value, 0));
+    return { starts_at, cost, components, label };
   });
+  if (subscriptionMissing) {
+    logger.warn('Subscription not given by espaceclient: only the kWh are priced');
+  }
+  return costs;
 }
 
 /**

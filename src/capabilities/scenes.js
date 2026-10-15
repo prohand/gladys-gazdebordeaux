@@ -4,10 +4,12 @@
 // Triggers (manifest `scene_triggers`), fired by index.js after a refresh:
 //   - daily_reading      a new day was read for a contract;
 //   - high_consumption   that day goes above the alert threshold of the config;
-//   - connection_failed  a read failed after the previous one succeeded.
+//   - connection_failed  a read failed after the previous one succeeded;
+//   - price_changed      a price of espaceclient.gazdebordeaux.fr changed.
 // One event per transition: a day is announced once (the last announced day
-// is kept in the store, so a restart does not announce it again) and a
-// failure only when the account was working before.
+// is kept in the store, so a restart does not announce it again), a failure
+// only when the account was working before, a price change once (the last
+// prices are kept in the store too).
 //
 // Actions (manifest `scene_actions`), handled here:
 //   - refresh_now        read the account now;
@@ -30,6 +32,7 @@ export const TRIGGERS = {
   DAILY_READING: 'daily_reading',
   HIGH_CONSUMPTION: 'high_consumption',
   CONNECTION_FAILED: 'connection_failed',
+  PRICE_CHANGED: 'price_changed',
 };
 
 /** Every trigger key the code fires (checked against the manifest). */
@@ -80,6 +83,54 @@ export async function fireReadingEvents(gladys, account, { store, config }) {
         threshold,
       });
     }
+  }
+}
+
+/** The prices a change of which is announced, and their scene variable. */
+const PRICE_VARIABLES = {
+  kwhPrice: 'kwh_price',
+  peakPrice: 'peak_price',
+  offPeakPrice: 'off_peak_price',
+  subscriptionPerMonth: 'subscription',
+};
+
+/**
+ * Fire `price_changed` for every contract whose prices differ from the ones
+ * kept in the store. The values are the website's own (prices.js), compared
+ * as they are: no rounding, so no false alarm. A price the website stops
+ * giving (null) is no change, and the first read of a contract only records
+ * its prices.
+ * @param {Array<ReturnType<import('../gazdebordeaux/prices.js').currentPrices>>} pricesList
+ */
+export async function firePriceEvents(gladys, pricesList, { store }) {
+  for (const prices of pricesList) {
+    const key = `prices:${prices.id}`;
+    const known = store.get(key).prices;
+    const current = { ...known };
+    for (const name of Object.keys(PRICE_VARIABLES)) {
+      if (prices[name] !== null) {
+        current[name] = prices[name];
+      }
+    }
+    const changed = Object.keys(PRICE_VARIABLES).filter(
+      (name) => known?.[name] !== undefined && current[name] !== known[name],
+    );
+    if (known !== undefined && changed.length === 0) {
+      continue;
+    }
+    store.update(key, { prices: current });
+    await store.save();
+    if (known === undefined) {
+      continue;
+    }
+
+    logger.info(`Prices changed for contract ${prices.id}: ${changed.join(', ')}`);
+    const data = { energy: prices.energy, offer: prices.offer };
+    for (const [name, variable] of Object.entries(PRICE_VARIABLES)) {
+      data[variable] = current[name] ?? null;
+      data[`previous_${variable}`] = known[name] ?? null;
+    }
+    await gladys.publishSceneEvent(TRIGGERS.PRICE_CHANGED, data);
   }
 }
 

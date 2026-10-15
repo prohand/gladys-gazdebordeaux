@@ -68,6 +68,12 @@ const LABELS = {
     de: 'Letzte Aktualisierung',
     es: 'Última actualización',
   },
+  currentPrice: {
+    en: 'Current price',
+    fr: 'Prix actuel',
+    de: 'Aktueller Preis',
+    es: 'Precio actual',
+  },
   connection: { en: 'Customer account', fr: 'Espace client', de: 'Kundenkonto', es: 'Cuenta' },
   refresh: { en: 'Refresh', fr: 'Rafraîchir', de: 'Aktualisieren', es: 'Actualizar' },
   gas: { en: 'Gas', fr: 'Gaz', de: 'Gas', es: 'Gas' },
@@ -124,6 +130,42 @@ function yearSummary({ kwh, cost }) {
     parts.push(`${Math.round(cost)} €`);
   }
   return parts.join(' · ') || '–';
+}
+
+// The current price of the contract, as espaceclient gives it (prices.js):
+// "0,160164 €/kWh · 15,87 €/mois" or "HP 0,19648 · HC 0,14669 €/kWh"
+// (≤ 40 characters). Matched by energy: only when the account holds one
+// contract of that energy, the two websites sharing no contract id.
+function currentPriceText(account, energy, language) {
+  const matching = account.state.prices.filter((prices) => prices.energy === energy);
+  if (matching.length !== 1) {
+    return null;
+  }
+  const [prices] = matching;
+  const format = (value) =>
+    new Intl.NumberFormat(LANGUAGE_LOCALES[language] ?? 'en-GB', {
+      maximumFractionDigits: 6,
+    }).format(value);
+  if (prices.peakPrice !== null && prices.offPeakPrice !== null) {
+    const [peak, offPeak] = {
+      en: ['Peak', 'off-peak'],
+      fr: ['HP', 'HC'],
+      de: ['HT', 'NT'],
+      es: ['Punta', 'valle'],
+    }[language] ?? ['Peak', 'off-peak'];
+    return `${peak} ${format(prices.peakPrice)} · ${offPeak} ${format(prices.offPeakPrice)} €/kWh`;
+  }
+  const parts = [];
+  if (prices.kwhPrice !== null) {
+    parts.push(`${format(prices.kwhPrice)} €/kWh`);
+  }
+  if (prices.subscriptionPerMonth !== null) {
+    const month = { en: 'month', fr: 'mois', de: 'Monat', es: 'mes' }[language] ?? 'month';
+    parts.push(
+      `${new Intl.NumberFormat(LANGUAGE_LOCALES[language] ?? 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(prices.subscriptionPerMonth)} €/${month}`,
+    );
+  }
+  return parts.join(' · ') || null;
 }
 
 /** The snapshot the widget shows: the chosen contract, or the first one. */
@@ -183,6 +225,15 @@ export function buildContent({ gladys, account }, { settings, language = 'en' })
       label: LABELS.volume,
       icon: 'droplet',
       value: `${Number(lastDay.volume.toFixed(2))} m³`,
+      color: WIDGET_COLORS.NEUTRAL,
+    });
+  }
+  const price = currentPriceText(account, contract.energy, language);
+  if (price) {
+    status.push({
+      label: LABELS.currentPrice,
+      icon: 'tag',
+      value: price,
       color: WIDGET_COLORS.NEUTRAL,
     });
   }

@@ -95,9 +95,23 @@ La integración añade sus tarjetas al editor de escenas, en **Integraciones**.
   funcionaba. Filtre por la causa (inicio de sesión rechazado, solicitud
   bloqueada, red, respuesta inesperada, ningún contrato). Variables: `reason`,
   `message`.
+- **Precios del contrato cambiados**: un precio actual de
+  espaceclient.gazdebordeaux.fr ha cambiado (kWh, punta/valle o suscripción,
+  IVA incl.). Filtre si quiere por energía. Variables: `offer`, `kwh_price`,
+  `peak_price`, `off_peak_price`, `subscription`, y el valor anterior de cada
+  uno (`previous_kwh_price`…). Los precios se leen en cada actualización y se
+  comparan tal como los da el sitio: ninguna falsa alarma por redondeo. El
+  aviso llega cuando el sitio muestra el nuevo precio.
 
-Un día solo se anuncia una vez, incluso tras un reinicio. En la primerísima
-lectura no se anuncia nada: solo los días siguientes.
+Un día, o un cambio de precio, solo se anuncia una vez, incluso tras un
+reinicio. En la primerísima lectura no se anuncia nada: solo los cambios
+siguientes.
+
+Ejemplo: **Precios del contrato cambiados** y luego **Enviar un mensaje**
+«Nuevo precio Gaz de Bordeaux: {{triggerEvent.data.kwh_price}} €/kWh (antes
+{{triggerEvent.data.previous_kwh_price}}), suscripción
+{{triggerEvent.data.subscription}} €/mes». Cree entonces un nuevo contrato de
+energía de Gladys (ver «Cuando cambian sus precios»).
 
 ### Acciones
 
@@ -117,8 +131,9 @@ Añada el widget **Consumo Gaz de Bordeaux** a un panel. Muestra:
 
 - el consumo y el coste del último día leído y del mes;
 - un gráfico de barras de los últimos 30 días;
-- la energía, el último día leído, el volumen de gas, el total del año, la
-  hora de la última lectura y el estado de la conexión;
+- la energía, el último día leído, el volumen de gas, el precio actual (leído
+  en espaceclient), el total del año, la hora de la última lectura y el estado
+  de la conexión;
 - un botón **Actualizar**.
 
 En los ajustes del widget, elija el contrato a mostrar; si se deja vacío, es
@@ -169,8 +184,7 @@ los precios de la página de su contrato en espaceclient.gazdebordeaux.fr.
 Deje vacía la **fecha de fin** de su contrato de Gladys mientras sus precios no
 cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, Ecodigo Elec,
 fin de un periodo a precio fijo) o un impuesto (impuesto especial, IVA) que
-cambia el precio con IVA. Gaz de Bordeaux le avisa; el botón **Mis precios de
-contrato** da entonces los nuevos precios.
+cambia el precio con IVA. Gaz de Bordeaux le avisa, y también el disparador de escena **Precios del contrato cambiados**; el botón **Mis precios de contrato** da entonces los nuevos precios.
 
 1. En el contrato actual, ponga la **fecha de fin** el día anterior al cambio.
 2. Cree un **nuevo contrato** que empiece el día del cambio, con los nuevos

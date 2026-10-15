@@ -91,9 +91,22 @@ The integration adds its cards to the scene editor, under **Integrations**.
 - **Customer account unreachable**: reading failed after it had worked. Filter
   on the reason (sign-in refused, request blocked, network, unexpected answer,
   no contract). Variables: `reason`, `message`.
+- **Contract prices changed**: a current price of espaceclient.gazdebordeaux.fr
+  changed (kWh, peak/off-peak or subscription, incl. VAT). Filter on the
+  energy if you like. Variables: `offer`, `kwh_price`, `peak_price`,
+  `off_peak_price`, `subscription`, and the previous value of each
+  (`previous_kwh_price`…). The prices are read at every refresh and compared
+  as the website gives them: no false alarm from rounding. The alert comes
+  when the website shows the new price.
 
-A day is announced once, even after a restart. On the very first read nothing
-is announced: only the following days are.
+A day, or a price change, is announced once, even after a restart. On the very
+first read nothing is announced: only the following changes are.
+
+Example: **Contract prices changed** then **Send a message** "New Gaz de
+Bordeaux price: {{triggerEvent.data.kwh_price}} €/kWh (was
+{{triggerEvent.data.previous_kwh_price}}), subscription
+{{triggerEvent.data.subscription}} €/month". Then create a new Gladys energy
+contract (see "When your prices change").
 
 ### Actions
 
@@ -113,8 +126,9 @@ Add the **Gaz de Bordeaux consumption** widget to a dashboard. It shows:
 
 - the consumption and cost of the latest day read and of the month;
 - a bar chart of the last 30 days;
-- the energy, the latest day read, the gas volume, the year total, the time
-  of the last read and the connection state;
+- the energy, the latest day read, the gas volume, the current price (read on
+  espaceclient), the year total, the time of the last read and the connection
+  state;
 - a **Refresh** button.
 
 In the widget settings, pick the contract to show; left empty, it is the
@@ -163,8 +177,7 @@ from the page of your contract on espaceclient.gazdebordeaux.fr.
 Leave the **end date** of your Gladys contract empty while your prices do not
 change. They may change along the way: a new grid (NovaFlex, Ecodigo Elec, end
 of a fixed-price period), or a tax (excise, VAT) that changes the price incl.
-VAT. Gaz de Bordeaux tells you; the **My contract prices** button then gives
-the new prices.
+VAT. Gaz de Bordeaux tells you, and so does the **Contract prices changed** scene trigger; the **My contract prices** button then gives the new prices.
 
 1. On the current contract, set the **end date** to the day before the change.
 2. Create a **new contract** starting on the day of the change, with the new

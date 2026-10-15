@@ -97,9 +97,24 @@ Die Integration fügt ihre Karten dem Szenen-Editor hinzu, unter
   funktioniert hatte. Auf die Ursache filtern (Anmeldung abgelehnt, Anfrage
   blockiert, Netzwerk, unerwartete Antwort, kein Vertrag). Variablen:
   `reason`, `message`.
+- **Vertragspreise geändert**: ein aktueller Preis auf
+  espaceclient.gazdebordeaux.fr hat sich geändert (kWh, HT/NT oder
+  Grundgebühr, brutto). Optional auf die Energie filtern. Variablen: `offer`,
+  `kwh_price`, `peak_price`, `off_peak_price`, `subscription` und der
+  bisherige Wert von jedem (`previous_kwh_price`…). Die Preise werden bei jeder
+  Aktualisierung gelesen und so verglichen, wie die Website sie angibt: kein
+  Fehlalarm durch Rundung. Die Meldung kommt, sobald die Website den neuen
+  Preis zeigt.
 
-Ein Tag wird nur einmal gemeldet, auch nach einem Neustart. Beim allerersten
-Lesen wird nichts gemeldet: nur die folgenden Tage.
+Ein Tag oder eine Preisänderung wird nur einmal gemeldet, auch nach einem
+Neustart. Beim allerersten Lesen wird nichts gemeldet: nur die folgenden
+Änderungen.
+
+Beispiel: **Vertragspreise geändert**, dann **Nachricht senden** „Neuer Preis
+Gaz de Bordeaux: {{triggerEvent.data.kwh_price}} €/kWh (vorher
+{{triggerEvent.data.previous_kwh_price}}), Grundgebühr
+{{triggerEvent.data.subscription}} €/Monat“. Legen Sie dann einen neuen
+Gladys-Energievertrag an (siehe „Wenn sich Ihre Preise ändern“).
 
 ### Aktionen
 
@@ -120,8 +135,9 @@ zeigt:
 
 - Verbrauch und Kosten des letzten gelesenen Tages und des Monats;
 - ein Balkendiagramm der letzten 30 Tage;
-- die Energie, den letzten gelesenen Tag, das Gasvolumen, die Jahressumme,
-  die Uhrzeit des letzten Lesens und den Verbindungszustand;
+- die Energie, den letzten gelesenen Tag, das Gasvolumen, den aktuellen Preis
+  (von espaceclient), die Jahressumme, die Uhrzeit des letzten Lesens und den
+  Verbindungszustand;
 - eine Schaltfläche **Aktualisieren**.
 
 Wählen Sie in den Widget-Einstellungen den anzuzeigenden Vertrag; leer
@@ -172,9 +188,7 @@ espaceclient.gazdebordeaux.fr.
 Lassen Sie das **Enddatum** Ihres Gladys-Vertrags leer, solange sich Ihre
 Preise nicht ändern. Sie können sich unterwegs ändern: neue Preisliste
 (NovaFlex, Ecodigo Elec, Ende einer Festpreisperiode) oder eine Steuer
-(Verbrauchsteuer, MwSt.), die den Bruttopreis ändert. Gaz de Bordeaux
-informiert Sie; die Schaltfläche **Meine Vertragspreise** gibt dann die neuen
-Preise an.
+(Verbrauchsteuer, MwSt.), die den Bruttopreis ändert. Gaz de Bordeaux informiert Sie, ebenso der Szenen-Auslöser **Vertragspreise geändert**; die Schaltfläche **Meine Vertragspreise** gibt dann die neuen Preise an.
 
 1. Setzen Sie beim aktuellen Vertrag das **Enddatum** auf den Tag vor der
    Änderung.

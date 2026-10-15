@@ -10,6 +10,14 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- "Contract prices changed" scene trigger: the current prices of
+  espaceclient.gazdebordeaux.fr are read at every refresh, and a change (kWh,
+  peak/off-peak or subscription) fires it once, with the new and previous
+  values, to send yourself a message.
+- The widget shows the current price of the contract, read on espaceclient.
+
 ### Changed
 
 - "My contract prices" now reads the current prices of your contracts on

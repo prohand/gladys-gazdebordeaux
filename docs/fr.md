@@ -98,9 +98,23 @@ L'intégration ajoute ses cartes à l'éditeur de scènes, catégorie
   fonctionnait. Filtrez sur la cause (connexion refusée, requête bloquée,
   réseau, réponse inattendue, aucun contrat). Variables : `reason`,
   `message`.
+- **Prix du contrat modifiés** : un prix actuel d'espaceclient.gazdebordeaux.fr
+  a changé (kWh, HP/HC ou abonnement, TTC). Filtrez éventuellement sur
+  l'énergie. Variables : `offer`, `kwh_price`, `peak_price`,
+  `off_peak_price`, `subscription`, et l'ancienne valeur de chacun
+  (`previous_kwh_price`…). Les prix sont lus à chaque rafraîchissement et
+  comparés tels que le site les donne : aucune fausse alerte due aux
+  arrondis. L'alerte arrive quand le site affiche le nouveau prix.
 
-Une journée n'est annoncée qu'une fois, même après un redémarrage. À la toute
-première lecture, rien n'est annoncé : seules les journées suivantes le sont.
+Une journée, ou un changement de prix, n'est annoncé qu'une fois, même après un
+redémarrage. À la toute première lecture, rien n'est annoncé : seuls les
+changements suivants le sont.
+
+Exemple : **Prix du contrat modifiés** puis **Envoyer un message** « Nouveau
+prix Gaz de Bordeaux : {{triggerEvent.data.kwh_price}} €/kWh (avant
+{{triggerEvent.data.previous_kwh_price}}), abonnement
+{{triggerEvent.data.subscription}} €/mois ». Pensez alors à créer un nouveau
+contrat d'énergie Gladys (voir « Quand vos prix changent »).
 
 ### Actions
 
@@ -122,8 +136,9 @@ affiche :
 
 - la consommation et le coût du dernier jour relevé et du mois ;
 - un graphique en barres des 30 derniers jours ;
-- l'énergie, le dernier jour relevé, le volume de gaz, le total de l'année,
-  l'heure de la dernière lecture et l'état de la connexion ;
+- l'énergie, le dernier jour relevé, le volume de gaz, le prix actuel (lu sur
+  espaceclient), le total de l'année, l'heure de la dernière lecture et l'état
+  de la connexion ;
 - un bouton **Rafraîchir**.
 
 Dans les réglages du widget, choisissez le contrat à afficher ; laissé vide,
@@ -173,8 +188,9 @@ Si l'espace client ne peut pas être lu, le bouton le dit : les prix sont alors
 Laissez la **date de fin** de votre contrat Gladys vide tant que vos prix ne
 changent pas. Ils peuvent changer en cours de route : nouvelle grille (NovaFlex,
 Ecodigo Elec, fin d'une période à prix fixe), ou taxe (accise, TVA) qui change
-le prix TTC. Gaz de Bordeaux vous prévient ; le bouton **Mes prix de contrat**
-donne alors les nouveaux prix.
+le prix TTC. Gaz de Bordeaux vous prévient, et le déclencheur de scène **Prix du
+contrat modifiés** aussi ; le bouton **Mes prix de contrat** donne alors les
+nouveaux prix.
 
 1. Sur le contrat actuel, mettez la **date de fin** à la veille du changement.
 2. Créez un **nouveau contrat** qui démarre le jour du changement, avec les

@@ -25,7 +25,12 @@ import {
   pricesUnavailableMessage,
   refreshedMessage,
 } from './messages.js';
-import { fireConnectionFailed, fireReadingEvents, SCENE_ACTIONS } from './capabilities/scenes.js';
+import {
+  fireConnectionFailed,
+  firePriceEvents,
+  fireReadingEvents,
+  SCENE_ACTIONS,
+} from './capabilities/scenes.js';
 import { refreshWidgets, WIDGETS } from './capabilities/widget.js';
 import { createFileStore } from './store.js';
 
@@ -61,6 +66,22 @@ export function createIntegration(
     }
   }
 
+  // The current prices, read at every refresh to announce a change. They come
+  // from another website (espaceclient): a failure there is logged, it does
+  // not fail the refresh of the readings.
+  async function checkPrices() {
+    let prices;
+    try {
+      prices = await account.readPrices(config);
+    } catch (error) {
+      logger.warn(`Contract prices not read: ${error.message}`);
+      return;
+    }
+    await firePriceEvents(gladys, prices, { store }).catch((err) =>
+      logger.warn('Scene event', err),
+    );
+  }
+
   async function runRefresh(origin) {
     await loadStore();
     if (!isConfigured(config)) {
@@ -88,6 +109,7 @@ export function createIntegration(
     await gladys.setConnectionStatus(true);
     await publishAll(gladys, account, { store, today: today(), sleep });
     await fireReadingEvents(gladys, account, { store, config });
+    await checkPrices();
     await publishTransports();
     refreshWidgets(gladys);
     return { ok: true };

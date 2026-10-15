@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { currentPrices, parseOffPeakTimes } from '../src/gazdebordeaux/prices.js';
 import { ERROR_KINDS } from '../src/gazdebordeaux/client.js';
+import { tariffOf } from '../src/capabilities/energy.js';
 import {
   contractPricesLine,
   contractPricesMessage,
@@ -105,4 +106,67 @@ test('the prices messages exist in the four languages', () => {
   assert.match(known.fr, /Prix actuels de votre espace client/);
   assert.match(unavailable.fr, /connexion refusée.*« Votre prix actuel »/);
   assert.match(pricesUnavailableMessage(new Error('boom')).en, /unexpected answer/);
+});
+
+test('a base contract becomes a Gladys tariff, every decimal kept', () => {
+  const prices = currentPrices({ summary: ELEC, details: ELEC_CONTRACT });
+  assert.deepEqual(tariffOf(prices), {
+    tariff_version: 1,
+    components: [
+      { key: 'energy', kind: 'consumption', rules: [], fallback: { price: 0.160164 } },
+      { key: 'subscription', kind: 'fixed', amount: 15.87, per: 'month' },
+    ],
+  });
+  const message = contractPricesMessage([prices]);
+  assert.match(
+    message.fr,
+    /Tarif Gladys \(JSON\) : \{"tariff_version":1,"components":\[\{"key":"energy"/,
+  );
+  assert.equal(
+    JSON.parse(message.en.slice(message.en.indexOf('{'))).components[0].fallback.price,
+    0.160164,
+  );
+});
+
+test('a peak/off-peak contract becomes a tariff with its off-peak hours', () => {
+  const prices = currentPrices({
+    summary: ELEC,
+    details: {
+      offPeakHours: '22h00-6h00',
+      tarifScale: {
+        hp: { prixConsoUniteWithTaxeTTC: 0.19648 },
+        hc: { prixConsoUniteWithTaxeTTC: 0.14669 },
+      },
+    },
+  });
+  assert.deepEqual(tariffOf(prices), {
+    tariff_version: 1,
+    components: [
+      {
+        key: 'energy',
+        kind: 'consumption',
+        rules: [{ label: 'Heures creuses', when: { time: [['22:00', '06:00']] }, price: 0.14669 }],
+        fallback: { label: 'Heures pleines', price: 0.19648 },
+      },
+    ],
+  });
+});
+
+test('no tariff for gas, nor without the off-peak hours or any price', () => {
+  assert.equal(
+    tariffOf(currentPrices({ summary: { id: 7, type: 'gaz' }, details: GAS_CONTRACT })),
+    null,
+  );
+  const hpNoHours = currentPrices({
+    summary: ELEC,
+    details: {
+      tarifScale: {
+        hp: { prixConsoUniteWithTaxeTTC: 0.2 },
+        hc: { prixConsoUniteWithTaxeTTC: 0.1 },
+      },
+    },
+  });
+  assert.equal(tariffOf(hpNoHours), null);
+  assert.equal(tariffOf(currentPrices({ summary: ELEC, details: {} })), null);
+  assert.doesNotMatch(contractPricesMessage([hpNoHours]).fr, /JSON/);
 });

@@ -5,6 +5,7 @@
 
 import { ENERGIES, ERROR_KINDS } from './gazdebordeaux/client.js';
 import { localize, pick } from './i18n.js';
+import { tariffOf } from './capabilities/energy.js';
 
 const ERROR_TEXTS = {
   [ERROR_KINDS.NOT_CONFIGURED]: {
@@ -180,12 +181,23 @@ export function contractPricesMessage(pricesList) {
   return localize((language) => {
     const lines = pricesList.map((prices) => contractPricesLine(language, prices));
     const footer = pick(language, {
-      en: 'Current prices of your customer account, incl. VAT. In the Gladys energy contract, choose the template "Gaz de Bordeaux – My contract (customer account prices)": the integration applies these prices itself (kWh and subscription), even when they change: nothing to type. Or copy them into another template.',
-      fr: "Prix actuels de votre espace client, TTC. Dans le contrat d'énergie Gladys, choisissez le modèle « Gaz de Bordeaux – Mon contrat (prix de l'espace client) » : l'intégration y applique elle-même ces prix (kWh et abonnement), même quand ils changent : rien à saisir. Ou recopiez-les dans un autre modèle.",
-      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt. Wählen Sie im Gladys-Energievertrag die Vorlage „Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)“: die Integration wendet diese Preise selbst an (kWh und Grundgebühr), auch wenn sie sich ändern: nichts einzugeben. Oder übernehmen Sie sie in eine andere Vorlage.',
-      es: 'Precios actuales de su cuenta de cliente, IVA incluido. En el contrato de energía de Gladys, elija la plantilla «Gaz de Bordeaux – Mi contrato (precios de la cuenta)»: la integración aplica ella misma estos precios (kWh y suscripción), incluso cuando cambian: nada que introducir. O cópielos en otra plantilla.',
+      en: 'Current prices of your customer account, incl. VAT. In the Gladys energy contract, choose the template "Gaz de Bordeaux – My contract (customer account prices)": the integration applies these prices itself (kWh and subscription), even when they change: nothing to type. Or the template "Gaz de Bordeaux – My contract (computed by Gladys)": type the subscription and a fallback kWh price, the integration publishes the kWh price every day. Or copy them into another template.',
+      fr: "Prix actuels de votre espace client, TTC. Dans le contrat d'énergie Gladys, choisissez le modèle « Gaz de Bordeaux – Mon contrat (prix de l'espace client) » : l'intégration y applique elle-même ces prix (kWh et abonnement), même quand ils changent : rien à saisir. Ou le modèle « Gaz de Bordeaux – Mon contrat (calculé par Gladys) » : saisissez l'abonnement et un prix du kWh de secours, l'intégration publie chaque jour le prix du kWh. Ou recopiez-les dans un autre modèle.",
+      de: 'Aktuelle Preise Ihres Kundenkontos, inkl. MwSt. Wählen Sie im Gladys-Energievertrag die Vorlage „Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)“: die Integration wendet diese Preise selbst an (kWh und Grundgebühr), auch wenn sie sich ändern: nichts einzugeben. Oder die Vorlage „Gaz de Bordeaux – Mein Vertrag (von Gladys berechnet)“: Grundgebühr und Ersatz-kWh-Preis eingeben, die Integration veröffentlicht täglich den kWh-Preis. Oder übernehmen Sie sie in eine andere Vorlage.',
+      es: 'Precios actuales de su cuenta de cliente, IVA incluido. En el contrato de energía de Gladys, elija la plantilla «Gaz de Bordeaux – Mi contrato (precios de la cuenta)»: la integración aplica ella misma estos precios (kWh y suscripción), incluso cuando cambian: nada que introducir. O la plantilla «Gaz de Bordeaux – Mi contrato (calculado por Gladys)»: introduzca la suscripción y un precio del kWh de reserva, la integración publica cada día el precio del kWh. O cópielos en otra plantilla.',
     });
-    return `${lines.join(' — ')}. ${footer}`;
+    const tariffs = pricesList
+      .map(tariffOf)
+      .filter(Boolean)
+      .map((tariff) =>
+        pick(language, {
+          en: `Gladys tariff (JSON): ${JSON.stringify(tariff)}`,
+          fr: `Tarif Gladys (JSON) : ${JSON.stringify(tariff)}`,
+          de: `Gladys-Tarif (JSON): ${JSON.stringify(tariff)}`,
+          es: `Tarifa Gladys (JSON): ${JSON.stringify(tariff)}`,
+        }),
+      );
+    return [`${lines.join(' — ')}. ${footer}`, ...tariffs].join(' ');
   });
 }
 

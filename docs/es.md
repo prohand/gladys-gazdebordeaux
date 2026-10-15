@@ -195,6 +195,32 @@ en el asistente.
 - Se admite un contrato de electricidad por cuenta de cliente (el primero, si
   hay varios).
 
+### Variante: «Mi contrato (calculado por Gladys)»
+
+La plantilla **Gaz de Bordeaux – Mi contrato (calculado por Gladys)** usa los
+mismos precios, pero es Gladys quien calcula el coste, con una tarifa real
+(visible en el JSON del contrato):
+
+- Cada día, la integración publica el precio del kWh de su cuenta de cliente
+  en un calendario de precios (`gazdebordeaux-kwh-price`), hasta 7 días por
+  adelantado. La tarifa lo lee (`price_from_calendar`).
+- Un cambio de precio se aplica desde el día en que se lee: no hay que crear
+  otro contrato.
+- A introducir: la **suscripción al mes** y un **precio del kWh de reserva**,
+  que da el botón **Mis precios de contrato**.
+
+Límites:
+
+- La suscripción es un número fijo de la tarifa: cuando cambia, corríjala en
+  el contrato.
+- El precio de reserva solo sirve para los días que la integración no ha
+  publicado (parada más de 7 días).
+- Horas valle: un precio medio por día, según la parte de horas valle, incluso
+  con lecturas cada media hora.
+- Una vez creado el contrato, pulse **Mis precios de contrato** (o espere a la
+  próxima actualización): el calendario se remonta entonces al inicio del
+  contrato.
+
 ### Sus precios: el botón «Mis precios de contrato»
 
 Una oferta a precio fijo conserva **el precio del día de la contratación**,
@@ -212,6 +238,22 @@ Son precios con IVA e impuestos (CTA en la suscripción, impuesto especial en
 el kWh), como los contratos que ofrece Gladys. Con la plantilla **Mi
 contrato** la integración los aplica ella misma; con otra plantilla, cópielos
 en el asistente de contratos de Gladys.
+
+Para un contrato de electricidad, el botón da también estos precios como
+tarifa Gladys (JSON), lista para pegar donde Gladys pide la tarifa de un
+contrato. Un contrato **Mi contrato** no tiene ninguna en Gladys (la
+integración lo calcula): este JSON es el que hay que usar. En Horas valle se
+añade una regla de horas valle con sus horarios (si espaceclient los da).
+
+```json
+{
+  "tariff_version": 1,
+  "components": [
+    { "key": "energy", "kind": "consumption", "rules": [], "fallback": { "price": 0.160164 } },
+    { "key": "subscription", "kind": "fixed", "amount": 15.87, "per": "month" }
+  ]
+}
+```
 
 Si la cuenta de cliente no se puede leer, el botón lo indica: copie entonces
 los precios de la página de su contrato en espaceclient.gazdebordeaux.fr.

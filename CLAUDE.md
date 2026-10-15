@@ -143,6 +143,13 @@ There is no public API: the client calls the JSON endpoints the customer website
   takes the first prices; a whole-day interval (local midnight, kWh / max power > 1 h) on
   Peak/Off-peak is split by its off-peak minutes. Prices never read = throw (no cost, the core
   retries), never a zero.
+- **"Computed by Gladys" template** (`espaceclient-elec-rules`, `pricing_mode: "rules"`,
+  hand-written, kept as is by `tariffs.mjs`): the energy rule reads the daily price calendar
+  `gazdebordeaux-kwh-price` (`price_from_calendar`), the fallback and the subscription are inputs
+  (a `fixed` amount cannot come from a calendar). `publishPriceCalendar` feeds it after every
+  refresh and every "My contract prices" read, from the `price-history` (never the website): one
+  price per day from the earliest contract start (or first read) to 7 days ahead, peak/off-peak
+  weighted by the off-peak share of the day. Never rename the calendar key.
 - **Widget budget**: 8 components at most (4 tiles + chart + status + button today);
   `test/widget.test.js` runs `validateWidgetContent` in the four languages.
 

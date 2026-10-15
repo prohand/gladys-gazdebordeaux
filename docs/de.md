@@ -196,6 +196,32 @@ Assistenten aus der Vorlage.
   Ihre Niedertarifzeiten nicht an, tragen Sie sie im Vertrag ein.
 - Ein Stromvertrag pro Kundenkonto wird unterstützt (bei mehreren der erste).
 
+### Variante: „Mein Vertrag (von Gladys berechnet)“
+
+Die Vorlage **Gaz de Bordeaux – Mein Vertrag (von Gladys berechnet)** nutzt
+dieselben Preise, aber Gladys berechnet die Kosten selbst, mit einem echten
+Tarif (im JSON des Vertrags sichtbar):
+
+- Täglich veröffentlicht die Integration den kWh-Preis Ihres Kundenkontos in
+  einem Preiskalender (`gazdebordeaux-kwh-price`), bis zu 7 Tage im Voraus.
+  Der Tarif liest ihn (`price_from_calendar`).
+- Eine Preisänderung gilt ab dem Tag, an dem sie gelesen wird: kein neuer
+  Vertrag nötig.
+- Einzugeben: die **Grundgebühr pro Monat** und ein **Ersatz-kWh-Preis**, die
+  die Schaltfläche **Meine Vertragspreise** nennt.
+
+Grenzen:
+
+- Die Grundgebühr ist eine feste Zahl des Tarifs: ändert sie sich, passen Sie
+  sie im Vertrag an.
+- Der Ersatzpreis gilt nur für Tage, die die Integration nicht veröffentlicht
+  hat (mehr als 7 Tage gestoppt).
+- HT/NT: ein Durchschnittspreis pro Tag nach dem Anteil der
+  Niedertarifstunden, auch mit halbstündlichen Werten.
+- Nach dem Anlegen des Vertrags auf **Meine Vertragspreise** klicken (oder die
+  nächste Aktualisierung abwarten): der Kalender reicht dann bis zum
+  Vertragsbeginn zurück.
+
 ### Ihre Preise: die Schaltfläche „Meine Vertragspreise“
 
 Ein Festpreisangebot behält **den Preis des Abschlusstages**, ein indexiertes
@@ -213,6 +239,22 @@ Es sind Bruttopreise (inkl. MwSt. und Abgaben: CTA in der Grundgebühr,
 Verbrauchsteuer im kWh-Preis), wie in den Verträgen von Gladys. Mit der
 Vorlage **Mein Vertrag** wendet die Integration sie selbst an; mit einer
 anderen Vorlage übernehmen Sie sie in den Vertragsassistenten von Gladys.
+
+Für einen Stromvertrag gibt die Schaltfläche diese Preise auch als
+Gladys-Tarif (JSON) an, bereit zum Einfügen, wo Gladys den Tarif eines
+Vertrags verlangt. Ein Vertrag **Mein Vertrag** hat in Gladys keinen (die
+Integration berechnet ihn): dieses JSON ist zu verwenden. Bei HT/NT kommt eine
+Niedertarif-Regel mit Ihren Zeiten hinzu (wenn espaceclient sie angibt).
+
+```json
+{
+  "tariff_version": 1,
+  "components": [
+    { "key": "energy", "kind": "consumption", "rules": [], "fallback": { "price": 0.160164 } },
+    { "key": "subscription", "kind": "fixed", "amount": 15.87, "per": "month" }
+  ]
+}
+```
 
 Kann das Kundenkonto nicht gelesen werden, sagt die Schaltfläche es: Übernehmen
 Sie die Preise dann von der Seite Ihres Vertrags auf

@@ -13,7 +13,7 @@ export const CREDENTIALS = { email: EMAIL, password: PASSWORD };
 
 /**
  * @param {import('node:test').TestContext} t
- * @param {{ config?: object, site?: object, store?: object, devices?: object[], today?: string, connect?: boolean }} [options]
+ * @param {{ config?: object, site?: object, store?: object, devices?: object[], today?: string, connect?: boolean, fake?: object }} [options]  `fake`: more options of the fake Gladys
  */
 export async function setup(
   t,
@@ -24,9 +24,10 @@ export async function setup(
     devices = [],
     today = TODAY,
     connect = true,
+    fake = {},
   } = {},
 ) {
-  const gladys = createFakeGladys({ config, devices });
+  const gladys = createFakeGladys({ config, devices, ...fake });
   const account = createAccount({
     clientFactory: (options) => createClient({ ...options, fetchImpl: site.fetch }),
     today: () => today,

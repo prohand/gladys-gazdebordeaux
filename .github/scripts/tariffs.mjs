@@ -337,7 +337,7 @@ const contentOf = (template) =>
 /**
  * The manifest with its templates rebuilt from the grids. A template whose
  * content did not change keeps its version; a template no grid builds (the
- * delegated "My contract" one) is kept as is, after the built ones.
+ * "My contract" ones) is kept as is, after the built ones.
  * @param {object} manifest
  * @param {Record<string, ReturnType<typeof parseGrid>>} grids by offer key
  * @returns {{ manifest: object, changed: string[] }} the keys of the changed templates
@@ -357,8 +357,12 @@ export function updateManifest(manifest, grids) {
       changed.push(template.key);
       return template;
     });
-  // The grids build `rules` templates only: any other is not theirs to drop.
-  templates.push(...[...previous.values()].filter((template) => template.pricing_mode !== 'rules'));
+  // A template no offer builds (the hand-written "My contract" ones, delegated
+  // or rules) is not theirs to drop.
+  const built = new Set(
+    OFFERS.flatMap((offer) => [`${offer.key}-base`, `${offer.key}-peak-off-peak`]),
+  );
+  templates.push(...[...previous.values()].filter((template) => !built.has(template.key)));
   return {
     manifest: { ...manifest, energy_contracts: { ...manifest.energy_contracts, templates } },
     changed,

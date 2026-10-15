@@ -76,8 +76,8 @@ a importar**). Nunca se envían dos veces, ni siquiera tras un reinicio.
   introducidos y lista los contratos encontrados.
 - **Actualizar ahora**: lee la cuenta de cliente en el acto e indica el último
   día leído.
-- **Mis precios de contrato**: calcula los precios realmente pagados en su
-  contrato de electricidad (ver «Contratos de energía»).
+- **Mis precios de contrato**: muestra los precios actuales de sus contratos,
+  tal como los da espaceclient.gazdebordeaux.fr (ver «Contratos de energía»).
 
 ## Escenas
 
@@ -145,56 +145,40 @@ figura en su cuenta de cliente, línea «Votre tarif».
 
 ### Sus precios: el botón «Mis precios de contrato»
 
-Una oferta a precio fijo conserva **el precio del día de la contratación**: un
-contrato firmado hace dos años no tiene los precios de la tarifa de hoy. El
-botón **Mis precios de contrato** (pestaña **Configuración**) los calcula a
-partir de **su** cuenta de cliente: para cada día Gaz de Bordeaux da los kWh y
-lo que costaron, y la integración deduce el precio del kWh realmente pagado
-(punta y valle por separado), la suscripción mensual, la potencia y las horas
-valle. Ejemplo:
+Una oferta a precio fijo conserva **el precio del día de la contratación**,
+una oferta indexada (Ecodigo Elec) cambia con los impuestos y el mercado: su
+precio no es necesariamente el de la tarifa de hoy. El botón **Mis precios de
+contrato** (pestaña **Configuración**) lee sus precios actuales en
+**espaceclient.gazdebordeaux.fr** (mismo correo y contraseña), línea «Votre
+prix actuel» de la página de su contrato, y los da tal cual, sin cálculo.
+Ejemplo:
 
-> Electricidad (6 kVA): 0,18373 €/kWh, suscripción 15,87 €/mes. Calculado sobre
-> los últimos 30 días de su cuenta.
+> Electricidad, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA):
+> 0,160164 €/kWh, suscripción 15,87 €/mes.
 
-Son precios con IVA, como los que muestra Gaz de Bordeaux y los contratos
-que ofrece Gladys. El sitio redondea cada día al céntimo: el precio del
-kWh es exacto a pocas millonésimas, pero la suscripción puede diferir en
-algunos céntimos (hasta unos quince) cuando la parte diaria es la misma cada
-día. Si difieren, use la suscripción de su cuenta de cliente («Votre prix
-actuel»).
+Son precios con IVA e impuestos (CTA en la suscripción, impuesto especial en
+el kWh), como los contratos que ofrece Gladys. Cópielos en el asistente de
+contratos de Gladys: Gladys no permite que una integración rellene un contrato
+por usted.
 
-Copie estos valores en el asistente de contratos de Gladys. El precio pagado
-también aparece en el widget (fila **Precio pagado**).
-
-Gladys no permite que una integración rellene un contrato por usted: por eso
-se copian una vez, y luego en cada cambio de precio.
+Si la cuenta de cliente no se puede leer, el botón lo indica: copie entonces
+los precios de la página de su contrato en espaceclient.gazdebordeaux.fr.
 
 ### Cuando cambian sus precios
 
 Deje vacía la **fecha de fin** de su contrato de Gladys mientras sus precios no
-cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, Ecodigo Elec, fin de un
-periodo a precio fijo) o un impuesto (impuesto especial, IVA) que cambia el
-precio con IVA.
+cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, Ecodigo Elec,
+fin de un periodo a precio fijo) o un impuesto (impuesto especial, IVA) que
+cambia el precio con IVA. Gaz de Bordeaux le avisa; el botón **Mis precios de
+contrato** da entonces los nuevos precios.
 
-El botón **Mis precios de contrato** detecta ese cambio en sus lecturas y
-calcula entonces los precios solo sobre los días desde entonces. Ejemplo:
-
-> Electricidad (6 kVA): 0,17112 €/kWh, suscripción 15,87 €/mes. Nuevos precios
-> desde el 01/02/2027: termine su contrato de Gladys el 31/01/2027 y cree uno
-> nuevo a partir del 01/02/2027 con estos precios.
-
-1. En el contrato actual, ponga la **fecha de fin** en la víspera del cambio.
+1. En el contrato actual, ponga la **fecha de fin** el día anterior al cambio.
 2. Cree un **nuevo contrato** que empiece el día del cambio, con los nuevos
    precios.
 
 Así los días pasados conservan sus precios antiguos. No modifique los precios
 del contrato existente: Gladys recalcularía todo el historial desde el inicio
 del contrato con el nuevo precio.
-
-Unos días después del cambio, los precios son algo menos precisos (menos días
-para calcularlos): pulse de nuevo una o dos semanas más tarde y corrija el
-nuevo contrato si hace falta. El cambio solo se detecta en los días leídos
-(**Días de historial a importar**, hasta 90).
 
 ### Los precios por defecto: las tarifas oficiales
 

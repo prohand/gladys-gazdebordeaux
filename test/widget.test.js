@@ -76,12 +76,3 @@ test('every refresh nudges the widget', async (t) => {
   await integration.refresh('test');
   assert.deepEqual(gladys.fake.widgetRefreshes.slice(before), [CONSUMPTION_WIDGET]);
 });
-
-test('the electricity widget shows the kWh price charged, computed from the account', async (t) => {
-  const { gladys } = await setup(t);
-  const device = contractIds(gladys, { id: ELEC_ID }).device;
-  const { content } = (await get(gladys, { device }, 'fr')).data;
-  const status = content.components.find((c) => c.type === 'status');
-  const row = status.items.find((item) => item.label.fr === 'Prix payé');
-  assert.equal(row.value, '0,18373 €/kWh');
-});

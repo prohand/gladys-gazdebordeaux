@@ -44,21 +44,6 @@ function readingOf(entry) {
   };
 }
 
-// What the day cost, split the way the customer website charts it: the
-// energy (`consumptionPrice`, or `priceHp` + `priceHc`) and the share of the
-// subscription (`contractPrice`). prices.js derives the contract prices from
-// them. Absent on gas and on old days: all null then.
-function costsOf(entry) {
-  return {
-    energyCost: toNumber(entry?.consumptionPrice),
-    subscriptionCost: toNumber(entry?.contractPrice),
-    peakKwh: toNumber(entry?.consumptionHp),
-    offPeakKwh: toNumber(entry?.consumptionHc),
-    peakCost: toNumber(entry?.priceHp),
-    offPeakCost: toNumber(entry?.priceHc),
-  };
-}
-
 function assertObject(raw, what) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     throw new GdbError(ERROR_KINDS.API, `Unexpected ${what} payload from Gaz de Bordeaux`);
@@ -67,13 +52,13 @@ function assertObject(raw, what) {
 
 /**
  * Daily readings, oldest first; days without a consumption are left out.
- * @returns {Array<{ date: string, kwh: number, volume: number | null, cost: number | null, temperature: number | null, energyCost: number | null, subscriptionCost: number | null, peakKwh: number | null, offPeakKwh: number | null, peakCost: number | null, offPeakCost: number | null }>}
+ * @returns {Array<{ date: string, kwh: number, volume: number | null, cost: number | null, temperature: number | null }>}
  */
 export function parseDaily(raw) {
   assertObject(raw, 'daily consumption');
   return Object.entries(raw)
     .filter(([key]) => isDay(key))
-    .map(([date, entry]) => ({ date, ...readingOf(entry), ...costsOf(entry) }))
+    .map(([date, entry]) => ({ date, ...readingOf(entry) }))
     .filter((day) => day.kwh !== null)
     .sort((a, b) => a.date.localeCompare(b.date));
 }

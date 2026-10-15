@@ -169,21 +169,23 @@ test('the history import is paced under the host API limit', async (t) => {
   assert.equal(sleeps[0], 60_000);
 });
 
-test('"My contract prices" gives the prices charged on the account', async (t) => {
-  const { gladys } = await setup(t);
+test('"My contract prices" gives the prices of espaceclient.gazdebordeaux.fr as they are', async (t) => {
+  const { gladys, site } = await setup(t);
   const answer = await gladys.fake.action('show_prices', {});
   assert.equal(answer.success, true);
   assert.match(
     answer.data.message.fr,
-    /Électricité \(6 kVA\) : 0,18373 €\/kWh, abonnement 15,87 €\/mois/,
+    /\(BASE, 6 kVA\) : 0,160164 €\/kWh, abonnement 15,87 €\/mois/,
   );
   assert.match(answer.data.message.en, /Copy them into the Gladys energy contract/);
+  const login = site.requests.find((r) => r.pathname === '/api/authentication-token');
+  assert.equal(login.host, 'espaceclient.gazdebordeaux.fr');
 });
 
-test('"My contract prices" reads the account first when nothing was read yet', async (t) => {
-  const { gladys, site } = await setup(t, { connect: false });
-  await gladys.fake.configUpdated(CREDENTIALS);
-  assert.ok(site.requests.length > 0);
+test('"My contract prices" sends to the website when espaceclient cannot be read', async (t) => {
+  const { gladys, site } = await setup(t);
+  site.espace.me = { contracts: [] };
   const answer = await gladys.fake.action('show_prices', {});
-  assert.match(answer.data.message.en, /0\.18373/);
+  assert.match(answer.data.message.fr, /Impossible de lire vos prix.*aucun contrat trouvé/);
+  assert.match(answer.data.message.fr, /« Votre prix actuel »/);
 });

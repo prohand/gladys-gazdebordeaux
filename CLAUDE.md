@@ -13,7 +13,8 @@ and year totals. Gladys 5.1+ adds scene triggers (new daily reading, high consum
 unreachable), scene actions (refresh, get a consumption) and a "consumption" widget; Gladys 5.2+
 adds electricity contract templates (three offers × Base, Peak/Off-peak) to the contract wizard,
 declared in the manifest `energy_contracts` (the core rule engine prices them), and the
-"My contract prices" button gives the prices of the user's own contract.
+"My contract prices" button gives the current prices of the user's own contracts, read on
+espaceclient.gazdebordeaux.fr.
 
 Started from the official
 [JavaScript template](https://github.com/GladysAssistant/integration-template-js); the workflows
@@ -49,7 +50,7 @@ src/gazdebordeaux/client.js  HTTP client of life.gazdebordeaux.fr (login, contra
 src/gazdebordeaux/readings.js payloads -> plain days and totals
 src/gazdebordeaux/account.js one refresh = every contract read; snapshots kept in memory
 src/gazdebordeaux/dates.js   YYYY-MM-DD days on the Paris calendar
-src/gazdebordeaux/prices.js  the prices of the user's own contract, computed from the account
+src/gazdebordeaux/prices.js  the current prices of the user's contracts (espaceclient), as given
 src/devices/contract.js      the device of a contract: features, dated states, totals
 src/devices/index.js         discovery payload, contract lookup, "is it created?"
 src/capabilities/scenes.js   scene triggers fired after a refresh, scene action handlers
@@ -73,6 +74,10 @@ There is no public API: the client calls the JSON endpoints the customer website
 - `GET /api/houses/{uuid}` → `contractType.category` (`gas`, `electricity`).
 - `GET /api/houses/{uuid}/consumptions?scale=month&startDate&endDate` → one entry per day
   (`kwh`, `volumeOfEnergy`, `price`, `temperature`) + `total`; `scale=year` → `total`.
+- The current prices come from **espaceclient.gazdebordeaux.fr** (same email and password):
+  `POST /api/authentication-token` → `{token}`, `GET /api/me` → `contracts[]` (`id`,
+  `type`: `gaz` / `elec`), `GET /api/contracts/{id}` → `tarif`, `optionTarif`, `power`,
+  `offPeakHours`, `tarifScale` (see `prices.js`).
 - A filter in front of the site answers **HTML** (403, or 200 with the app) to requests that do
   not look like the site's own: every call sends `BROWSER_HEADERS`. HTML = `blocked` error.
 
@@ -107,22 +112,20 @@ There is no public API: the client calls the JSON endpoints the customer website
   `pdftotext`), or `update <dir>` on `grid-<offer>.txt` files. The monthly workflow
   `.github/workflows/tariffs.yml` does it and opens a PR; a template whose prices changed takes the
   grid date as `version` (shown by the wizard; Gladys never updates an existing contract: a price
-  change is a new contract, which "My contract prices" tells the user, with its start day), an
+  change is a new contract, which the docs tell the user), an
   unchanged one is kept as is. When the
   prices change, also update the price tables of `docs/*.md` and `test/fixtures/grid-*.txt`
   (`test/tariffs.test.js` checks the manifest matches the fixtures). Prices are template `inputs`:
   a fixed-price contract keeps the price of its subscription date. Never rename a template key.
   Electricity only (Gladys contracts do not cover gas). Peak/Off-peak needs half-hourly readings.
-- **Contract prices from the account** (`src/gazdebordeaux/prices.js`): the website rounds every
-  daily amount to the cent and splits the monthly subscription over the days of each month
-  (`contractPrice` = monthly / days of the month): each day bounds the price (± half a cent),
-  the price is the middle of what every day allows (`consumptionPrice / kwh`, or
-  `priceHp / consumptionHp`, `priceHc / consumptionHc`; `contractPrice` × days of the month).
-  Computed over the days since the latest price change (`priceChangeDay`: two days in a row off
-  the price of the latest days), 30 at most; power, option and off-peak hours from the house
-  (`electricityPower`, `priceCategory`, `offPeakTimes`). These field names come from the
-  customer website's own code, not from a documented API: keep every read null-safe. The house
-  field NAMES are logged at debug level to check them on a real account.
+- **Contract prices** (`src/gazdebordeaux/prices.js`): read from espaceclient
+  `tarifScale` (`prixTotalTTCAbo` or `abo.prixAboTTC`; `base` / `hp` / `hc`
+  `.prixConsoUniteWithTaxeTTC`; gas `prixTotalTTCConso`), shown with every decimal given.
+  **Never compute a price** from the daily amounts: they are rounded to the cent, the result is
+  approximate (0.16066 instead of 0.160164 on a real account). When espaceclient cannot be read,
+  the button sends the user to its "Votre prix actuel" line. These field names come from the
+  website's own code, not from a documented API: keep every read null-safe; their NAMES are
+  logged at debug level to check them on a real account.
 - **Widget budget**: 8 components at most (4 tiles + chart + status + button today);
   `test/widget.test.js` runs `validateWidgetContent` in the four languages.
 

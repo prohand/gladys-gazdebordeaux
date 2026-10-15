@@ -11,6 +11,7 @@
 // -----------------------------------------------------------------------------
 
 import { createClient, ENERGIES, ERROR_KINDS, GdbError } from './client.js';
+import { currentPrices } from './prices.js';
 import { addDays, firstOfMonth, parisDay } from './dates.js';
 import { parseDaily, parseTotal, sumDays } from './readings.js';
 
@@ -119,10 +120,19 @@ export function createAccount({
     return clientFactory({ email: config.email, password: config.password }).getContracts();
   }
 
+  /**
+   * The current prices of every contract, read on espaceclient.gazdebordeaux.fr
+   * (on demand: they change rarely).
+   */
+  async function readPrices(config) {
+    assertConfigured(config);
+    return (await clientFor(config).getContractDetails()).map(currentPrices);
+  }
+
   /** True when the last refresh succeeded. */
   function isHealthy() {
     return state.lastSuccessAt !== null && state.lastError === null;
   }
 
-  return { state, refresh, testConnection, isHealthy };
+  return { state, refresh, testConnection, readPrices, isHealthy };
 }

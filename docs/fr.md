@@ -76,8 +76,8 @@ un redémarrage.
   saisis et liste les contrats trouvés.
 - **Rafraîchir maintenant** : lit l'espace client tout de suite et indique
   le dernier jour relevé.
-- **Mes prix de contrat** : calcule les prix réellement payés sur votre
-  contrat d'électricité (voir « Contrats d'énergie »).
+- **Mes prix de contrat** : affiche les prix actuels de vos contrats, tels
+  qu'ils sont sur espaceclient.gazdebordeaux.fr (voir « Contrats d'énergie »).
 
 ## Scènes
 
@@ -149,42 +149,32 @@ Votre offre est écrite dans votre espace client, ligne « Votre tarif ».
 
 ### Vos prix : le bouton « Mes prix de contrat »
 
-Une offre à prix fixe garde **le prix du jour de la souscription** : un
-contrat signé il y a deux ans n'a pas les prix de la grille d'aujourd'hui. Le
-bouton **Mes prix de contrat** (onglet **Configuration**) les calcule à
-partir de **votre** espace client : pour chaque jour, Gaz de Bordeaux donne
-les kWh et ce qu'ils ont coûté, l'intégration en déduit le prix du kWh
-réellement payé (heures pleines et creuses séparées), l'abonnement mensuel,
-la puissance et les heures creuses. Exemple :
+Une offre à prix fixe garde **le prix du jour de la souscription**, une offre
+indexée (Ecodigo Elec) change avec les taxes et le marché : votre prix n'est
+pas forcément celui de la grille d'aujourd'hui. Le bouton **Mes prix de
+contrat** (onglet **Configuration**) lit vos prix actuels sur
+**espaceclient.gazdebordeaux.fr** (mêmes e-mail et mot de passe), ligne
+« Votre prix actuel » de la page de votre contrat, et les donne tels quels,
+sans calcul. Exemple :
 
-> Électricité (6 kVA) : 0,18373 €/kWh, abonnement 15,87 €/mois. Calculé sur
-> les 30 derniers jours de votre compte.
+> Électricité, OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE (BASE, 6 kVA) :
+> 0,160164 €/kWh, abonnement 15,87 €/mois.
 
-Ce sont des prix **TTC**, comme ceux affichés par Gaz de Bordeaux et comme
-les contrats proposés par Gladys. Le site arrondit chaque jour au centime : le prix du
-kWh est juste à quelques millionièmes près, mais l'abonnement peut différer de
-quelques centimes (jusqu'à une quinzaine) quand la part par jour est la même
-chaque jour. En cas d'écart, préférez l'abonnement indiqué dans votre espace
-client (« Votre prix actuel »).
+Ce sont des prix **TTC** (taxes comprises : CTA dans l'abonnement, accise
+dans le kWh), comme les contrats proposés par Gladys. Recopiez-les dans
+l'assistant de contrat de Gladys : Gladys ne permet pas à une intégration de
+remplir un contrat à votre place.
 
-Recopiez ces valeurs dans l'assistant de contrat de Gladys. Le prix payé est
-aussi affiché dans le widget (ligne **Prix payé**).
-
-Gladys ne permet pas à une intégration de remplir un contrat à votre place :
-c'est pourquoi il faut les recopier une fois, puis à chaque changement de prix.
+Si l'espace client ne peut pas être lu, le bouton le dit : les prix sont alors
+à recopier depuis la page de votre contrat sur espaceclient.gazdebordeaux.fr.
 
 ### Quand vos prix changent
 
 Laissez la **date de fin** de votre contrat Gladys vide tant que vos prix ne
 changent pas. Ils peuvent changer en cours de route : nouvelle grille (NovaFlex,
-Ecodigo Elec, fin d'une période à prix fixe), ou taxe (accise, TVA) qui change le prix TTC.
-
-Le bouton **Mes prix de contrat** repère ce changement dans vos relevés et
-calcule alors les prix sur les seuls jours depuis. Exemple :
-
-> Électricité (6 kVA) : 0,17112 €/kWh, abonnement 15,87 €/mois. Nouveaux prix
-> depuis le 01/02/2027 : terminez votre contrat Gladys le 31/01/2027 et
-> créez-en un nouveau à partir du 01/02/2027 avec ces prix.
+Ecodigo Elec, fin d'une période à prix fixe), ou taxe (accise, TVA) qui change
+le prix TTC. Gaz de Bordeaux vous prévient ; le bouton **Mes prix de contrat**
+donne alors les nouveaux prix.
 
 1. Sur le contrat actuel, mettez la **date de fin** à la veille du changement.
 2. Créez un **nouveau contrat** qui démarre le jour du changement, avec les
@@ -193,11 +183,6 @@ calcule alors les prix sur les seuls jours depuis. Exemple :
 Les jours passés gardent ainsi leurs anciens prix. Ne modifiez pas les prix du
 contrat existant : Gladys recalculerait tout l'historique depuis le début du
 contrat avec le nouveau prix.
-
-Quelques jours après le changement, les prix sont un peu moins précis (moins
-de jours pour les calculer) : cliquez à nouveau une ou deux semaines plus
-tard et corrigez le nouveau contrat si besoin. Le changement n'est repéré que
-dans les jours relevés (**Jours d'historique à importer**, jusqu'à 90).
 
 ### Les prix par défaut : les grilles officielles
 

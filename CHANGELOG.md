@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-10-15
+
 ### Changed
 
 - "My contract" energy contract template: nothing to type any more. The
@@ -99,7 +101,8 @@ the notes of the version's GitHub Release.
   Release, multi-arch build and GitHub Release workflows, Dependabot.
 - `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.1...v1.0.2

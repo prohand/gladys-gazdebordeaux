@@ -32,12 +32,7 @@ import {
   SCENE_ACTIONS,
 } from './capabilities/scenes.js';
 import { refreshWidgets, WIDGETS } from './capabilities/widget.js';
-import {
-  currentPrice,
-  priceIntervals,
-  publishPriceCalendar,
-  recordPriceHistory,
-} from './capabilities/energy.js';
+import { publishPriceCalendar, recordPriceHistory } from './capabilities/energy.js';
 import { createFileStore } from './store.js';
 
 const logger = createLogger({ name: 'integration' });
@@ -47,17 +42,11 @@ const HOUR_MS = 60 * 60 * 1000;
 /**
  * Register every handler on `gladys`.
  * @param {object} gladys a GladysIntegration (or the SDK fake)
- * @param {{ account?: object, store?: object, today?: () => string, now?: () => Date, sleep?: (ms: number) => Promise<void> }} [options]
+ * @param {{ account?: object, store?: object, today?: () => string, sleep?: (ms: number) => Promise<void> }} [options]
  */
 export function createIntegration(
   gladys,
-  {
-    account = createAccount(),
-    store = createFileStore(),
-    today = () => parisDay(),
-    now = () => new Date(),
-    sleep,
-  } = {},
+  { account = createAccount(), store = createFileStore(), today = () => parisDay(), sleep } = {},
 ) {
   let config = normalizeConfig();
   let timer = null;
@@ -79,7 +68,7 @@ export function createIntegration(
   }
 
   // The current prices, read at every refresh to announce a change and to
-  // price the delegated energy contract. They come from another website
+  // feed the price calendar of the energy contract. They come from another website
   // (espaceclient): a failure there is logged, it does not fail the refresh
   // of the readings.
   async function checkPrices() {
@@ -228,19 +217,6 @@ export function createIntegration(
         ? errorMessage(error)
         : pricesUnavailableMessage(error);
     }
-  });
-
-  // --- Energy contract "My Gaz de Bordeaux contract" (Gladys 5.2+) --------
-  // The core prices the kWh of that template through these two commands:
-  // the prices kept from espaceclient answer, the website is not called.
-  gladys.onEnergyPrice(async (request) => {
-    await loadStore();
-    return priceIntervals(request, { store });
-  });
-
-  gladys.onEnergyCurrent(async (request) => {
-    await loadStore();
-    return currentPrice(request, { store, now: now() });
   });
 
   // --- Scene actions (Gladys 5.1+) -----------------------------------------

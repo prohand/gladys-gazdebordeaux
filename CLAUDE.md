@@ -13,9 +13,9 @@ and year totals. Gladys 5.1+ adds scene triggers (new daily reading, high consum
 unreachable, contract prices changed), scene actions (refresh, get a consumption) and a "consumption" widget; Gladys 5.2+
 adds electricity contract templates (three offers × Base, Peak/Off-peak) to the contract wizard,
 declared in the manifest `energy_contracts` (the core rule engine prices them), plus the
-delegated "My contract" template the integration prices itself with the user's own prices; the
-"My contract prices" button gives the current prices of the user's own contracts, read on
-espaceclient.gazdebordeaux.fr.
+"My contract" template whose kWh price the integration publishes every day in a price calendar,
+from the user's own prices; the "My contract prices" button gives the current prices of the
+user's own contracts, read on espaceclient.gazdebordeaux.fr.
 
 Started from the official
 [JavaScript template](https://github.com/GladysAssistant/integration-template-js); the workflows
@@ -56,7 +56,7 @@ src/devices/contract.js      the device of a contract: features, dated states, t
 src/devices/index.js         discovery payload, contract lookup, "is it created?"
 src/capabilities/scenes.js   scene triggers fired after a refresh, scene action handlers
 src/capabilities/widget.js   dashboard widget content + its Refresh action
-src/capabilities/energy.js   the delegated "My contract" template: kWh priced from the prices kept
+src/capabilities/energy.js   the "My contract" template: price history, daily price calendar
 docs/{en,fr,de,es}.md        user documentation, re-hosted by Gladys (keep the four in sync)
 test/                        node --test, against the SDK fake Gladys + test/helpers/fakeWebsite.js
 .github/scripts/changelog-release.mjs  changelog roll of the Release workflow (tested)
@@ -131,25 +131,16 @@ There is no public API: the client calls the JSON endpoints the customer website
   nothing. The widget matches them to its contract by energy (the two websites share no id). These field names come from the
   website's own code, not from a documented API: keep every read null-safe; their NAMES are
   logged at debug level to check them on a real account.
-- **"My contract" template** (`espaceclient-elec`, `pricing_mode: "delegated"`, hand-written,
-  kept as is by `tariffs.mjs`): no `tariff`, no required input — Gladys gives an integration no
-  way to pre-fill the wizard, so the integration prices EVERY cost: `onEnergyPrice` returns
-  `components: { energy, subscription }`, the subscription spread over the interval's share of
-  the local month's minutes (as the core spreads a monthly `fixed` component). A contract of
-  template version 1 carries `inputs.subscription_per_month` (a core `fixed` component): then
-  the subscription is NOT added. Prices come from the store `price-history` (espaceclient
-  electricity prices with the day they were first read, subscription included), never from
-  the website: a retry must get the same answer. A day before the first read
-  takes the first prices; a whole-day interval (local midnight, kWh / max power > 1 h) on
-  Peak/Off-peak is split by its off-peak minutes. Prices never read = throw (no cost, the core
-  retries), never a zero.
-- **"Computed by Gladys" template** (`espaceclient-elec-rules`, `pricing_mode: "rules"`,
-  hand-written, kept as is by `tariffs.mjs`): the energy rule reads the daily price calendar
-  `gazdebordeaux-kwh-price` (`price_from_calendar`), the fallback and the subscription are inputs
-  (a `fixed` amount cannot come from a calendar). `publishPriceCalendar` feeds it after every
-  refresh and every "My contract prices" read, from the `price-history` (never the website): one
-  price per day from the earliest contract start (or first read) to 7 days ahead, peak/off-peak
-  weighted by the off-peak share of the day. Never rename the calendar key.
+- **"My contract" template** (`espaceclient-elec-rules`, `pricing_mode: "rules"`, hand-written,
+  kept as is by `tariffs.mjs`): the energy fallback reads the daily price calendar
+  `gazdebordeaux-kwh-price` (`price_from_calendar`), only the subscription is an input (a `fixed`
+  amount cannot come from a calendar; Gladys gives an integration no way to fill a contract in).
+  `publishPriceCalendar` feeds it after every refresh and every "My contract prices" read, from
+  the store `price-history` (espaceclient electricity prices with the day they were first read,
+  never the website): one price per day from the earliest contract start (or first read) to 7
+  days ahead, a day before the first read taking the first prices, peak/off-peak weighted by the
+  off-peak share of the day. Never rename the calendar key. The delegated template
+  (`espaceclient-elec`) was removed in favour of this one: never reuse its key.
 - **Widget budget**: 8 components at most (4 tiles + chart + status + button today);
   `test/widget.test.js` runs `validateWidgetContent` in the four languages.
 

@@ -1401,7 +1401,7 @@
         }
       },
       {
-        "key": "espaceclient-elec",
+        "key": "espaceclient-elec-rules",
         "name": {
           "en": "Gaz de Bordeaux – My contract (customer account prices)",
           "fr": "Gaz de Bordeaux – Mon contrat (prix de l'espace client)",
@@ -1409,55 +1409,16 @@
           "es": "Gaz de Bordeaux – Mi contrato (precios de la cuenta)"
         },
         "description": {
-          "en": "The prices of YOUR electricity contract, read by the integration on espaceclient.gazdebordeaux.fr (\"Votre prix actuel\"): kWh and subscription, Base or Peak/Off-peak, any offer (Ecodigo, NovaFixe…). Nothing to type: the integration computes the whole cost. When your prices change, the new ones apply from the day they are read: no new contract to create.",
-          "fr": "Les prix de VOTRE contrat d'électricité, lus par l'intégration sur espaceclient.gazdebordeaux.fr (« Votre prix actuel ») : kWh et abonnement, Base ou Heures creuses, toute offre (Ecodigo, NovaFixe…). Rien à saisir : l'intégration calcule tout le coût. Quand vos prix changent, les nouveaux s'appliquent dès le jour où ils sont lus : pas de nouveau contrat à créer.",
-          "de": "Die Preise IHRES Stromvertrags, von der Integration auf espaceclient.gazdebordeaux.fr gelesen („Votre prix actuel“): kWh und Grundgebühr, Base oder HT/NT, jedes Angebot (Ecodigo, NovaFixe…). Nichts einzugeben: die Integration berechnet die gesamten Kosten. Ändern sich Ihre Preise, gelten die neuen ab dem Tag, an dem sie gelesen werden: kein neuer Vertrag nötig.",
-          "es": "Los precios de SU contrato de electricidad, leídos por la integración en espaceclient.gazdebordeaux.fr («Votre prix actuel»): kWh y suscripción, Base u Horas valle, cualquier oferta (Ecodigo, NovaFixe…). Nada que introducir: la integración calcula todo el coste. Cuando sus precios cambian, los nuevos se aplican desde el día en que se leen: no hay que crear otro contrato."
-        },
-        "country": "FR",
-        "currency": "EUR",
-        "timezone": "Europe/Paris",
-        "pricing_mode": "delegated",
-        "version": "2",
-        "inputs": [
-          {
-            "key": "off_peak_slots",
-            "type": "time_intervals",
-            "required": false,
-            "label": {
-              "en": "Off-peak hours (if not read)",
-              "fr": "Heures creuses (si non lues)",
-              "de": "Niedertarifzeiten (falls nicht gelesen)",
-              "es": "Horas valle (si no se leen)"
-            },
-            "description": {
-              "en": "Peak/Off-peak only, and only if the \"My contract prices\" button does not show them: the hours read on your customer account come first.",
-              "fr": "Heures creuses seulement, et seulement si le bouton « Mes prix de contrat » ne les affiche pas : les heures lues sur votre espace client passent avant.",
-              "de": "Nur HT/NT, und nur wenn die Schaltfläche „Meine Vertragspreise“ sie nicht anzeigt: die im Kundenkonto gelesenen Zeiten haben Vorrang.",
-              "es": "Solo Horas valle, y solo si el botón «Mis precios de contrato» no las muestra: las horas leídas en su cuenta de cliente tienen prioridad."
-            }
-          }
-        ]
-      },
-      {
-        "key": "espaceclient-elec-rules",
-        "name": {
-          "en": "Gaz de Bordeaux – My contract (computed by Gladys)",
-          "fr": "Gaz de Bordeaux – Mon contrat (calculé par Gladys)",
-          "de": "Gaz de Bordeaux – Mein Vertrag (von Gladys berechnet)",
-          "es": "Gaz de Bordeaux – Mi contrato (calculado por Gladys)"
-        },
-        "description": {
-          "en": "The kWh price of YOUR electricity contract, read on espaceclient.gazdebordeaux.fr and published daily in a price calendar: Gladys computes the cost itself, a price change applies from the day it is read. Type the subscription and a fallback kWh price (\"My contract prices\" button): the subscription does not follow price changes, the fallback only covers days not published (integration stopped over 7 days). Peak/Off-peak: a daily average.",
-          "fr": "Le prix du kWh de VOTRE contrat d'électricité, lu sur espaceclient.gazdebordeaux.fr et publié chaque jour dans un calendrier de prix : Gladys calcule lui-même le coût, un changement de prix s'applique dès sa lecture. Saisissez l'abonnement et un prix de secours (bouton « Mes prix de contrat ») : l'abonnement ne suit pas les changements, le secours ne sert qu'aux jours non publiés (intégration arrêtée plus de 7 jours). Heures creuses : une moyenne du jour.",
-          "de": "Der kWh-Preis IHRES Stromvertrags, auf espaceclient.gazdebordeaux.fr gelesen und täglich in einem Preiskalender veröffentlicht: Gladys berechnet die Kosten selbst, eine Preisänderung gilt ab dem Lesetag. Grundgebühr und Ersatzpreis eingeben (Schaltfläche „Meine Vertragspreise“): die Grundgebühr folgt keiner Änderung, der Ersatzpreis gilt nur für nicht veröffentlichte Tage (Integration über 7 Tage gestoppt). HT/NT: ein Tagesmittel.",
-          "es": "El precio del kWh de SU contrato de electricidad, leído en espaceclient.gazdebordeaux.fr y publicado cada día en un calendario de precios: Gladys calcula él mismo el coste, un cambio de precio se aplica desde su lectura. Introduzca la suscripción y un precio de reserva (botón «Mis precios de contrato»): la suscripción no sigue los cambios, la reserva solo cubre días no publicados (integración parada más de 7 días). Horas valle: una media del día."
+          "en": "The kWh price of YOUR electricity contract (\"Votre prix actuel\" of espaceclient.gazdebordeaux.fr), any offer, Base or Peak/Off-peak: the integration publishes it every day in a price calendar, Gladys computes the cost. Only the subscription is typed (\"My contract prices\" button gives it). A kWh price change applies from the day it is read; a subscription change is typed in the contract. Peak/Off-peak: an average of the day by its off-peak hours.",
+          "fr": "Le prix du kWh de VOTRE contrat d'électricité (« Votre prix actuel » de espaceclient.gazdebordeaux.fr), toute offre, Base ou Heures creuses : l'intégration le publie chaque jour dans un calendrier de prix, Gladys calcule le coût. Seul l'abonnement est à saisir (le bouton « Mes prix de contrat » le donne). Un changement du prix du kWh s'applique dès sa lecture ; un changement d'abonnement se saisit dans le contrat. Heures creuses : une moyenne du jour.",
+          "de": "Der kWh-Preis IHRES Stromvertrags („Votre prix actuel“ auf espaceclient.gazdebordeaux.fr), jedes Angebot, Base oder HT/NT: die Integration veröffentlicht ihn täglich in einem Preiskalender, Gladys berechnet die Kosten. Nur die Grundgebühr ist einzugeben (Schaltfläche „Meine Vertragspreise“). Eine kWh-Preisänderung gilt ab dem Lesetag; eine neue Grundgebühr wird im Vertrag eingegeben. HT/NT: ein Tagesmittel.",
+          "es": "El precio del kWh de SU contrato de electricidad («Votre prix actuel» de espaceclient.gazdebordeaux.fr), cualquier oferta, Base u Horas valle: la integración lo publica cada día en un calendario de precios, Gladys calcula el coste. Solo se introduce la suscripción (la da el botón «Mis precios de contrato»). Un cambio del precio del kWh se aplica desde su lectura; un cambio de suscripción se introduce en el contrato. Horas valle: una media del día."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "rules",
-        "version": "1",
+        "version": "2",
         "calendars": ["gazdebordeaux-kwh-price"],
         "inputs": [
           {
@@ -1476,24 +1437,6 @@
               "fr": "Donné par le bouton « Mes prix de contrat ».",
               "de": "Nennt die Schaltfläche „Meine Vertragspreise“.",
               "es": "Lo da el botón «Mis precios de contrato»."
-            }
-          },
-          {
-            "key": "kwh_price",
-            "type": "number",
-            "unit": "EUR/kWh",
-            "required": true,
-            "label": {
-              "en": "Fallback kWh price (incl. VAT)",
-              "fr": "Prix du kWh de secours (TTC)",
-              "de": "Ersatz-kWh-Preis (inkl. MwSt.)",
-              "es": "Precio del kWh de reserva (IVA incl.)"
-            },
-            "description": {
-              "en": "Only for the days the integration has not published. Your kWh price (Peak/Off-peak: the peak one), given by the \"My contract prices\" button.",
-              "fr": "Seulement pour les jours que l'intégration n'a pas publiés. Votre prix du kWh (Heures creuses : celui des heures pleines), donné par le bouton « Mes prix de contrat ».",
-              "de": "Nur für die Tage, die die Integration nicht veröffentlicht hat. Ihr kWh-Preis (HT/NT: der HT-Preis), den die Schaltfläche „Meine Vertragspreise“ nennt.",
-              "es": "Solo para los días que la integración no ha publicado. Su precio del kWh (Horas valle: el de horas punta), que da el botón «Mis precios de contrato»."
             }
           },
           {
@@ -1521,15 +1464,10 @@
             {
               "key": "energy",
               "kind": "consumption",
-              "rules": [
-                {
-                  "label": "Prix de l'espace client",
-                  "price_from_calendar": "gazdebordeaux-kwh-price"
-                }
-              ],
+              "rules": [],
               "fallback": {
-                "label": "Prix de secours",
-                "price": "{{input:kwh_price}}"
+                "label": "Prix de l'espace client",
+                "price_from_calendar": "gazdebordeaux-kwh-price"
               }
             },
             {

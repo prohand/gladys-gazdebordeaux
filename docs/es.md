@@ -159,67 +159,39 @@ sirve para todas las ofertas. Su oferta figura en su cuenta de cliente, línea
 
 ### Lo más sencillo: la plantilla «Mi contrato»
 
-La plantilla **Gaz de Bordeaux – Mi contrato (precios de la cuenta)** usa **sus
-propios precios**, los que la integración lee en
-**espaceclient.gazdebordeaux.fr** (línea «Votre prix actuel»):
+La plantilla **Gaz de Bordeaux – Mi contrato (precios de la cuenta)** usa
+**sus propios precios**, los que la integración lee en
+**espaceclient.gazdebordeaux.fr** (línea «Votre prix actuel»), para cualquier
+oferta (Ecodigo, NovaFixe, NovaFlex…):
 
-1. En Gladys, **Energía** → contrato del contador eléctrico Gaz de Bordeaux,
-   elija esta plantilla.
-2. Nada que introducir: la integración da a Gladys todo el coste, kWh (Base u
-   Horas valle) y suscripción, para todas las ofertas (Ecodigo, NovaFixe,
-   NovaFlex…).
+1. En Gladys, **Energía** → contrato del contador eléctrico de Gaz de
+   Bordeaux, elija esta plantilla.
+2. Introduzca la **suscripción al mes**, que da el botón **Mis precios de
+   contrato**. Eso es todo: el precio del kWh no se introduce.
+3. Pulse **Mis precios de contrato** (o espere a la próxima actualización): la
+   integración llena el calendario de precios desde el inicio del contrato.
 
-El asistente no muestra ningún precio y una tarifa vacía (`"components": []`):
-es normal, los precios quedan del lado de la integración. El campo **potencia
-contratada** es opcional (solo informativo): el botón **Mis precios de
-contrato** la da si quiere rellenarlo. Gladys no permite que una integración
-rellene el asistente por usted.
+Cómo funciona: cada día, la integración publica el precio del kWh de su
+cuenta de cliente en un calendario de precios (`gazdebordeaux-kwh-price`),
+hasta 7 días por adelantado, y la tarifa del contrato lo lee
+(`price_from_calendar`). Gladys calcula él mismo el coste. El JSON del
+contrato muestra este calendario, no la cifra: los precios de cada día están
+en el calendario.
 
-Cuando sus precios cambian, la integración lo ve en la siguiente
-actualización: los nuevos precios se aplican desde ese día, los días pasados
-conservan los antiguos. **No hay que crear otro contrato.**
-
-Un contrato creado con la primera versión de esta plantilla (con un campo
-«Suscripción al mes») sigue funcionando: la suscripción introducida allí se
-cuenta una sola vez. Para quitarla, actualice el contrato desde la plantilla
-en el asistente.
-
-- La integración debe estar en marcha: Gladys le pide el precio. Si está
-  parada, los costes se calculan a su vuelta.
-- Los días anteriores a la primera lectura de precios toman los primeros
+- Un **cambio del precio del kWh** se aplica desde el día en que se lee: nada
+  que hacer.
+- Un **cambio de suscripción**: cree un nuevo contrato (ver «Cuando cambian
+  sus precios»). Gladys no permite a una integración rellenar ni modificar un
+  contrato.
+- Los días anteriores a la primera lectura de los precios toman los primeros
   precios leídos.
-- **Horas valle** solo con consumo diario: un día se reparte según su parte de
-  horas valle (8 de 24), una estimación. Con consumo cada media hora (Linky),
-  el cálculo es exacto. Si la cuenta de cliente no da sus horas valle,
-  introdúzcalas en el contrato.
+- **Horas valle**: un precio medio por día, según la parte de horas valle (8
+  de 24), ya que las lecturas son diarias. Si la cuenta de cliente no da sus
+  horas valle, introdúzcalas en el contrato.
+- El calendario se llena 7 días por adelantado: si la integración se para más
+  tiempo, los días siguientes reciben su precio a su vuelta.
 - Se admite un contrato de electricidad por cuenta de cliente (el primero, si
   hay varios).
-
-### Variante: «Mi contrato (calculado por Gladys)»
-
-La plantilla **Gaz de Bordeaux – Mi contrato (calculado por Gladys)** usa los
-mismos precios, pero es Gladys quien calcula el coste, con una tarifa real
-(visible en el JSON del contrato):
-
-- Cada día, la integración publica el precio del kWh de su cuenta de cliente
-  en un calendario de precios (`gazdebordeaux-kwh-price`), hasta 7 días por
-  adelantado. La tarifa lo lee (`price_from_calendar`).
-- Un cambio de precio se aplica desde el día en que se lee: no hay que crear
-  otro contrato.
-- A introducir: la **suscripción al mes** y un **precio del kWh de reserva**,
-  que da el botón **Mis precios de contrato**.
-
-Límites:
-
-- La suscripción es un número fijo de la tarifa: cuando cambia, corríjala en
-  el contrato.
-- El precio de reserva solo sirve para los días que la integración no ha
-  publicado (parada más de 7 días).
-- Horas valle: un precio medio por día, según la parte de horas valle, incluso
-  con lecturas cada media hora.
-- Una vez creado el contrato, pulse **Mis precios de contrato** (o espere a la
-  próxima actualización): el calendario se remonta entonces al inicio del
-  contrato.
 
 ### Sus precios: el botón «Mis precios de contrato»
 
@@ -236,13 +208,13 @@ Ejemplo:
 
 Son precios con IVA e impuestos (CTA en la suscripción, impuesto especial en
 el kWh), como los contratos que ofrece Gladys. Con la plantilla **Mi
-contrato** la integración los aplica ella misma; con otra plantilla, cópielos
-en el asistente de contratos de Gladys.
+contrato** solo se introduce la suscripción; con otra plantilla, cópielos en
+el asistente de contratos de Gladys.
 
 Para un contrato de electricidad, el botón da también estos precios como
 tarifa Gladys (JSON), lista para pegar donde Gladys pide la tarifa de un
-contrato. Un contrato **Mi contrato** no tiene ninguna en Gladys (la
-integración lo calcula): este JSON es el que hay que usar. En Horas valle se
+contrato. Sus precios son fijos: para una
+plantilla cuyos precios usted introduce. En Horas valle se
 añade una regla de horas valle con sus horarios (si espaceclient los da).
 
 ```json
@@ -260,8 +232,9 @@ los precios de la página de su contrato en espaceclient.gazdebordeaux.fr.
 
 ### Cuando cambian sus precios
 
-Con la plantilla **Mi contrato**, nada que hacer para el precio del kWh (ver
-más arriba). Con otra plantilla: deje vacía la **fecha de fin** de su contrato
+Con la plantilla **Mi contrato**, el precio del kWh sigue solo (ver más
+arriba): solo un cambio de suscripción necesita los pasos siguientes. Con
+cualquier plantilla: deje vacía la **fecha de fin** de su contrato
 de Gladys mientras sus precios no cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, Ecodigo Elec,
 fin de un periodo a precio fijo) o un impuesto (impuesto especial, IVA) que
 cambia el precio con IVA. Gaz de Bordeaux le avisa, y también el disparador de escena **Precios del contrato cambiados**; el botón **Mis precios de contrato** da entonces los nuevos precios.

@@ -162,65 +162,40 @@ Kundenkonto, Zeile „Votre tarif“.
 
 ### Am einfachsten: die Vorlage „Mein Vertrag“
 
-Die Vorlage **Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)** nutzt
-**Ihre eigenen Preise**, die die Integration auf
-**espaceclient.gazdebordeaux.fr** liest (Zeile „Votre prix actuel“):
+Die Vorlage **Gaz de Bordeaux – Mein Vertrag (Preise des Kundenkontos)**
+nutzt **Ihre eigenen Preise**, die die Integration auf
+**espaceclient.gazdebordeaux.fr** liest (Zeile „Votre prix actuel“), für jedes
+Angebot (Ecodigo, NovaFixe, NovaFlex…):
 
-1. Wählen Sie in Gladys unter **Energie** → Vertrag des Gaz de Bordeaux
-   Stromzählers diese Vorlage.
-2. Nichts einzugeben: Die Integration gibt Gladys die gesamten Kosten, kWh
-   (Base oder HT/NT) und Grundgebühr, für jedes Angebot (Ecodigo, NovaFixe,
-   NovaFlex…).
+1. In Gladys **Energie** → Vertrag des Gaz de Bordeaux Stromzählers, diese
+   Vorlage wählen.
+2. Die **Grundgebühr pro Monat** eingeben, die die Schaltfläche **Meine
+   Vertragspreise** nennt. Das ist alles: der kWh-Preis wird nicht
+   eingegeben.
+3. Auf **Meine Vertragspreise** klicken (oder die nächste Aktualisierung
+   abwarten): die Integration füllt den Preiskalender ab Vertragsbeginn.
 
-Der Assistent zeigt keinen Preis und einen leeren Tarif (`"components": []`):
-das ist normal, die Preise bleiben bei der Integration. Das Feld **vertragliche
-Leistung** ist optional (nur zur Information): die Schaltfläche **Meine
-Vertragspreise** nennt sie, wenn Sie es ausfüllen möchten. Gladys erlaubt
-einer Integration nicht, den Assistenten für Sie auszufüllen.
+So funktioniert es: täglich veröffentlicht die Integration den kWh-Preis
+Ihres Kundenkontos in einem Preiskalender (`gazdebordeaux-kwh-price`), bis zu
+7 Tage im Voraus, und der Tarif des Vertrags liest ihn
+(`price_from_calendar`). Gladys berechnet die Kosten selbst. Das JSON des
+Vertrags zeigt diesen Kalender, nicht die Zahl: die Preise jedes Tages stehen
+im Kalender.
 
-Ändern sich Ihre Preise, bemerkt die Integration es bei der nächsten
-Aktualisierung: Die neuen Preise gelten ab diesem Tag, vergangene Tage behalten
-die alten. **Kein neuer Vertrag nötig.**
-
-Ein mit der ersten Version dieser Vorlage angelegter Vertrag (mit einem Feld
-„Grundgebühr pro Monat“) funktioniert weiter: die dort eingegebene Grundgebühr
-wird einmal gezählt. Um sie zu entfernen, aktualisieren Sie den Vertrag im
-Assistenten aus der Vorlage.
-
-- Die Integration muss laufen: Gladys fragt sie nach dem Preis. Ist sie
-  gestoppt, werden die Kosten bei ihrer Rückkehr berechnet.
-- Tage vor dem ersten Lesen der Preise erhalten die ersten gelesenen Preise.
-- **HT/NT** nur mit Tageswerten: Ein Tag wird nach seinem Anteil an
-  Niedertarifstunden (8 von 24) aufgeteilt, eine Schätzung. Mit
-  Halbstundenwerten (Linky) ist die Berechnung genau. Gibt das Kundenkonto
-  Ihre Niedertarifzeiten nicht an, tragen Sie sie im Vertrag ein.
-- Ein Stromvertrag pro Kundenkonto wird unterstützt (bei mehreren der erste).
-
-### Variante: „Mein Vertrag (von Gladys berechnet)“
-
-Die Vorlage **Gaz de Bordeaux – Mein Vertrag (von Gladys berechnet)** nutzt
-dieselben Preise, aber Gladys berechnet die Kosten selbst, mit einem echten
-Tarif (im JSON des Vertrags sichtbar):
-
-- Täglich veröffentlicht die Integration den kWh-Preis Ihres Kundenkontos in
-  einem Preiskalender (`gazdebordeaux-kwh-price`), bis zu 7 Tage im Voraus.
-  Der Tarif liest ihn (`price_from_calendar`).
-- Eine Preisänderung gilt ab dem Tag, an dem sie gelesen wird: kein neuer
-  Vertrag nötig.
-- Einzugeben: die **Grundgebühr pro Monat** und ein **Ersatz-kWh-Preis**, die
-  die Schaltfläche **Meine Vertragspreise** nennt.
-
-Grenzen:
-
-- Die Grundgebühr ist eine feste Zahl des Tarifs: ändert sie sich, passen Sie
-  sie im Vertrag an.
-- Der Ersatzpreis gilt nur für Tage, die die Integration nicht veröffentlicht
-  hat (mehr als 7 Tage gestoppt).
-- HT/NT: ein Durchschnittspreis pro Tag nach dem Anteil der
-  Niedertarifstunden, auch mit halbstündlichen Werten.
-- Nach dem Anlegen des Vertrags auf **Meine Vertragspreise** klicken (oder die
-  nächste Aktualisierung abwarten): der Kalender reicht dann bis zum
-  Vertragsbeginn zurück.
+- Eine **kWh-Preisänderung** gilt ab dem Tag, an dem sie gelesen wird: nichts
+  zu tun.
+- Eine **neue Grundgebühr**: einen neuen Vertrag anlegen (siehe „Wenn sich
+  Ihre Preise ändern“). Gladys erlaubt einer Integration nicht, einen Vertrag
+  auszufüllen oder zu ändern.
+- Die Tage vor dem ersten Lesen der Preise erhalten die ersten gelesenen
+  Preise.
+- **HT/NT**: ein Durchschnittspreis pro Tag nach dem Anteil der
+  Niedertarifstunden (8 von 24), da die Werte täglich sind. Nennt das
+  Kundenkonto Ihre Niedertarifzeiten nicht, tragen Sie sie im Vertrag ein.
+- Der Kalender wird 7 Tage im Voraus gefüllt: ist die Integration länger
+  gestoppt, erhalten die folgenden Tage ihren Preis bei ihrer Rückkehr.
+- Ein Stromvertrag pro Kundenkonto wird unterstützt (der erste, wenn es
+  mehrere gibt).
 
 ### Ihre Preise: die Schaltfläche „Meine Vertragspreise“
 
@@ -237,13 +212,13 @@ an, ohne Berechnung. Beispiel:
 
 Es sind Bruttopreise (inkl. MwSt. und Abgaben: CTA in der Grundgebühr,
 Verbrauchsteuer im kWh-Preis), wie in den Verträgen von Gladys. Mit der
-Vorlage **Mein Vertrag** wendet die Integration sie selbst an; mit einer
+Vorlage **Mein Vertrag** wird nur die Grundgebühr eingegeben; mit einer
 anderen Vorlage übernehmen Sie sie in den Vertragsassistenten von Gladys.
 
 Für einen Stromvertrag gibt die Schaltfläche diese Preise auch als
 Gladys-Tarif (JSON) an, bereit zum Einfügen, wo Gladys den Tarif eines
-Vertrags verlangt. Ein Vertrag **Mein Vertrag** hat in Gladys keinen (die
-Integration berechnet ihn): dieses JSON ist zu verwenden. Bei HT/NT kommt eine
+Vertrags verlangt. Seine Preise sind fest: für eine
+Vorlage, deren Preise Sie eingeben. Bei HT/NT kommt eine
 Niedertarif-Regel mit Ihren Zeiten hinzu (wenn espaceclient sie angibt).
 
 ```json
@@ -262,8 +237,9 @@ espaceclient.gazdebordeaux.fr.
 
 ### Wenn sich Ihre Preise ändern
 
-Mit der Vorlage **Mein Vertrag** ist für den kWh-Preis nichts zu tun (siehe
-oben). Mit einer anderen Vorlage: Lassen Sie das **Enddatum** Ihres
+Mit der Vorlage **Mein Vertrag** folgt der kWh-Preis von selbst (siehe
+oben): nur eine neue Grundgebühr braucht die Schritte unten. Mit jeder
+Vorlage: Lassen Sie das **Enddatum** Ihres
 Gladys-Vertrags leer, solange sich Ihre Preise nicht ändern. Sie können sich unterwegs ändern: neue Preisliste
 (NovaFlex, Ecodigo Elec, Ende einer Festpreisperiode) oder eine Steuer
 (Verbrauchsteuer, MwSt.), die den Bruttopreis ändert. Gaz de Bordeaux informiert Sie, ebenso der Szenen-Auslöser **Vertragspreise geändert**; die Schaltfläche **Meine Vertragspreise** gibt dann die neuen Preise an.

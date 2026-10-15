@@ -32,7 +32,6 @@ import {
   SCENE_ACTIONS,
 } from './capabilities/scenes.js';
 import { refreshWidgets, WIDGETS } from './capabilities/widget.js';
-import { publishPriceCalendar, recordPriceHistory } from './capabilities/energy.js';
 import { createFileStore } from './store.js';
 
 const logger = createLogger({ name: 'integration' });
@@ -67,10 +66,9 @@ export function createIntegration(
     }
   }
 
-  // The current prices, read at every refresh to announce a change and to
-  // feed the price calendar of the energy contract. They come from another website
-  // (espaceclient): a failure there is logged, it does not fail the refresh
-  // of the readings.
+  // The current prices, read at every refresh to announce a change. They come
+  // from another website (espaceclient): a failure there is logged, it does
+  // not fail the refresh of the readings.
   async function checkPrices() {
     let prices;
     try {
@@ -79,7 +77,6 @@ export function createIntegration(
       logger.warn(`Contract prices not read: ${error.message}`);
       return;
     }
-    await recordPriceHistory(prices, { store, today: today() });
     await firePriceEvents(gladys, prices, { store }).catch((err) =>
       logger.warn('Scene event', err),
     );
@@ -113,11 +110,6 @@ export function createIntegration(
     await publishAll(gladys, account, { store, today: today(), sleep });
     await fireReadingEvents(gladys, account, { store, config });
     await checkPrices();
-    // From the prices kept, even when espaceclient failed: the calendar
-    // stays 7 days ahead.
-    await publishPriceCalendar(gladys, { store, today: today() }).catch((err) =>
-      logger.warn(`Price calendar not published: ${err.message}`),
-    );
     await publishTransports();
     refreshWidgets(gladys);
     return { ok: true };
@@ -204,12 +196,6 @@ export function createIntegration(
   gladys.onAction('show_prices', async () => {
     try {
       const prices = await account.readPrices(config);
-      await loadStore();
-      await recordPriceHistory(prices, { store, today: today() });
-      // A contract just created on the calendar template is fed at once.
-      await publishPriceCalendar(gladys, { store, today: today() }).catch((err) =>
-        logger.warn(`Price calendar not published: ${err.message}`),
-      );
       return contractPricesMessage(prices);
     } catch (error) {
       logger.warn(`Contract prices unavailable: ${error.message}`);

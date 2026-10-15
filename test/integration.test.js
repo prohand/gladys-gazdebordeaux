@@ -2,10 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { contractIds, FEATURES } from '../src/devices/contract.js';
 import { TRIGGERS } from '../src/capabilities/scenes.js';
-import { PRICE_CALENDAR } from '../src/capabilities/energy.js';
 import { createMemoryStore } from '../src/store.js';
 import { createAllDevices, CREDENTIALS, setup } from './helpers/setup.js';
-import { createFakeWebsite, ELEC_ID, GAS_ID, makeDays, TODAY } from './helpers/fakeWebsite.js';
+import { createFakeWebsite, ELEC_ID, GAS_ID, makeDays } from './helpers/fakeWebsite.js';
 
 const idsOf = (gladys, id, energy) => contractIds(gladys, { id, energy });
 
@@ -178,27 +177,12 @@ test('"My contract prices" gives the prices of espaceclient.gazdebordeaux.fr as 
     answer.data.message.fr,
     /\(BASE, 6 kVA\) : 0,160164 €\/kWh, abonnement 15,87 €\/mois/,
   );
-  assert.match(answer.data.message.fr, /choisissez le modèle « Gaz de Bordeaux – Mon contrat/);
+  assert.match(
+    answer.data.message.fr,
+    /saisissez-les dans le contrat d.énergie Gladys, modèle « Gaz de Bordeaux – Mon contrat »/,
+  );
   const login = site.requests.find((r) => r.pathname === '/api/authentication-token');
   assert.equal(login.host, 'espaceclient.gazdebordeaux.fr');
-});
-
-test('a refresh feeds the price calendar of the "computed by Gladys" template', async (t) => {
-  const { gladys, integration } = await setup(t, {
-    fake: { energyCalendars: { [PRICE_CALENDAR]: [] } },
-  });
-  await integration.refresh('test');
-  const [batch] = gladys.fake.publishedEnergyCalendars;
-  assert.equal(batch.calendar_key, PRICE_CALENDAR);
-  assert.deepEqual(batch.entries.at(0), { date: TODAY, price: 0.160164 });
-  assert.equal(batch.entries.length, 8, 'today and 7 days ahead');
-});
-
-test('a Gladys without the price calendar fails no refresh', async (t) => {
-  const { gladys, integration } = await setup(t);
-  const { ok } = await integration.refresh('test');
-  assert.equal(ok, true);
-  assert.deepEqual(gladys.fake.publishedEnergyCalendars, []);
 });
 
 test('"My contract prices" sends to the website when espaceclient cannot be read', async (t) => {

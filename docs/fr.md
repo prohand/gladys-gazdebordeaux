@@ -161,40 +161,28 @@ ancienne offre qui n'est plus vendue) : prenez le modèle **Mon contrat**
 ci-dessous, il marche pour toutes les offres. Votre offre est écrite dans votre
 espace client, ligne « Votre tarif ».
 
-### Le plus simple : le modèle « Mon contrat »
+### Le plus simple : les modèles « Mon contrat »
 
-Le modèle **Gaz de Bordeaux – Mon contrat (prix de l'espace client)** utilise
-**vos propres prix**, ceux que l'intégration lit sur
-**espaceclient.gazdebordeaux.fr** (ligne « Votre prix actuel »), pour toutes
-les offres (Ecodigo, NovaFixe, NovaFlex…) :
+Les modèles **Gaz de Bordeaux – Mon contrat – Base** et **– Heures creuses**
+prennent **vos propres prix**, pour toutes les offres (Ecodigo, NovaFixe,
+NovaFlex…). Ce sont ceux de votre espace client
+(**espaceclient.gazdebordeaux.fr**, ligne « Votre prix actuel »), donnés par
+le bouton **Mes prix de contrat** :
 
-1. Dans Gladys, **Énergie** → contrat du compteur électrique Gaz de Bordeaux,
-   choisissez ce modèle.
-2. Saisissez l'**abonnement par mois**, donné par le bouton **Mes prix de
-   contrat**. C'est tout : le prix du kWh ne se saisit pas.
-3. Cliquez sur **Mes prix de contrat** (ou attendez le prochain
-   rafraîchissement) : l'intégration remplit le calendrier de prix depuis le
-   début du contrat.
+1. Cliquez sur **Mes prix de contrat** (onglet **Configuration** de
+   l'intégration).
+2. Dans Gladys, **Énergie** → contrat du compteur électrique Gaz de Bordeaux,
+   choisissez le modèle **Mon contrat** de votre option (Base ou Heures
+   creuses).
+3. Saisissez les prix donnés par le bouton : prix du kWh (Heures creuses :
+   prix heures pleines et heures creuses, et les heures creuses) et abonnement
+   par mois.
 
-Comment ça marche : chaque jour, l'intégration publie le prix du kWh de votre
-espace client dans un calendrier de prix (`gazdebordeaux-kwh-price`), jusqu'à
-7 jours à l'avance, et le tarif du contrat le lit (`price_from_calendar`).
-Gladys calcule lui-même le coût. Le JSON du contrat montre ce calendrier, pas
-le chiffre : les prix de chaque jour sont dans le calendrier.
-
-- Un **changement du prix du kWh** s'applique dès le jour où il est lu : rien
-  à faire.
-- Un **changement d'abonnement** : créez un nouveau contrat (voir « Quand vos
-  prix changent »). Gladys ne permet pas à une intégration de remplir ou de
-  modifier un contrat.
-- Les jours d'avant la première lecture des prix prennent les premiers prix lus.
-- **Heures creuses** : un prix moyen par jour, selon la part d'heures creuses
-  (8 h sur 24), car les relevés sont journaliers. Si l'espace client ne donne
-  pas vos heures creuses, saisissez-les dans le contrat.
-- Le calendrier est rempli 7 jours à l'avance : si l'intégration est arrêtée
-  plus longtemps, les jours suivants reçoivent leur prix à son retour.
-- Un seul contrat d'électricité par espace client est pris en charge (le
-  premier, s'il y en a plusieurs).
+Les prix sont dans le contrat, comme avec les autres modèles : l'assistant et
+le JSON du contrat les affichent. Gladys ne permet pas à une intégration de
+remplir l'assistant : ils se saisissent donc une fois. Quand ils changent, le
+déclencheur de scène **Prix du contrat modifiés** vous prévient : créez un
+nouveau contrat (voir « Quand vos prix changent »).
 
 ### Vos prix : le bouton « Mes prix de contrat »
 
@@ -210,14 +198,13 @@ sans calcul. Exemple :
 > 0,160164 €/kWh, abonnement 15,87 €/mois.
 
 Ce sont des prix **TTC** (taxes comprises : CTA dans l'abonnement, accise
-dans le kWh), comme les contrats proposés par Gladys. Avec le modèle **Mon
-contrat**, seul l'abonnement est à saisir ; avec un autre modèle, recopiez-les
-dans l'assistant de contrat de Gladys.
+dans le kWh), comme les contrats proposés par Gladys. Recopiez-les dans l'assistant de
+contrat de Gladys (modèle **Mon contrat**, ou celui de votre offre).
 
 Pour un contrat d'électricité, le bouton donne aussi ces prix sous forme de
 tarif Gladys (JSON), prêt à coller là où Gladys demande le tarif d'un
-contrat. Ses prix sont fixes : pour un modèle dont
-vous saisissez les prix. En Heures
+contrat. C'est le tarif qu'obtient un contrat **Mon
+contrat**. En Heures
 creuses, une règle heures creuses est ajoutée avec vos horaires (si l'espace
 client les donne).
 
@@ -236,9 +223,7 @@ Si l'espace client ne peut pas être lu, le bouton le dit : les prix sont alors
 
 ### Quand vos prix changent
 
-Avec le modèle **Mon contrat**, le prix du kWh suit tout seul (voir plus
-haut) : seul un changement d'abonnement demande les étapes ci-dessous. Avec
-tout modèle : laissez la **date de fin** de votre contrat
+Laissez la **date de fin** de votre contrat
 Gladys vide tant que vos prix ne changent pas. Ils peuvent changer en cours de route : nouvelle grille (NovaFlex,
 Ecodigo Elec, fin d'une période à prix fixe), ou taxe (accise, TVA) qui change
 le prix TTC. Gaz de Bordeaux vous prévient, et le déclencheur de scène **Prix du
@@ -284,8 +269,7 @@ prix de NovaFixe Élec.
 - **Heures creuses** a besoin d'une consommation à la **demi-heure** (un
   compteur Linky relevé toutes les 30 minutes par une autre intégration).
   Avec la seule consommation journalière, Gladys ne peut pas savoir quels kWh
-  sont en heures creuses : n'utilisez pas ce modèle dans ce cas (le modèle
-  **Mon contrat** donne une estimation).
+  sont en heures creuses : n'utilisez pas ce modèle dans ce cas.
 - **Le gaz n'est pas concerné** : les contrats d'énergie de Gladys ne
   couvrent que l'électricité. Le coût du gaz reste celui donné par Gaz de
   Bordeaux (fonctionnalités « Coût du jour relevé », « Coût du mois »…).

@@ -10,7 +10,7 @@ A Gladys Assistant **external integration** (Node 22+, ESM, no build step, one r
 supplier. It signs in to the customer account (life.gazdebordeaux.fr) with the user's email and
 password and publishes, per contract, the daily consumption, cost and gas volume, plus the month
 and year totals. Gladys 5.1+ adds scene triggers (new daily reading, high consumption, account
-unreachable), scene actions (refresh, get a consumption) and a "consumption" widget; Gladys 5.2+
+unreachable, contract prices changed), scene actions (refresh, get a consumption) and a "consumption" widget; Gladys 5.2+
 adds electricity contract templates (three offers × Base, Peak/Off-peak) to the contract wizard,
 declared in the manifest `energy_contracts` (the core rule engine prices them), and the
 "My contract prices" button gives the current prices of the user's own contracts, read on
@@ -123,7 +123,10 @@ There is no public API: the client calls the JSON endpoints the customer website
   `.prixConsoUniteWithTaxeTTC`; gas `prixTotalTTCConso`), shown with every decimal given.
   **Never compute a price** from the daily amounts: they are rounded to the cent, the result is
   approximate (0.16066 instead of 0.160164 on a real account). When espaceclient cannot be read,
-  the button sends the user to its "Votre prix actuel" line. These field names come from the
+  the button sends the user to its "Votre prix actuel" line. Every refresh also reads them
+  (a failure there only logs: the readings still count): `price_changed` fires once per change,
+  the last prices kept in the store under `prices:<espaceclient id>`, the first read announcing
+  nothing. The widget matches them to its contract by energy (the two websites share no id). These field names come from the
   website's own code, not from a documented API: keep every read null-safe; their NAMES are
   logged at debug level to check them on a real account.
 - **Widget budget**: 8 components at most (4 tiles + chart + status + button today);

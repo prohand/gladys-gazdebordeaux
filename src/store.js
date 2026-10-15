@@ -1,6 +1,7 @@
 // -----------------------------------------------------------------------------
 // What must survive a restart: per contract, the last day already published
-// as a dated state and the last day a scene event was fired for.
+// as a dated state and the last day a scene event was fired for; per contract
+// of espaceclient (key `prices:<id>`), the last prices read.
 //
 // Without it, every restart (an update, a Gladys reboot) would publish the
 // imported history again — duplicated points in the charts — and fire
@@ -25,7 +26,7 @@ function createStore(load, save) {
     async load() {
       data = (await load()) ?? {};
     },
-    /** @returns {{ lastPublishedDay?: string, lastEventDay?: string }} */
+    /** @returns {{ lastPublishedDay?: string, lastEventDay?: string, prices?: object }} */
     get(contractId) {
       return { ...data[contractId] };
     },

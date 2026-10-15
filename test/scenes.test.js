@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { contractIds } from '../src/devices/contract.js';
 import { TRIGGERS } from '../src/capabilities/scenes.js';
 import { CREDENTIALS, setup } from './helpers/setup.js';
-import { createFakeWebsite, ELEC_ID, GAS_ID } from './helpers/fakeWebsite.js';
+import { createFakeWebsite, ELEC_CONTRACT, ELEC_ID, GAS_ID } from './helpers/fakeWebsite.js';
 
 const manifest = JSON.parse(
   await readFile(new URL('../gladys-assistant-integration.json', import.meta.url), 'utf8'),
@@ -24,6 +24,10 @@ test('scene event data only carries the keys its trigger declares, as primitives
   });
   addDay(site, GAS_ID, '2026-10-14', 50);
   addDay(site, ELEC_ID, '2026-10-14', 50);
+  site.espace.contracts['1001'] = {
+    ...ELEC_CONTRACT,
+    tarifScale: { ...ELEC_CONTRACT.tarifScale, prixTotalTTCAbo: 16.02 },
+  };
   await integration.refresh('test');
   site.blocked = true;
   await integration.refresh('test');
@@ -97,4 +101,49 @@ test('refresh_now reads the account and reports its outcome', async (t) => {
   const failed = await gladys.fake.sceneAction('refresh_now', {});
   assert.equal(failed.success, true, 'a failed read is an output, not a failed action');
   assert.equal(failed.data.outputs.success, false);
+});
+
+test('a price change on espaceclient fires "Contract prices changed" once, with both prices', async (t) => {
+  const site = createFakeWebsite();
+  const { gladys, integration } = await setup(t, { site });
+  await integration.refresh('test');
+  assert.equal(gladys.fake.sceneEvents.length, 0, 'the first read only records the prices');
+
+  site.espace.contracts['1001'] = {
+    ...ELEC_CONTRACT,
+    tarifScale: {
+      ...ELEC_CONTRACT.tarifScale,
+      prixTotalTTCAbo: 16.02,
+      base: { prixConsoUniteWithTaxeTTC: 0.1625 },
+    },
+  };
+  await integration.refresh('test');
+  await integration.refresh('test');
+  const events = gladys.fake.sceneEvents.filter(({ key }) => key === TRIGGERS.PRICE_CHANGED);
+  assert.equal(events.length, 1, 'one event per change');
+  assert.deepEqual(events[0].data, {
+    energy: 'electricity',
+    offer: 'OFFRE ECODIGO ELEC 100% ÉLECTRICITÉ VERTE',
+    kwh_price: 0.1625,
+    previous_kwh_price: 0.160164,
+    peak_price: null,
+    previous_peak_price: null,
+    off_peak_price: null,
+    previous_off_peak_price: null,
+    subscription: 16.02,
+    previous_subscription: 15.87,
+  });
+});
+
+test('a price the website stops giving is no change, and espaceclient failing fails no refresh', async (t) => {
+  const site = createFakeWebsite();
+  const { gladys, integration } = await setup(t, { site });
+  site.espace.contracts['1001'] = { ...ELEC_CONTRACT, tarifScale: {} };
+  assert.equal((await integration.refresh('test')).ok, true);
+  site.espace.me = { contracts: [] };
+  assert.equal((await integration.refresh('test')).ok, true);
+  assert.equal(
+    gladys.fake.sceneEvents.filter(({ key }) => key === TRIGGERS.PRICE_CHANGED).length,
+    0,
+  );
 });

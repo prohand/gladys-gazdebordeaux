@@ -475,6 +475,145 @@
           }
         }
       ]
+    },
+    {
+      "key": "price_changed",
+      "label": {
+        "en": "Contract prices changed",
+        "fr": "Prix du contrat modifiés",
+        "de": "Vertragspreise geändert",
+        "es": "Precios del contrato cambiados"
+      },
+      "description": {
+        "en": "The current prices of espaceclient.gazdebordeaux.fr changed (kWh or subscription, incl. VAT).",
+        "fr": "Les prix actuels d'espaceclient.gazdebordeaux.fr ont changé (kWh ou abonnement, TTC).",
+        "de": "Die aktuellen Preise auf espaceclient.gazdebordeaux.fr haben sich geändert (kWh oder Grundgebühr, brutto).",
+        "es": "Los precios actuales de espaceclient.gazdebordeaux.fr han cambiado (kWh o suscripción, IVA incl.)."
+      },
+      "fields": [
+        {
+          "key": "energy",
+          "type": "multi_select",
+          "label": {
+            "en": "Energy",
+            "fr": "Énergie",
+            "de": "Energie",
+            "es": "Energía"
+          },
+          "options": [
+            {
+              "value": "gas",
+              "label": {
+                "en": "Gas",
+                "fr": "Gaz",
+                "de": "Gas",
+                "es": "Gas"
+              }
+            },
+            {
+              "value": "electricity",
+              "label": {
+                "en": "Electricity",
+                "fr": "Électricité",
+                "de": "Strom",
+                "es": "Electricidad"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "offer",
+          "type": "string",
+          "label": {
+            "en": "Offer",
+            "fr": "Offre",
+            "de": "Angebot",
+            "es": "Oferta"
+          }
+        },
+        {
+          "key": "kwh_price",
+          "type": "number",
+          "label": {
+            "en": "kWh price (€)",
+            "fr": "Prix du kWh (€)",
+            "de": "kWh-Preis (€)",
+            "es": "Precio del kWh (€)"
+          }
+        },
+        {
+          "key": "previous_kwh_price",
+          "type": "number",
+          "label": {
+            "en": "Previous kWh price (€)",
+            "fr": "Ancien prix du kWh (€)",
+            "de": "Bisheriger kWh-Preis (€)",
+            "es": "Precio anterior del kWh (€)"
+          }
+        },
+        {
+          "key": "peak_price",
+          "type": "number",
+          "label": {
+            "en": "Peak kWh price (€)",
+            "fr": "Prix du kWh HP (€)",
+            "de": "kWh-Preis HT (€)",
+            "es": "Precio kWh punta (€)"
+          }
+        },
+        {
+          "key": "previous_peak_price",
+          "type": "number",
+          "label": {
+            "en": "Previous peak price (€)",
+            "fr": "Ancien prix HP (€)",
+            "de": "Bisheriger HT-Preis (€)",
+            "es": "Precio punta anterior (€)"
+          }
+        },
+        {
+          "key": "off_peak_price",
+          "type": "number",
+          "label": {
+            "en": "Off-peak kWh price (€)",
+            "fr": "Prix du kWh HC (€)",
+            "de": "kWh-Preis NT (€)",
+            "es": "Precio kWh valle (€)"
+          }
+        },
+        {
+          "key": "previous_off_peak_price",
+          "type": "number",
+          "label": {
+            "en": "Previous off-peak price (€)",
+            "fr": "Ancien prix HC (€)",
+            "de": "Bisheriger NT-Preis (€)",
+            "es": "Precio valle anterior (€)"
+          }
+        },
+        {
+          "key": "subscription",
+          "type": "number",
+          "label": {
+            "en": "Subscription (€/month)",
+            "fr": "Abonnement (€/mois)",
+            "de": "Grundgebühr (€/Monat)",
+            "es": "Suscripción (€/mes)"
+          }
+        },
+        {
+          "key": "previous_subscription",
+          "type": "number",
+          "label": {
+            "en": "Previous subscription (€/month)",
+            "fr": "Ancien abonnement (€/mois)",
+            "de": "Bisherige Grundgebühr (€/Monat)",
+            "es": "Suscripción anterior (€/mes)"
+          }
+        }
+      ]
     }
   ],
   "scene_actions": [

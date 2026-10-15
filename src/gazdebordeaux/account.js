@@ -37,6 +37,8 @@ export function createAccount({
     lastAttemptAt: null,
     /** @type {GdbError | Error | null} */
     lastError: null,
+    /** The current prices of every contract, as last read on espaceclient. */
+    prices: [],
   };
 
   let client = null;
@@ -126,7 +128,8 @@ export function createAccount({
    */
   async function readPrices(config) {
     assertConfigured(config);
-    return (await clientFor(config).getContractDetails()).map(currentPrices);
+    state.prices = (await clientFor(config).getContractDetails()).map(currentPrices);
+    return state.prices;
   }
 
   /** True when the last refresh succeeded. */

@@ -94,6 +94,9 @@ test('declaring scene triggers, scene actions and widgets requires Gladys >= 5.1
 // tests catch the mistakes that are easy to make when editing the prices.
 
 const templates = manifest.energy_contracts?.templates ?? [];
+// The templates of the official grids, priced by the core rule engine.
+const ruleTemplates = templates.filter((template) => template.pricing_mode === 'rules');
+const delegated = templates.find((template) => template.key === 'espaceclient-elec');
 
 // Every `{{input:<key>}}` placeholder of a tariff.
 function placeholdersOf(node, found = new Set()) {
@@ -112,15 +115,16 @@ test('declaring energy contracts requires Gladys >= 5.2.0', () => {
   assert.ok(isAtLeast(minGladysVersion(), [5, 2, 0]), `got "${manifest.gladys_version}"`);
 });
 
-test('the contract templates are French electricity offers priced by the rules engine', () => {
+test('the contract templates are French electricity offers, the grid ones priced by the rules engine', () => {
   const keys = templates.map((template) => template.key);
   assert.equal(new Set(keys).size, keys.length, 'template keys are unique');
+  assert.equal(ruleTemplates.length, 6);
+  assert.equal(delegated?.pricing_mode, 'delegated', 'the "My contract" template');
   for (const template of templates) {
     assert.match(template.key, /^[a-z0-9][a-z0-9-]{0,63}$/);
     assert.equal(template.country, 'FR');
     assert.equal(template.currency, 'EUR');
     assert.equal(template.timezone, 'Europe/Paris');
-    assert.equal(template.pricing_mode, 'rules');
     for (const [lang, name] of Object.entries(template.name)) {
       assert.ok(name.length <= 64, `${template.key} name.${lang}: ${name.length} characters`);
     }
@@ -128,7 +132,7 @@ test('the contract templates are French electricity offers priced by the rules e
 });
 
 test('every tariff placeholder names a declared input, and every input is used', () => {
-  for (const template of templates) {
+  for (const template of ruleTemplates) {
     const inputs = template.inputs.map((input) => input.key);
     const used = placeholdersOf(template.tariff);
     for (const key of used) {
@@ -141,7 +145,7 @@ test('every tariff placeholder names a declared input, and every input is used',
 });
 
 test('the default prices are plausible euros, the subscription is monthly', () => {
-  for (const template of templates) {
+  for (const template of ruleTemplates) {
     for (const input of template.inputs.filter((i) => i.type === 'number')) {
       const max = input.unit === 'EUR/kWh' ? 1 : 100;
       assert.ok(input.default > 0 && input.default < max, `${template.key}.${input.key}`);
@@ -155,11 +159,26 @@ test('the default prices are plausible euros, the subscription is monthly', () =
 });
 
 test('every consumption component has a price for any hour (a fallback)', () => {
-  for (const template of templates) {
+  for (const template of ruleTemplates) {
     for (const component of template.tariff.components.filter((c) => c.kind === 'consumption')) {
       assert.ok(component.fallback?.price, `${template.key}.${component.key}`);
     }
   }
+});
+
+test('the "My contract" template only asks the subscription, the integration prices the kWh', () => {
+  // A delegated template carries `fixed` components only: the energy is ours.
+  assert.deepEqual(
+    delegated.tariff.components.map((c) => [c.kind, c.per, c.amount]),
+    [['fixed', 'month', '{{input:subscription_per_month}}']],
+  );
+  const required = delegated.inputs.filter((input) => input.required).map((input) => input.key);
+  assert.deepEqual(required, ['subscription_per_month']);
+  assert.equal(
+    delegated.inputs.some((input) => input.default !== undefined),
+    false,
+    'no default: the user types the subscription of their own contract',
+  );
 });
 
 test('the off-peak hours default to 8 hours a day, as Enedis sets them', () => {

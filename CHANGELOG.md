@@ -10,6 +10,15 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- Energy contract template "Gaz de Bordeaux – My contract (customer account
+  prices)" (Gladys 5.2+): pick it in the Gladys contract wizard and type only
+  the subscription; the integration gives Gladys the kWh price of your own
+  contract, read on espaceclient.gazdebordeaux.fr (Base or Peak/Off-peak, any
+  offer). A price change applies from the day it is read, with no new
+  contract to create. "My contract prices" now points to it.
+
 ## [1.0.3] - 2026-10-15
 
 ### Added

@@ -153,10 +153,38 @@ opción:
 | NovaFlex Élec       | indexados a la tarifa regulada (TRV), kWh sin impuestos un 5 % por debajo | Base, Horas valle |
 
 **¿Su oferta no está en la lista?** (por ejemplo **Ecodigo Elec**, o una oferta
-antigua que ya no se vende): elija una plantilla de la misma opción (Base u
-Horas valle), o cree el contrato a mano en Gladys, y luego introduzca los
-precios que da el botón **Mis precios de contrato** (más abajo). Su oferta
-figura en su cuenta de cliente, línea «Votre tarif».
+antigua que ya no se vende): elija la plantilla **Mi contrato** (más abajo),
+sirve para todas las ofertas. Su oferta figura en su cuenta de cliente, línea
+«Votre tarif».
+
+### Lo más sencillo: la plantilla «Mi contrato»
+
+La plantilla **Gaz de Bordeaux – Mi contrato (precios de la cuenta)** usa **sus
+propios precios**, los que la integración lee en
+**espaceclient.gazdebordeaux.fr** (línea «Votre prix actuel»):
+
+1. En Gladys, **Energía** → contrato del contador eléctrico Gaz de Bordeaux,
+   elija esta plantilla.
+2. Introduzca solo la **suscripción al mes** (la da el botón **Mis precios de
+   contrato**).
+3. Nada más: la integración da a Gladys el precio del kWh, Base u Horas valle,
+   para todas las ofertas (Ecodigo, NovaFixe, NovaFlex…).
+
+Cuando sus precios cambian, la integración lo ve en la siguiente
+actualización: los nuevos precios se aplican desde ese día, los días pasados
+conservan los antiguos. **No hay que crear otro contrato** por el precio del
+kWh (solo la suscripción, introducida a mano, se actualiza si cambia).
+
+- La integración debe estar en marcha: Gladys le pide el precio. Si está
+  parada, los costes se calculan a su vuelta.
+- Los días anteriores a la primera lectura de precios toman los primeros
+  precios leídos.
+- **Horas valle** solo con consumo diario: un día se reparte según su parte de
+  horas valle (8 de 24), una estimación. Con consumo cada media hora (Linky),
+  el cálculo es exacto. Si la cuenta de cliente no da sus horas valle,
+  introdúzcalas en el contrato.
+- Se admite un contrato de electricidad por cuenta de cliente (el primero, si
+  hay varios).
 
 ### Sus precios: el botón «Mis precios de contrato»
 
@@ -172,17 +200,18 @@ Ejemplo:
 > 0,160164 €/kWh, suscripción 15,87 €/mes.
 
 Son precios con IVA e impuestos (CTA en la suscripción, impuesto especial en
-el kWh), como los contratos que ofrece Gladys. Cópielos en el asistente de
-contratos de Gladys: Gladys no permite que una integración rellene un contrato
-por usted.
+el kWh), como los contratos que ofrece Gladys. Con la plantilla **Mi
+contrato** la integración los aplica ella misma; con otra plantilla, cópielos
+en el asistente de contratos de Gladys.
 
 Si la cuenta de cliente no se puede leer, el botón lo indica: copie entonces
 los precios de la página de su contrato en espaceclient.gazdebordeaux.fr.
 
 ### Cuando cambian sus precios
 
-Deje vacía la **fecha de fin** de su contrato de Gladys mientras sus precios no
-cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, Ecodigo Elec,
+Con la plantilla **Mi contrato**, nada que hacer para el precio del kWh (ver
+más arriba). Con otra plantilla: deje vacía la **fecha de fin** de su contrato
+de Gladys mientras sus precios no cambien. Pueden cambiar por el camino: nueva tarifa (NovaFlex, Ecodigo Elec,
 fin de un periodo a precio fijo) o un impuesto (impuesto especial, IVA) que
 cambia el precio con IVA. Gaz de Bordeaux le avisa, y también el disparador de escena **Precios del contrato cambiados**; el botón **Mis precios de contrato** da entonces los nuevos precios.
 
@@ -224,7 +253,7 @@ precios de NovaFixe Élec.
 - **Horas valle** necesita un consumo **cada media hora** (un contador Linky
   leído cada 30 minutos por otra integración). Con el consumo diario solo,
   Gladys no puede saber qué kWh fueron en horas valle: no use esta plantilla en
-  ese caso.
+  ese caso (la plantilla **Mi contrato** da una estimación).
 - **El gas no está incluido**: los contratos de energía de Gladys solo cubren
   la electricidad. El coste del gas sigue siendo el que da Gaz de Bordeaux
   (funciones «Coste del día leído», «Coste del mes»…).

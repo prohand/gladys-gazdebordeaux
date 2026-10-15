@@ -147,10 +147,37 @@ electricity at the Gaz de Bordeaux prices. One template per offer and option:
 | NovaFlex Élec       | indexed on the regulated tariff (TRV), kWh excl. taxes 5% below it | Base, Peak/Off-peak |
 
 **Your offer is not in the list?** (for example **Ecodigo Elec**, or an older
-offer no longer sold): pick a template of the same option (Base or
-Peak/Off-peak), or create the contract by hand in Gladys, then enter the prices
-given by the **My contract prices** button below. Your offer is written in your
-customer account, line "Votre tarif".
+offer no longer sold): pick the **My contract** template below, it works for
+every offer. Your offer is written in your customer account, line "Votre
+tarif".
+
+### The simplest: the "My contract" template
+
+The **Gaz de Bordeaux – My contract (customer account prices)** template uses
+**your own prices**, the ones the integration reads on
+**espaceclient.gazdebordeaux.fr** (line "Votre prix actuel"):
+
+1. In Gladys, **Energy** → the contract of the Gaz de Bordeaux electricity
+   meter, pick this template.
+2. Type only the **subscription per month** (given by the **My contract
+   prices** button).
+3. That's all: the integration gives Gladys the kWh price, Base or
+   Peak/Off-peak, for every offer (Ecodigo, NovaFixe, NovaFlex…).
+
+When your prices change, the integration sees it at the next refresh: the new
+prices apply from that day, the past days keep the old ones. **No new contract
+to create** for the kWh price (only the subscription, typed by hand, needs an
+update if it changes).
+
+- The integration must be running: Gladys asks it the price. When it is
+  stopped, the costs are computed when it is back.
+- The days before the first read of the prices take the first prices read.
+- **Peak/Off-peak** with daily readings only: a day is split by its share of
+  off-peak hours (8 out of 24), an estimate. With half-hourly readings
+  (Linky), the cost is exact. If the customer account does not give your
+  off-peak hours, type them in the contract.
+- One electricity contract per customer account is supported (the first one,
+  when there are several).
 
 ### Your prices: the "My contract prices" button
 
@@ -166,16 +193,18 @@ computation. Example:
 > 0.160164 €/kWh, subscription 15.87 €/month.
 
 These prices include VAT and taxes (CTA in the subscription, excise in the
-kWh), like the contracts Gladys offers. Copy them into the Gladys contract
-wizard: Gladys gives an integration no way to fill a contract in for you.
+kWh), like the contracts Gladys offers. With the **My contract** template the
+integration applies them itself; with another template, copy them into the
+Gladys contract wizard.
 
 When the customer account cannot be read, the button says so: copy the prices
 from the page of your contract on espaceclient.gazdebordeaux.fr.
 
 ### When your prices change
 
-Leave the **end date** of your Gladys contract empty while your prices do not
-change. They may change along the way: a new grid (NovaFlex, Ecodigo Elec, end
+With the **My contract** template, nothing to do for the kWh price (see
+above). With another template: leave the **end date** of your Gladys contract
+empty while your prices do not change. They may change along the way: a new grid (NovaFlex, Ecodigo Elec, end
 of a fixed-price period), or a tax (excise, VAT) that changes the price incl.
 VAT. Gaz de Bordeaux tells you, and so does the **Contract prices changed** scene trigger; the **My contract prices** button then gives the new prices.
 
@@ -216,7 +245,8 @@ NovaFixe Élec prices.
   Energy module.
 - **Peak/Off-peak** needs a **half-hourly** consumption (a Linky meter read
   every 30 minutes by another integration). With the daily consumption only,
-  Gladys cannot tell which kWh were off-peak: do not use this template then.
+  Gladys cannot tell which kWh were off-peak: do not use this template then
+  (the **My contract** template gives an estimate).
 - **Gas is not covered**: Gladys energy contracts are for electricity only. The
   gas cost stays the one given by Gaz de Bordeaux ("Cost of the day read",
   "Month cost"… features).

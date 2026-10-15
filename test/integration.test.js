@@ -177,7 +177,7 @@ test('"My contract prices" gives the prices of espaceclient.gazdebordeaux.fr as 
     answer.data.message.fr,
     /\(BASE, 6 kVA\) : 0,160164 €\/kWh, abonnement 15,87 €\/mois/,
   );
-  assert.match(answer.data.message.en, /Copy them into the Gladys energy contract/);
+  assert.match(answer.data.message.fr, /choisissez le modèle « Gaz de Bordeaux – Mon contrat/);
   const login = site.requests.find((r) => r.pathname === '/api/authentication-token');
   assert.equal(login.host, 'espaceclient.gazdebordeaux.fr');
 });

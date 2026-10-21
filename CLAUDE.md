@@ -76,6 +76,9 @@ There is no public API: the client calls the JSON endpoints the customer website
 - `GET /api/houses/{uuid}` → `contractType.category` (`gas`, `electricity`).
 - `GET /api/houses/{uuid}/consumptions?scale=month&startDate&endDate` → one entry per day
   (`kwh`, `volumeOfEnergy`, `price`, `temperature`) + `total`; `scale=year` → `total`.
+  A Peak/Off-peak electricity day has `isHphc: true` and its values in `consumptionHp` /
+  `consumptionHc` (`priceHp` / `priceHc`), `kwh` left at 0: `readings.js` reads the split,
+  as the website's own code does.
 - The current prices come from **espaceclient.gazdebordeaux.fr** (same email and password):
   `POST /api/authentication-token` → `{token}`, `GET /api/me` → `contracts[]` (`id`,
   `type`: `gaz` / `elec`), `GET /api/contracts/{id}` → `tarif`, `optionTarif`, `power`,

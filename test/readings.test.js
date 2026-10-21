@@ -1,6 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseDaily, parseTotal, sumDays, toNumber } from '../src/gazdebordeaux/readings.js';
+import {
+  latestDayFields,
+  parseDaily,
+  parseTotal,
+  sumDays,
+  toNumber,
+} from '../src/gazdebordeaux/readings.js';
 import {
   addDays,
   daysBetween,
@@ -33,6 +39,48 @@ test('parseDaily keeps the days, sorted, and drops the total and the days not re
       ['2026-10-13', 41.5, 4.98],
     ],
   );
+});
+
+test('a peak/off-peak day is read from its split, as the website does', () => {
+  const days = parseDaily({
+    // Flagged: the split wins over the 0 the day carries in `kwh` and `price`.
+    '2026-10-07': {
+      kwh: 0,
+      price: 0,
+      isHphc: true,
+      consumptionHp: 4.2,
+      consumptionHc: '2,1',
+      priceHp: 0.71,
+      priceHc: 0.27,
+    },
+    // Not flagged, no plain value: the split still counts.
+    '2026-10-08': { kwh: null, consumptionHp: 3, consumptionHc: 1, price: 0.6 },
+    // A Base day that happens to carry an empty split keeps its own value.
+    '2026-10-09': { kwh: 5, price: 0.9, consumptionHp: 0, consumptionHc: 0 },
+    // Nothing read yet.
+    '2026-10-10': { kwh: null, isHphc: true, consumptionHp: null, consumptionHc: null },
+  });
+  assert.deepEqual(
+    days.map((day) => [day.date, day.kwh, day.cost]),
+    [
+      ['2026-10-07', 6.3, 0.98],
+      ['2026-10-08', 4, 0.6],
+      ['2026-10-09', 5, 0.9],
+    ],
+  );
+});
+
+test('latestDayFields names the fields of the latest day, never their values', () => {
+  assert.deepEqual(
+    latestDayFields({
+      '2026-10-07': { kwh: 1 },
+      '2026-10-08': { kwh: 0, isHphc: true, consumptionHp: 3 },
+      total: { kwh: 1 },
+    }),
+    ['kwh', 'isHphc', 'consumptionHp'],
+  );
+  assert.deepEqual(latestDayFields({ total: {} }), []);
+  assert.deepEqual(latestDayFields(null), []);
 });
 
 test('an unexpected payload is an "api" error', () => {

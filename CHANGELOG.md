@@ -10,6 +10,21 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Fixed
+
+- Electricity on a Peak/Off-peak contract (Ecodigo and others): the daily
+  consumption and cost were read as 0, so the widget, the month total and the
+  chart stayed at 0 while the year total was right. The days are now read from
+  their peak and off-peak values, as the Gaz de Bordeaux website does. The
+  widget, the month total and the Energy module are correct at the next
+  refresh; the days already published at 0 in the device history stay as they
+  are.
+
+### Changed
+
+- The logs show, for each contract read, how many days came back, the latest
+  one and the names of its fields (never their values), to help support.
+
 ## [1.0.10] - 2026-10-15
 
 ### Fixed

@@ -14,6 +14,8 @@
 import { ERROR_KINDS, GdbError } from './client.js';
 import { isDay } from './dates.js';
 
+const round = (value, digits) => Math.round(value * 10 ** digits) / 10 ** digits;
+
 /** A finite number, or null. Accepts "12,5" as well as "12.5". */
 export function toNumber(value) {
   if (value === null || value === undefined || value === '') {
@@ -23,23 +25,44 @@ export function toNumber(value) {
   return Number.isFinite(number) ? number : null;
 }
 
-// The electricity days of a peak/off-peak contract carry the kWh split
-// (`consumptionHp` / `consumptionHc`) and may have no plain `kwh`.
-function kwhOf(entry) {
-  const kwh = toNumber(entry?.kwh ?? entry?.amountOfEnergy);
-  if (kwh !== null) {
-    return kwh;
+// The electricity days of a peak/off-peak contract carry the split
+// (`consumptionHp` / `consumptionHc`, `priceHp` / `priceHc`) and flag it with
+// `isHphc`: the website's own code then reads the split, not `kwh`, which such
+// a day leaves at 0 (or null). The plain value wins only when the day is not
+// flagged and carries more than nothing.
+function splitOf(entry, peakKey, offPeakKey) {
+  const peak = toNumber(entry?.[peakKey]);
+  const offPeak = toNumber(entry?.[offPeakKey]);
+  // Rounded to drop the float noise of the sum (4.2 + 2.1), no real digit.
+  return peak === null && offPeak === null ? null : round((peak ?? 0) + (offPeak ?? 0), 6);
+}
+
+function plainOrSplit(plain, split, entry) {
+  if (split !== null && (entry?.isHphc === true || !(plain > 0))) {
+    return split;
   }
-  const peak = toNumber(entry?.consumptionHp);
-  const offPeak = toNumber(entry?.consumptionHc);
-  return peak === null && offPeak === null ? null : (peak ?? 0) + (offPeak ?? 0);
+  return plain;
+}
+
+function kwhOf(entry) {
+  return plainOrSplit(
+    toNumber(entry?.kwh ?? entry?.amountOfEnergy),
+    splitOf(entry, 'consumptionHp', 'consumptionHc'),
+    entry,
+  );
+}
+
+function costOf(entry) {
+  // `price` is what the website exports as the day's expense, split or not.
+  const price = toNumber(entry?.price ?? entry?.amount);
+  return price > 0 ? price : (splitOf(entry, 'priceHp', 'priceHc') ?? price);
 }
 
 function readingOf(entry) {
   return {
     kwh: kwhOf(entry),
     volume: toNumber(entry?.volumeOfEnergy ?? entry?.volume),
-    cost: toNumber(entry?.price ?? entry?.amount),
+    cost: costOf(entry),
     temperature: toNumber(entry?.temperature),
   };
 }
@@ -64,6 +87,20 @@ export function parseDaily(raw) {
 }
 
 /**
+ * The field names of the latest day of a payload (never their values), logged
+ * to check them on a real account: the field names come from the website's
+ * own code, not from a documented API.
+ */
+export function latestDayFields(raw) {
+  const latest = Object.keys(raw ?? {})
+    .filter(isDay)
+    .sort()
+    .at(-1);
+  const entry = latest ? raw[latest] : null;
+  return entry && typeof entry === 'object' ? Object.keys(entry) : [];
+}
+
+/**
  * The `total` entry of a payload.
  * @returns {{ kwh: number | null, volume: number | null, cost: number | null }}
  */
@@ -75,8 +112,6 @@ export function parseTotal(raw) {
   const { kwh, volume, cost } = readingOf(raw.total);
   return { kwh, volume, cost };
 }
-
-const round = (value, digits) => Math.round(value * 10 ** digits) / 10 ** digits;
 
 /**
  * The sum of the days from `fromDay` on. A quantity no day carries stays null

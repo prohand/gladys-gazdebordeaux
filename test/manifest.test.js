@@ -83,6 +83,56 @@ test('the integration declares its cloud transport and the energy category', () 
   assert.ok(isAtLeast(minGladysVersion(), [4, 86, 0]), 'categories need Gladys >= 4.86.0');
 });
 
+// The store vocabulary of catalog shelves (2026-10: transport, vehicles, servers, leisure added).
+const CATALOG_CATEGORIES = [
+  'climate',
+  'lighting',
+  'energy',
+  'security',
+  'multimedia',
+  'appliances',
+  'environment',
+  'protocols',
+  'network',
+  'notifications',
+  'assistants',
+  'services',
+  'transport',
+  'vehicles',
+  'servers',
+  'leisure',
+];
+
+test('the catalog categories are 1 to 3 keys of the store vocabulary', () => {
+  assert.ok(manifest.categories.length >= 1 && manifest.categories.length <= 3);
+  assert.equal(new Set(manifest.categories).size, manifest.categories.length);
+  for (const category of manifest.categories) {
+    assert.ok(CATALOG_CATEGORIES.includes(category), `unknown category "${category}"`);
+  }
+});
+
+test('the search keywords are 1 to 10 unique terms of 2 to 30 characters', () => {
+  const { keywords } = manifest;
+  assert.ok(Array.isArray(keywords) && keywords.length >= 1 && keywords.length <= 10);
+  const normalized = keywords.map((keyword) => keyword.trim().toLowerCase());
+  assert.equal(new Set(normalized).size, keywords.length, 'keywords are unique');
+  for (const keyword of normalized) {
+    assert.ok(keyword.length >= 2 && keyword.length <= 30, `"${keyword}": 2 to 30 characters`);
+  }
+});
+
+test('the integration is declared for France only', () => {
+  assert.deepEqual(manifest.countries, ['FR']);
+  for (const country of manifest.countries) {
+    assert.match(country, /^[A-Z]{2}$/);
+  }
+});
+
+test('declaring keywords, countries or music requires Gladys >= 5.3.0', () => {
+  assert.ok(['keywords', 'countries', 'music'].some((field) => field in manifest));
+  assert.ok(isAtLeast(minGladysVersion(), [5, 3, 0]), `got "${manifest.gladys_version}"`);
+});
+
 test('declaring scene triggers, scene actions and widgets requires Gladys >= 5.1.0', () => {
   for (const field of ['scene_triggers', 'scene_actions', 'widgets']) {
     assert.ok(manifest[field]?.length > 0, `${field} is declared`);

@@ -16,7 +16,7 @@ módulo en el contador.
 - Gaz de Bordeaux publica el consumo de un día **uno o dos días después** (lo
   que tarda el contador Gazpar o Linky en enviarlo). Gladys muestra por tanto
   siempre el **último día leído**, no el de hoy.
-- Se necesita Gladys 5.2 o posterior.
+- Se necesita Gladys 5.3 o posterior.
 
 ## Configuración
 

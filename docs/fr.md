@@ -16,7 +16,7 @@ module sur le compteur.
 - Gaz de Bordeaux publie la consommation d'une journée **un ou deux jours plus
   tard** (le temps que le compteur Gazpar ou Linky la remonte). Gladys affiche
   donc toujours le **dernier jour relevé**, pas aujourd'hui.
-- Gladys 5.2 ou plus récent est nécessaire.
+- Gladys 5.3 ou plus récent est nécessaire.
 
 ## Configuration
 

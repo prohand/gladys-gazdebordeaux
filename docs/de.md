@@ -16,7 +16,7 @@ installieren, kein Modul am Zähler.
 - Gaz de Bordeaux veröffentlicht den Verbrauch eines Tages **ein bis zwei Tage
   später** (so lange braucht der Gazpar- oder Linky-Zähler). Gladys zeigt daher
   immer den **letzten gelesenen Tag**, nicht heute.
-- Gladys 5.2 oder neuer ist erforderlich.
+- Gladys 5.3 oder neuer ist erforderlich.
 
 ## Konfiguration
 

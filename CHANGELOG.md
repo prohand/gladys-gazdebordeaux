@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-25
+
 ### Added
 
 - Store catalog: search keywords (Gazpar, Linky, Régaz, NovaFixe, NovaFlex, heures creuses…)
@@ -191,7 +193,8 @@ the notes of the version's GitHub Release.
   Release, multi-arch build and GitHub Release workflows, Dependabot.
 - `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.12...HEAD
+[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.12...v1.1.0
 [1.0.12]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.11...v1.0.12
 [1.0.11]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.10...v1.0.11
 [1.0.10]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.9...v1.0.10

@@ -15,7 +15,7 @@ module on the meter.
 - Gaz de Bordeaux publishes the consumption of a day **one or two days later**
   (the time it takes the Gazpar or Linky meter to report it). Gladys therefore
   always shows the **latest day read**, not today.
-- Gladys 5.2 or later is required.
+- Gladys 5.3 or later is required.
 
 ## Configuration
 

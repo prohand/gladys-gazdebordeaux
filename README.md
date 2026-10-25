@@ -29,7 +29,8 @@ User documentation: [English](./docs/en.md) · [Français](./docs/fr.md) ·
 | Contract prices  | **My contract prices** button + widget row: the prices charged, from the account    |
 
 Manifest: `type: "device"`, `transports: ["cloud"]`, `categories: ["energy"]`,
-`gladys_version: ">=5.2.0"` (scenes and widget need 5.1, energy contracts 5.2).
+`countries: ["FR"]`, search `keywords`, `gladys_version: ">=5.3.0"` (scenes and widget need 5.1,
+energy contracts 5.2, keywords and countries 5.3).
 
 ## How it talks to Gaz de Bordeaux
 

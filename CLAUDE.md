@@ -155,7 +155,8 @@ There is no public API: the client calls the JSON endpoints the customer website
   `test/manifest.test.js`), messages (`src/messages.js`, built with `src/i18n.js`), widget texts
   and the four docs.
 - **Manifest.** `categories` needs Gladys ≥ 4.86.0; `widgets`, `scene_triggers`,
-  `scene_actions` need ≥ 5.1.0; `energy_contracts` needs ≥ 5.2.0. The catalog `description`
+  `scene_actions` need ≥ 5.1.0; `energy_contracts` needs ≥ 5.2.0; `keywords` and `countries`
+  (`["FR"]`) need ≥ 5.3.0, the floor today. The catalog `description`
   holds 10 to 100 characters per language. Change the manifest and the handlers together.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why, in English. Tests
   never touch the network: use `test/helpers/fakeWebsite.js`.

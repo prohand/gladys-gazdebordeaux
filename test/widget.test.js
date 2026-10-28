@@ -85,3 +85,19 @@ test('the electricity widget shows the current price of espaceclient, as given',
   const row = status.items.find((item) => item.label.fr === 'Prix actuel');
   assert.equal(row.value, '0,160164 €/kWh · 15,87 €/mois');
 });
+
+test('the latest day turns into a warning when the website has published nothing for days', async (t) => {
+  const latestRow = async (today) => {
+    const { gladys } = await setup(t, { today });
+    const { content } = (await get(gladys, {}, 'fr')).data;
+    assert.deepEqual(validateWidgetContent(content), []);
+    return content.components.find((c) => c.type === 'status').items[1];
+  };
+  const fresh = await latestRow('2026-10-14');
+  assert.equal(fresh.label.fr, 'Dernier jour relevé');
+  assert.equal(fresh.color, 'neutral');
+  const stale = await latestRow('2026-10-25');
+  assert.equal(stale.label.fr, 'Aucun relevé depuis le');
+  assert.equal(stale.color, 'warning');
+  assert.equal(stale.icon, 'alert-triangle');
+});

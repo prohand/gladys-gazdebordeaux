@@ -152,6 +152,7 @@ export function createIntegration(
   const context = {
     gladys,
     account,
+    today,
     refresh,
     get config() {
       return config;

@@ -10,6 +10,17 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- Widget: when the latest reading is more than 4 days old, the "Latest day
+  read" row turns orange and reads "No new reading since …". The values
+  stopping while the connection said "Connected" looked like a bug of the
+  integration, when Gaz de Bordeaux had published no new day.
+- The log line of each refresh also gives how many days the website sent,
+  with a value or not, and from which day: a support thread tells empty days
+  from missing ones.
+- Docs: what to do when the values no longer change.
+
 ## [1.1.0] - 2026-10-25
 
 ### Added

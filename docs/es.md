@@ -136,6 +136,9 @@ Añada el widget **Consumo Gaz de Bordeaux** a un panel. Muestra:
   de la conexión;
 - un botón **Actualizar**.
 
+Cuando la última lectura tiene más de 4 días, la línea «Último día leído» se
+vuelve naranja: **Sin lecturas nuevas desde …**.
+
 En los ajustes del widget, elija el contrato a mostrar; si se deja vacío, es
 el primero.
 
@@ -282,6 +285,15 @@ El mensaje de estado de la pestaña **Configuración** indica lo que falla:
 - **Inaccesible**: Gladys no tiene acceso a Internet o el sitio está caído.
 - **Ningún contrato**: la cuenta no tiene contratos de gas ni de electricidad
   visibles.
+
+**Los valores ya no cambian** («Sin lecturas nuevas desde …» en el widget,
+mismo total del año) aunque el estado es «Conectado»: la integración lee bien el
+sitio, pero Gaz de Bordeaux no ha publicado ningún día nuevo. Abra
+[life.gazdebordeaux.fr](https://life.gazdebordeaux.fr) en un navegador: si
+también faltan allí los últimos días, las lecturas del contador ya no llegan a
+Gaz de Bordeaux (contador, transmisión por Enedis o GRDF, autorización de
+recogida de datos); contacte con su servicio de atención al cliente. Los días
+que llegan con retraso se recuperan solos en la siguiente actualización.
 
 Los registros de la integración (Gladys → Integraciones → Gaz de Bordeaux →
 registros) dan el detalle. Nunca contienen la contraseña ni el token de sesión.

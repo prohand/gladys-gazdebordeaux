@@ -14,7 +14,7 @@ import { createLogger } from '@gladysassistant/integration-sdk';
 import { createClient, ENERGIES, ERROR_KINDS, GdbError } from './client.js';
 import { currentPrices } from './prices.js';
 import { addDays, firstOfMonth, parisDay } from './dates.js';
-import { latestDayFields, parseDaily, parseTotal, sumDays } from './readings.js';
+import { givenDays, latestDayFields, parseDaily, parseTotal, sumDays } from './readings.js';
 
 const logger = createLogger({ name: 'account' });
 
@@ -78,7 +78,8 @@ export function createAccount({
     // Field names only, at info level: the Logs tab of a user's Gladys is
     // what a support thread gets, and it shows how the website shaped the day.
     logger.info(
-      `Contract ${contract.id} (${contract.energy}): ${days.length} days read, latest ` +
+      `Contract ${contract.id} (${contract.energy}): ${days.length} days read ` +
+        `(${givenDays(raw)} given from ${start}), latest ` +
         `${days.at(-1)?.date ?? 'none'} (fields: ${latestDayFields(raw).join(', ') || 'none'})`,
     );
     const year = parseTotal(await api.getConsumptions(contract.path, { scale: 'year' }));

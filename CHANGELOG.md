@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-28
+
 ### Changed
 
 - Widget: when the latest reading is more than 4 days old, the "Latest day
@@ -204,7 +206,8 @@ the notes of the version's GitHub Release.
   Release, multi-arch build and GitHub Release workflows, Dependabot.
 - `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.12...v1.1.0
 [1.0.12]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.11...v1.0.12
 [1.0.11]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.10...v1.0.11

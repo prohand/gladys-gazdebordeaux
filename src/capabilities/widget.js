@@ -10,15 +10,16 @@
 // 1 status, 4 buttons):
 //   - 4 tiles (a 2 × 2 grid): last day and month, consumption and cost;
 //   - a bar chart of the last 30 days read;
-//   - a status list: energy, latest day read, gas volume, year total, last
-//     refresh, connection;
+//   - a status list: energy, latest day read (a warning when it is days old),
+//     gas volume, year total, last refresh, connection;
 //   - a "Refresh" button.
 // -----------------------------------------------------------------------------
 
 import { createLogger, WIDGET_COLORS } from '@gladysassistant/integration-sdk';
 import { ENERGIES } from '../gazdebordeaux/client.js';
-import { noonOf, TIME_ZONE } from '../gazdebordeaux/dates.js';
+import { daysBetween, noonOf, TIME_ZONE } from '../gazdebordeaux/dates.js';
 import { findContract } from '../devices/index.js';
+import { STALE_AFTER_DAYS } from '../publish.js';
 import { refreshedMessage, errorMessage } from '../messages.js';
 import { localize, pick } from '../i18n.js';
 
@@ -55,6 +56,14 @@ const LABELS = {
     fr: 'Dernier jour relevé',
     de: 'Letzter gelesener Tag',
     es: 'Último día leído',
+  },
+  // The latest day, when it is too old: the website has published nothing
+  // since, which the connection row alone ("Connected") does not tell.
+  staleSince: {
+    en: 'No new reading since',
+    fr: 'Aucun relevé depuis le',
+    de: 'Kein neuer Wert seit',
+    es: 'Sin lecturas nuevas desde',
   },
   volume: {
     en: 'Gas, last day',
@@ -191,7 +200,7 @@ function refreshButton() {
  * @param {{ gladys: object, account: object }} context
  * @param {{ settings?: object, language?: string }} request
  */
-export function buildContent({ gladys, account }, { settings, language = 'en' }) {
+export function buildContent({ gladys, account, today }, { settings, language = 'en' }) {
   const snapshot = snapshotFor(gladys, account, settings);
   if (!snapshot) {
     return {
@@ -202,6 +211,7 @@ export function buildContent({ gladys, account }, { settings, language = 'en' })
 
   const { contract, lastDay, month, year, days } = snapshot;
   const healthy = account.isHealthy();
+  const stale = lastDay !== null && daysBetween(lastDay.date, today()) > STALE_AFTER_DAYS;
   const status = [
     {
       label: LABELS.energy,
@@ -210,10 +220,10 @@ export function buildContent({ gladys, account }, { settings, language = 'en' })
       color: WIDGET_COLORS.NEUTRAL,
     },
     {
-      label: LABELS.latest,
-      icon: 'calendar',
+      label: stale ? LABELS.staleSince : LABELS.latest,
+      icon: stale ? 'alert-triangle' : 'calendar',
       value: lastDay ? formatDay(lastDay.date, language) : '–',
-      color: WIDGET_COLORS.NEUTRAL,
+      color: stale ? WIDGET_COLORS.WARNING : WIDGET_COLORS.NEUTRAL,
     },
   ];
   if (

@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  givenDays,
   latestDayFields,
   parseDaily,
   parseTotal,
@@ -81,6 +82,17 @@ test('latestDayFields names the fields of the latest day, never their values', (
   );
   assert.deepEqual(latestDayFields({ total: {} }), []);
   assert.deepEqual(latestDayFields(null), []);
+});
+
+test('givenDays counts the days of a payload, with a value or not', () => {
+  const raw = {
+    '2026-10-07': { kwh: 1 },
+    '2026-10-08': { kwh: null, consumptionHp: null, consumptionHc: null },
+    total: { kwh: 1 },
+  };
+  assert.equal(givenDays(raw), 2);
+  assert.equal(parseDaily(raw).length, 1);
+  assert.equal(givenDays(null), 0);
 });
 
 test('an unexpected payload is an "api" error', () => {

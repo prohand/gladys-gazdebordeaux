@@ -87,6 +87,15 @@ export function parseDaily(raw) {
 }
 
 /**
+ * How many days a payload gives, with a value or not: next to the days read,
+ * it tells a support thread whether the website gave the recent days empty
+ * or did not give them at all.
+ */
+export function givenDays(raw) {
+  return Object.keys(raw ?? {}).filter(isDay).length;
+}
+
+/**
  * The field names of the latest day of a payload (never their values), logged
  * to check them on a real account: the field names come from the website's
  * own code, not from a documented API.

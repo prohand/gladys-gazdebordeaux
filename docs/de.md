@@ -140,6 +140,9 @@ zeigt:
   Verbindungszustand;
 - eine Schaltfläche **Aktualisieren**.
 
+Ist der letzte Wert älter als 4 Tage, wird die Zeile „Letzter gelesener Tag“
+orange: **Kein neuer Wert seit …**.
+
 Wählen Sie in den Widget-Einstellungen den anzuzeigenden Vertrag; leer
 gelassen ist es der erste.
 
@@ -288,6 +291,15 @@ Die Statusmeldung im Reiter **Konfiguration** sagt, was nicht stimmt:
 - **Nicht erreichbar**: Gladys hat keinen Internetzugang oder die Website ist
   ausgefallen.
 - **Kein Vertrag**: das Konto hat keinen sichtbaren Gas- oder Stromvertrag.
+
+**Die Werte ändern sich nicht mehr** („Kein neuer Wert seit …“ im Widget,
+gleiche Jahressumme), obwohl der Zustand „Verbunden“ ist: Die Integration liest
+die Website problemlos, aber Gaz de Bordeaux hat dort keinen neuen Tag
+veröffentlicht. Öffnen Sie [life.gazdebordeaux.fr](https://life.gazdebordeaux.fr)
+in einem Browser: Fehlen die letzten Tage auch dort, erreichen die Zählerwerte
+Gaz de Bordeaux nicht mehr (Zähler, Übertragung durch Enedis oder GRDF,
+Zustimmung zur Datenerfassung); wenden Sie sich an den Kundendienst. Verspätete
+Tage werden beim nächsten Aktualisieren von selbst übernommen.
 
 Die Logs der Integration (Gladys → Integrationen → Gaz de Bordeaux → Logs)
 geben Details. Sie enthalten nie das Passwort oder das Sitzungs-Token.

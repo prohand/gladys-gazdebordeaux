@@ -141,6 +141,9 @@ affiche :
   de la connexion ;
 - un bouton **Rafraîchir**.
 
+Quand le dernier relevé a plus de 4 jours, la ligne « Dernier jour relevé »
+devient orange : **Aucun relevé depuis le …**.
+
 Dans les réglages du widget, choisissez le contrat à afficher ; laissé vide,
 c'est le premier.
 
@@ -291,6 +294,15 @@ Le message d'état de l'onglet **Configuration** dit ce qui bloque :
 - **Injoignable** : Gladys n'a pas accès à internet, ou le site est en panne.
 - **Aucun contrat** : le compte n'a pas de contrat de gaz ou d'électricité
   visible.
+
+**Les valeurs ne bougent plus** (« Aucun relevé depuis le … » dans le widget,
+même total de l'année) alors que l'état est « Connecté » : l'intégration lit
+bien le site, mais Gaz de Bordeaux n'y a publié aucun nouveau jour. Ouvrez
+[life.gazdebordeaux.fr](https://life.gazdebordeaux.fr) dans un navigateur : si
+les derniers jours y manquent aussi, le relevé du compteur n'arrive plus chez
+Gaz de Bordeaux (compteur, transmission par Enedis ou GRDF, autorisation de
+collecte) ; contactez leur service client. Les jours arrivés en retard sont
+repris tout seuls au rafraîchissement suivant.
 
 Les logs de l'intégration (Gladys → Intégrations → Gaz de Bordeaux → logs)
 donnent le détail. Ils ne contiennent jamais le mot de passe ni le jeton de

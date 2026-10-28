@@ -131,6 +131,9 @@ Add the **Gaz de Bordeaux consumption** widget to a dashboard. It shows:
   state;
 - a **Refresh** button.
 
+When the latest reading is more than 4 days old, the "Latest day read" row
+turns orange: **No new reading since …**.
+
 In the widget settings, pick the contract to show; left empty, it is the
 first one.
 
@@ -273,6 +276,15 @@ The status message of the **Configuration** tab says what is wrong:
   it lasts, open an issue on the GitHub repository.
 - **Unreachable**: Gladys has no Internet access, or the website is down.
 - **No contract**: the account has no visible gas or electricity contract.
+
+**The values no longer change** ("No new reading since …" in the widget, same
+year total) while the state is "Connected": the integration reads the website
+fine, but Gaz de Bordeaux has published no new day there. Open
+[life.gazdebordeaux.fr](https://life.gazdebordeaux.fr) in a browser: if the
+latest days are missing there too, the meter readings no longer reach Gaz de
+Bordeaux (meter, transmission by Enedis or GRDF, data collection consent);
+contact their customer service. Days that arrive late are picked up on their
+own at the next refresh.
 
 The integration logs (Gladys → Integrations → Gaz de Bordeaux → logs) give the
 details. They never contain the password nor the session token.

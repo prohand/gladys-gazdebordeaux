@@ -301,8 +301,12 @@ bien le site, mais Gaz de Bordeaux n'y a publié aucun nouveau jour. Ouvrez
 [life.gazdebordeaux.fr](https://life.gazdebordeaux.fr) dans un navigateur : si
 les derniers jours y manquent aussi, le relevé du compteur n'arrive plus chez
 Gaz de Bordeaux (compteur, transmission par Enedis ou GRDF, autorisation de
-collecte) ; contactez leur service client. Les jours arrivés en retard sont
-repris tout seuls au rafraîchissement suivant.
+collecte) ; contactez leur service client. Vérifiez aussi que la collecte de vos données
+de consommation (données à la demi-heure) est activée sur l'espace client :
+après l'activation, Gaz de Bordeaux annonce jusqu'à 12 jours avant les
+premières données. Les jours arrivés en retard sont repris tout seuls au
+rafraîchissement suivant, s'ils datent de moins de **Jours d'historique à
+importer** : montez ce réglage (jusqu'à 90) pour couvrir tout le trou.
 
 Les logs de l'intégration (Gladys → Intégrations → Gaz de Bordeaux → logs)
 donnent le détail. Ils ne contiennent jamais le mot de passe ni le jeton de

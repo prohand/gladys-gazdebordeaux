@@ -283,8 +283,12 @@ fine, but Gaz de Bordeaux has published no new day there. Open
 [life.gazdebordeaux.fr](https://life.gazdebordeaux.fr) in a browser: if the
 latest days are missing there too, the meter readings no longer reach Gaz de
 Bordeaux (meter, transmission by Enedis or GRDF, data collection consent);
-contact their customer service. Days that arrive late are picked up on their
-own at the next refresh.
+contact their customer service. Also check that the collection of your
+consumption data (half-hourly data) is turned on in the customer account: once
+turned on, Gaz de Bordeaux announces up to 12 days before the first data. Days
+that arrive late are picked up on their own at the next refresh, if they are
+less than **Days of history to import** old: raise this setting (up to 90) to
+cover the whole gap.
 
 The integration logs (Gladys → Integrations → Gaz de Bordeaux → logs) give the
 details. They never contain the password nor the session token.

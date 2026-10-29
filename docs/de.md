@@ -298,8 +298,12 @@ die Website problemlos, aber Gaz de Bordeaux hat dort keinen neuen Tag
 veröffentlicht. Öffnen Sie [life.gazdebordeaux.fr](https://life.gazdebordeaux.fr)
 in einem Browser: Fehlen die letzten Tage auch dort, erreichen die Zählerwerte
 Gaz de Bordeaux nicht mehr (Zähler, Übertragung durch Enedis oder GRDF,
-Zustimmung zur Datenerfassung); wenden Sie sich an den Kundendienst. Verspätete
-Tage werden beim nächsten Aktualisieren von selbst übernommen.
+Zustimmung zur Datenerfassung); wenden Sie sich an den Kundendienst. Prüfen Sie auch, ob die Erfassung Ihrer
+Verbrauchsdaten (Halbstundenwerte) im Kundenkonto aktiviert ist: Nach der
+Aktivierung kündigt Gaz de Bordeaux bis zu 12 Tage bis zu den ersten Daten an.
+Verspätete Tage werden beim nächsten Aktualisieren von selbst übernommen, wenn
+sie jünger als **Zu importierende Tage** sind: Erhöhen Sie diese Einstellung
+(bis 90), um die ganze Lücke abzudecken.
 
 Die Logs der Integration (Gladys → Integrationen → Gaz de Bordeaux → Logs)
 geben Details. Sie enthalten nie das Passwort oder das Sitzungs-Token.

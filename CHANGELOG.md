@@ -10,6 +10,12 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- Docs: when the values no longer change, check that the collection of the
+  half-hourly data is turned on in the customer account, and raise "Days of
+  history to import" so the late days are all picked up when they arrive.
+
 ## [1.1.1] - 2026-10-28
 
 ### Changed

@@ -292,8 +292,12 @@ sitio, pero Gaz de Bordeaux no ha publicado ningún día nuevo. Abra
 [life.gazdebordeaux.fr](https://life.gazdebordeaux.fr) en un navegador: si
 también faltan allí los últimos días, las lecturas del contador ya no llegan a
 Gaz de Bordeaux (contador, transmisión por Enedis o GRDF, autorización de
-recogida de datos); contacte con su servicio de atención al cliente. Los días
-que llegan con retraso se recuperan solos en la siguiente actualización.
+recogida de datos); contacte con su servicio de atención al cliente. Compruebe también que la
+recogida de sus datos de consumo (datos cada media hora) está activada en la
+cuenta de cliente: tras activarla, Gaz de Bordeaux anuncia hasta 12 días antes
+de los primeros datos. Los días que llegan con retraso se recuperan solos en la
+siguiente actualización, si tienen menos de **Días de historial a importar**:
+suba este ajuste (hasta 90) para cubrir todo el hueco.
 
 Los registros de la integración (Gladys → Integraciones → Gaz de Bordeaux →
 registros) dan el detalle. Nunca contienen la contraseña ni el token de sesión.

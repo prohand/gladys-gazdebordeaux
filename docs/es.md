@@ -129,7 +129,8 @@ luego **Enviar un mensaje** «Gas del {{date}}: {{kwh}} kWh, {{cost}} €».
 
 Añada el widget **Consumo Gaz de Bordeaux** a un panel. Muestra:
 
-- el consumo y el coste del último día leído y del mes;
+- el consumo y el coste del último día leído (el recuadro indica su fecha: el
+  sitio suele llevar de uno a tres días de retraso) y del mes;
 - un gráfico de barras de los últimos 30 días;
 - la energía, el último día leído, el volumen de gas, el precio actual (leído
   en espaceclient), el total del año, la hora de la última lectura y el estado

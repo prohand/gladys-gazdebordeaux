@@ -15,6 +15,9 @@ the notes of the version's GitHub Release.
 - Widget: each bar of the 30-day chart now sits on its own date. The date
   labels fell between two bars and the bar under "26 Oct" was the one of the
   25th, so the last days looked shifted by one day compared with the website.
+- Widget: the two "Last day" tiles are labelled with the date of that day
+  ("Thu 29 Oct", "Cost Thu 29 Oct"). The website publishes a day one to three
+  days late, and "Last day" read as yesterday.
 
 ## [1.1.1] - 2026-10-28
 

@@ -124,7 +124,8 @@ Example: every morning at 8:00, **Get a consumption** (last day read), then
 
 Add the **Gaz de Bordeaux consumption** widget to a dashboard. It shows:
 
-- the consumption and cost of the latest day read and of the month;
+- the consumption and cost of the latest day read (the tile gives its date:
+  the website is often one to three days late) and of the month;
 - a bar chart of the last 30 days;
 - the energy, the latest day read, the gas volume, the current price (read on
   espaceclient), the year total, the time of the last read and the connection

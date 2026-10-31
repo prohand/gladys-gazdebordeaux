@@ -134,7 +134,8 @@ puis **Envoyer un message** « Gaz du {{date}} : {{kwh}} kWh, {{cost}} € ».
 Ajoutez le widget **Consommation Gaz de Bordeaux** à un tableau de bord. Il
 affiche :
 
-- la consommation et le coût du dernier jour relevé et du mois ;
+- la consommation et le coût du dernier jour relevé (la tuile donne sa date :
+  le site a souvent un à trois jours de retard) et du mois ;
 - un graphique en barres des 30 derniers jours ;
 - l'énergie, le dernier jour relevé, le volume de gaz, le prix actuel (lu sur
   espaceclient), le total de l'année, l'heure de la dernière lecture et l'état

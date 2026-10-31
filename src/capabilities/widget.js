@@ -8,7 +8,8 @@
 //
 // Content, within the core budget (8 components at most: ≤ 6 tiles, 1 focal,
 // 1 status, 4 buttons):
-//   - 4 tiles (a 2 × 2 grid): last day and month, consumption and cost;
+//   - 4 tiles (a 2 × 2 grid): last day read (labelled with its date) and
+//     month, consumption and cost;
 //   - a bar chart of the last 30 days read;
 //   - a status list: energy, latest day read (a warning when it is days old),
 //     gas volume, year total, last refresh, connection;
@@ -106,6 +107,35 @@ function formatDay(day, language) {
     month: 'short',
     year: 'numeric',
   }).format(new Date(noonOf(day)));
+}
+
+// "jeu. 29 oct.": the day of the last tiles, short enough for a tile label
+// (≤ 24 characters, "Kosten Mi., 30. Sept." included).
+function shortDay(day, language) {
+  return new Intl.DateTimeFormat(LANGUAGE_LOCALES[language] ?? 'en-GB', {
+    timeZone: 'UTC',
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  }).format(new Date(noonOf(day)));
+}
+
+const COST_OF = { en: 'Cost', fr: 'Coût', de: 'Kosten', es: 'Coste' };
+
+// The labels of the two "last day" tiles: the date of that day, not "Last
+// day", which read as yesterday when the website is two or three days late.
+function lastDayLabels(lastDay) {
+  if (!lastDay) {
+    return { kwh: LABELS.lastDay, cost: LABELS.lastDayCost };
+  }
+  const kwh = {};
+  const cost = {};
+  for (const language of Object.keys(LANGUAGE_LOCALES)) {
+    const day = shortDay(lastDay.date, language);
+    kwh[language] = day.charAt(0).toUpperCase() + day.slice(1);
+    cost[language] = `${COST_OF[language]} ${day}`;
+  }
+  return { kwh, cost };
 }
 
 function formatTime(date, language) {
@@ -268,9 +298,10 @@ export function buildContent({ gladys, account, today }, { settings, language = 
     },
   );
 
+  const dayLabels = lastDayLabels(lastDay);
   const components = [
-    tile(LABELS.lastDay, lastDay?.kwh, 'kWh', 'activity', 1),
-    tile(LABELS.lastDayCost, lastDay?.cost, '€', 'credit-card', 2),
+    tile(dayLabels.kwh, lastDay?.kwh, 'kWh', 'activity', 1),
+    tile(dayLabels.cost, lastDay?.cost, '€', 'credit-card', 2),
     tile(LABELS.month, month.kwh, 'kWh', 'calendar', 0),
     tile(LABELS.monthCost, month.cost, '€', 'credit-card', 2),
   ];

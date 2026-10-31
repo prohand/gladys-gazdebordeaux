@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-10-31
+
 ### Fixed
 
 - Widget: each bar of the 30-day chart now sits on its own date. The date
@@ -215,7 +217,8 @@ the notes of the version's GitHub Release.
   Release, multi-arch build and GitHub Release workflows, Dependabot.
 - `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.12...v1.1.0
 [1.0.12]: https://github.com/prohand/gladys-gazdebordeaux/compare/v1.0.11...v1.0.12

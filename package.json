@@ -1,6 +1,6 @@
 {
   "name": "gladys-gazdebordeaux",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": true,
   "description": "Gladys Assistant external integration for Gaz de Bordeaux: gas and electricity consumption and costs from the customer account.",
   "type": "module",

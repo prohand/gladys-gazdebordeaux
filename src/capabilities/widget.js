@@ -17,7 +17,7 @@
 
 import { createLogger, WIDGET_COLORS } from '@gladysassistant/integration-sdk';
 import { ENERGIES } from '../gazdebordeaux/client.js';
-import { daysBetween, noonOf, TIME_ZONE } from '../gazdebordeaux/dates.js';
+import { daysBetween, noonOf, parisMidnightOf, TIME_ZONE } from '../gazdebordeaux/dates.js';
 import { findContract } from '../devices/index.js';
 import { STALE_AFTER_DAYS } from '../publish.js';
 import { refreshedMessage, errorMessage } from '../messages.js';
@@ -284,7 +284,8 @@ export function buildContent({ gladys, account, today }, { settings, language = 
       series: [
         {
           name: LABELS.consumption,
-          points: chartDays.map((day) => ({ t: noonOf(day.date), v: day.kwh })),
+          // Midnight in Paris, not noon: the bar then sits on its date label.
+          points: chartDays.map((day) => ({ t: parisMidnightOf(day.date), v: day.kwh })),
         },
       ],
     });

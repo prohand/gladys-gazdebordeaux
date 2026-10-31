@@ -10,6 +10,12 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Fixed
+
+- Widget: each bar of the 30-day chart now sits on its own date. The date
+  labels fell between two bars and the bar under "26 Oct" was the one of the
+  25th, so the last days looked shifted by one day compared with the website.
+
 ## [1.1.1] - 2026-10-28
 
 ### Changed

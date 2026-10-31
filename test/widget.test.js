@@ -36,7 +36,8 @@ test('the widget charts the last 30 days read', async (t) => {
   const { gladys } = await setup(t);
   const chart = (await get(gladys)).data.content.components.find((c) => c.type === 'chart');
   assert.equal(chart.series[0].points.length, 30);
-  assert.equal(chart.series[0].points.at(-1).t, '2026-10-13T12:00:00.000Z');
+  // Midnight in Paris (UTC+2 in October): the bar sits on its date label.
+  assert.equal(chart.series[0].points.at(-1).t, '2026-10-12T22:00:00.000Z');
 });
 
 test('without any reading yet, the widget explains what to do', async (t) => {

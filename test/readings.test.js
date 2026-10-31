@@ -14,6 +14,7 @@ import {
   firstOfMonth,
   isDay,
   noonOf,
+  parisMidnightOf,
   parisDay,
 } from '../src/gazdebordeaux/dates.js';
 
@@ -124,6 +125,17 @@ test('days are counted on the Paris calendar', () => {
   assert.equal(parisDay(new Date('2026-10-14T23:30:00Z')), '2026-10-15');
   // 22:30 UTC on 14 December is still the 14th in Paris (UTC+1).
   assert.equal(parisDay(new Date('2026-12-14T22:30:00Z')), '2026-12-14');
+});
+
+test('a day starts at midnight in Paris, daylight saving time included', () => {
+  assert.equal(parisMidnightOf('2026-10-14'), '2026-10-13T22:00:00.000Z');
+  assert.equal(parisMidnightOf('2026-12-14'), '2026-12-13T23:00:00.000Z');
+  // Clocks go back at 3 am on 25 October: the day still starts in summer time.
+  assert.equal(parisMidnightOf('2026-10-25'), '2026-10-24T22:00:00.000Z');
+  assert.equal(parisMidnightOf('2026-10-26'), '2026-10-25T23:00:00.000Z');
+  // Clocks go forward at 2 am on 29 March: the day still starts in winter time.
+  assert.equal(parisMidnightOf('2026-03-29'), '2026-03-28T23:00:00.000Z');
+  assert.equal(parisMidnightOf('2026-03-30'), '2026-03-29T22:00:00.000Z');
 });
 
 test('day arithmetic ignores daylight saving time', () => {

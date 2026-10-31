@@ -133,7 +133,8 @@ dann **Nachricht senden** „Gas am {{date}}: {{kwh}} kWh, {{cost}} €“.
 Fügen Sie das Widget **Gaz de Bordeaux Verbrauch** einem Dashboard hinzu. Es
 zeigt:
 
-- Verbrauch und Kosten des letzten gelesenen Tages und des Monats;
+- Verbrauch und Kosten des letzten gelesenen Tages (die Kachel nennt sein
+  Datum: die Website ist oft ein bis drei Tage im Rückstand) und des Monats;
 - ein Balkendiagramm der letzten 30 Tage;
 - die Energie, den letzten gelesenen Tag, das Gasvolumen, den aktuellen Preis
   (von espaceclient), die Jahressumme, die Uhrzeit des letzten Lesens und den

@@ -20,6 +20,22 @@ const parisFormatter = new Intl.DateTimeFormat('en-CA', {
   day: '2-digit',
 });
 
+// The UTC offset of Paris at an instant, "GMT+02:00" read as milliseconds.
+const offsetFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: TIME_ZONE,
+  timeZoneName: 'longOffset',
+});
+
+function parisOffsetMs(time) {
+  const name = offsetFormatter.formatToParts(time).find((part) => part.type === 'timeZoneName');
+  const match = /GMT([+-])(\d{2}):(\d{2})/.exec(name?.value ?? '');
+  if (!match) {
+    return 0;
+  }
+  const minutes = Number(match[2]) * 60 + Number(match[3]);
+  return (match[1] === '-' ? -1 : 1) * minutes * 60 * 1000;
+}
+
 /** The day of `date` in Paris, `YYYY-MM-DD`. */
 export function parisDay(date = new Date()) {
   return parisFormatter.format(date);
@@ -55,4 +71,17 @@ export function daysBetween(from, to) {
  */
 export function noonOf(day) {
   return `${day}T12:00:00.000Z`;
+}
+
+/**
+ * The instant `day` starts in Paris (00:00 local time), as an ISO string.
+ * A chart of the dashboard draws a day's bar centred on its instant and puts
+ * its date labels at local midnight: a bar dated at noon sat between two
+ * labels and read as the day before. Paris changes clocks at 2 or 3 am, so
+ * the offset of midnight is the one of the instant found by the first guess.
+ */
+export function parisMidnightOf(day) {
+  const utcMidnight = Date.parse(`${day}T00:00:00Z`);
+  const guess = utcMidnight - parisOffsetMs(utcMidnight);
+  return new Date(utcMidnight - parisOffsetMs(guess)).toISOString();
 }

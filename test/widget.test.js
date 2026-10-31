@@ -36,7 +36,22 @@ test('the widget charts the last 30 days read', async (t) => {
   const { gladys } = await setup(t);
   const chart = (await get(gladys)).data.content.components.find((c) => c.type === 'chart');
   assert.equal(chart.series[0].points.length, 30);
-  assert.equal(chart.series[0].points.at(-1).t, '2026-10-13T12:00:00.000Z');
+  // Midnight in Paris (UTC+2 in October): the bar sits on its date label.
+  assert.equal(chart.series[0].points.at(-1).t, '2026-10-12T22:00:00.000Z');
+});
+
+test('the last day tiles carry the date of that day, not "last day"', async (t) => {
+  const { gladys } = await setup(t);
+  const [kwh, cost] = (await get(gladys)).data.content.components;
+  // The fake website's latest day is Tuesday 13 October 2026.
+  assert.deepEqual(kwh.label, {
+    en: 'Tue 13 Oct',
+    fr: 'Mar. 13 oct.',
+    de: 'Di., 13. Okt.',
+    es: 'Mar, 13 oct',
+  });
+  assert.equal(cost.label.fr, 'Coût mar. 13 oct.');
+  assert.equal(cost.label.en, 'Cost Tue 13 Oct');
 });
 
 test('without any reading yet, the widget explains what to do', async (t) => {

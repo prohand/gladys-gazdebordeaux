@@ -118,9 +118,11 @@ There is no public API: the client calls the JSON endpoints the customer website
   `.github/workflows/tariffs.yml` does it and opens a PR; a template whose prices changed takes the
   grid date as `version` (shown by the wizard; Gladys never updates an existing contract: a price
   change is a new contract, which the docs tell the user), an
-  unchanged one is kept as is. When the
-  prices change, also update the price tables of `docs/*.md` and `test/fixtures/grid-*.txt`
-  (`test/tariffs.test.js` checks the manifest matches the fixtures). Prices are template `inputs`:
+  unchanged one is kept as is. A price
+  change also copies the grids to `test/fixtures/grid-*.txt` and rewrites the price tables of
+  `docs/*.md` (run Prettier after): `test/tariffs.test.js` checks the manifest and the docs match
+  those fixtures. The parsing tests use the frozen October 2026 grids of `test/fixtures/2026-10/`
+  (never update them). Prices are template `inputs`:
   a fixed-price contract keeps the price of its subscription date. Never rename a template key.
   Electricity only (Gladys contracts do not cover gas). Peak/Off-peak needs half-hourly readings.
 - **Contract prices** (`src/gazdebordeaux/prices.js`): read from espaceclient

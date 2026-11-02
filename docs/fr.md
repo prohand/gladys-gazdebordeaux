@@ -249,7 +249,7 @@ contrat avec le nouveau prix.
 ### Les prix par défaut : les grilles officielles
 
 Les valeurs proposées par défaut sont celles des **grilles tarifaires
-officielles** de Gaz de Bordeaux (prix TTC, ici celles du 1er octobre 2026).
+officielles** de Gaz de Bordeaux (prix TTC, ici celles du 1er novembre 2026).
 Elles sont téléchargées chaque mois sur gazdebordeaux.fr : quand un prix
 change, une nouvelle version de l'intégration propose les nouveaux prix pour
 les contrats créés ensuite. Un contrat déjà créé garde ses prix : voir **Quand
@@ -257,15 +257,15 @@ vos prix changent**.
 
 | Puissance | Abonnement / mois | NovaFixe : kWh Base | NovaFixe : HP / HC | NovaFlex : kWh Base | NovaFlex : HP / HC |
 | --------- | ----------------- | ------------------- | ------------------ | ------------------- | ------------------ |
-| 3 kVA     | 12,13             | 0,18373             | –                  | 0,19190             | –                  |
-| 6 kVA     | 15,87             | 0,18373             | 0,19648 / 0,14669  | 0,19190             | 0,20536 / 0,15280  |
-| 9 kVA     | 19,88             | 0,18233             | 0,19648 / 0,14669  | 0,19042             | 0,20536 / 0,15280  |
-| 12 kVA    | 23,76             | 0,18233             | 0,19648 / 0,14669  | 0,19042             | 0,20536 / 0,15280  |
-| 15 kVA    | 27,40             | 0,18233             | 0,19648 / 0,14669  | 0,19042             | 0,20536 / 0,15280  |
-| 18 kVA    | 31,14             | –                   | 0,19648 / 0,14669  | –                   | 0,20536 / 0,15280  |
-| 24 kVA    | 39,13             | –                   | 0,19648 / 0,14669  | –                   | 0,20536 / 0,15280  |
-| 30 kVA    | 46,46             | –                   | 0,19648 / 0,14669  | –                   | 0,20536 / 0,15280  |
-| 36 kVA    | 53,88             | –                   | 0,19648 / 0,14669  | –                   | 0,20536 / 0,15280  |
+| 3 kVA     | 12,13             | 0,19190             | –                  | 0,19680             | –                  |
+| 6 kVA     | 15,87             | 0,19190             | 0,20536 / 0,15280  | 0,19680             | 0,21067 / 0,15646  |
+| 9 kVA     | 19,88             | 0,19042             | 0,20536 / 0,15280  | 0,19526             | 0,21067 / 0,15646  |
+| 12 kVA    | 23,76             | 0,19042             | 0,20536 / 0,15280  | 0,19526             | 0,21067 / 0,15646  |
+| 15 kVA    | 27,40             | 0,19042             | 0,20536 / 0,15280  | 0,19526             | 0,21067 / 0,15646  |
+| 18 kVA    | 31,14             | –                   | 0,20536 / 0,15280  | –                   | 0,21067 / 0,15646  |
+| 24 kVA    | 39,13             | –                   | 0,20536 / 0,15280  | –                   | 0,21067 / 0,15646  |
+| 30 kVA    | 46,46             | –                   | 0,20536 / 0,15280  | –                   | 0,21067 / 0,15646  |
+| 36 kVA    | 53,88             | –                   | 0,20536 / 0,15280  | –                   | 0,21067 / 0,15646  |
 
 L'abonnement est le même pour les trois offres. NovaFixe Bonus Élec a les
 prix de NovaFixe Élec.

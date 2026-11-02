@@ -18,16 +18,17 @@
 // `version` (shown by the contract wizard; a contract already created keeps
 // its own prices, Gladys never changes it); an unchanged one is kept as
 // is, so a new monthly grid with the same prices changes nothing. A change
-// also adds a line to CHANGELOG.md.
+// also adds a line to CHANGELOG.md and copies the grids to test/fixtures/;
+// the price tables of docs/*.md follow the grids.
 //
 // Run monthly by .github/workflows/tariffs.yml, which opens a pull request.
 // The parsing is tested in test/tariffs.test.js against real grids.
 // -----------------------------------------------------------------------------
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 const LANGUAGES = ['en', 'fr', 'de', 'es'];
 const DEFAULT_POWER = 6;
@@ -395,6 +396,65 @@ export function addChangelogLine(text, line) {
   return `${text.slice(0, bodyStart)}${newBody.startsWith('\n') ? '' : '\n'}${newBody}${text.slice(end)}`;
 }
 
+// --- The price tables of the docs ----------------------------------------------
+
+const DOCS_LANGUAGES = ['en', 'fr', 'de', 'es'];
+
+// "here the 1 October 2026 ones" and its translations: the date of the grids.
+const DOCS_DATE = {
+  en: {
+    pattern: /here the \d{1,2} \p{L}+ \d{4} ones/u,
+    text: (day, month, year) => `here the ${day} ${month} ${year} ones`,
+  },
+  fr: {
+    pattern: /ici celles du (?:1er|\d{1,2}) \p{L}+ \d{4}/u,
+    text: (day, month, year) => `ici celles du ${day === 1 ? '1er' : day} ${month} ${year}`,
+  },
+  de: {
+    pattern: /hier die vom \d{1,2}\. \p{L}+ \d{4}/u,
+    text: (day, month, year) => `hier die vom ${day}. ${month} ${year}`,
+  },
+  es: {
+    pattern: /aquí las del \d{1,2} de \p{L}+ de \d{4}/u,
+    text: (day, month, year) => `aquí las del ${day} de ${month} de ${year}`,
+  },
+};
+
+// Markdown tables are aligned by Prettier: compare them without the padding.
+const unpadded = (text) => text.replace(/ {2,}/g, ' ');
+
+/**
+ * docs/<language>.md with the price table and the grid date of the given
+ * grids (NovaFixe Élec and NovaFlex Élec columns; NovaFixe Bonus Élec has the
+ * NovaFixe prices). The rows come out unpadded: run Prettier afterwards.
+ * @param {string} text
+ * @param {string} language en, fr, de or es
+ * @param {Record<string, ReturnType<typeof parseGrid>>} grids by offer key
+ */
+export function updateDocs(text, language, grids) {
+  const fixed = grids['novafixe-elec'];
+  const flex = grids['novaflex-elec'];
+  const price = (value) => (value === undefined ? '–' : amount(language, value));
+  const pair = (option) => (option ? `${price(option.peak)} / ${price(option.offPeak)}` : '–');
+  const rowOf = (grid, power) => grid.rows.find((row) => row.power === power);
+  let result = text.replace(/^\|\s*(\d+) kVA\s*\|.*$/gm, (line, power) => {
+    const a = rowOf(fixed, Number(power));
+    const b = rowOf(flex, Number(power));
+    if (!a || !b) {
+      return line;
+    }
+    const subscription = a.base?.subscription ?? a.peakOffPeak?.subscription;
+    return `| ${power} kVA | ${price(subscription)} | ${price(a.base?.kwh)} | ${pair(a.peakOffPeak)} | ${price(b.base?.kwh)} | ${pair(b.peakOffPeak)} |`;
+  });
+  const [year, month, day] = fixed.date.split('-').map(Number);
+  const monthName = new Intl.DateTimeFormat(language, { month: 'long', timeZone: 'UTC' }).format(
+    new Date(Date.UTC(year, month - 1, day)),
+  );
+  const date = DOCS_DATE[language];
+  result = result.replace(date.pattern, date.text(day, monthName, year));
+  return result;
+}
+
 // --- Command line -------------------------------------------------------------
 
 function pdfToText(file) {
@@ -449,6 +509,9 @@ async function downloadGrids(directory) {
   }
 }
 
+// The grids the tests check the manifest and the docs against.
+const FIXTURES = join('test', 'fixtures');
+
 function update(directory) {
   const grids = {};
   for (const offer of OFFERS) {
@@ -475,6 +538,24 @@ function update(directory) {
         `Electricity contract templates: default prices of the official ${date} Gaz de Bordeaux grid (${changed.join(', ')}).`,
       ),
     );
+    // test/tariffs.test.js checks the manifest and the docs against these
+    // grids: they move together, or the pull request fails its own checks.
+    if (resolve(directory) !== resolve(FIXTURES)) {
+      for (const offer of OFFERS) {
+        copyFileSync(
+          join(directory, `grid-${offer.key}.txt`),
+          join(FIXTURES, `grid-${offer.key}.txt`),
+        );
+      }
+    }
+  }
+  for (const language of DOCS_LANGUAGES) {
+    const file = join('docs', `${language}.md`);
+    const before = readFileSync(file, 'utf8');
+    const after = updateDocs(before, language, grids);
+    if (unpadded(after) !== unpadded(before)) {
+      writeFileSync(file, after);
+    }
   }
   console.log(changed.length ? `Changed: ${changed.join(', ')}` : 'Prices unchanged');
   if (process.env.GITHUB_OUTPUT) {

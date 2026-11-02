@@ -6,8 +6,9 @@
 # downloads the official price grid of each electricity offer from
 # www.gazdebordeaux.fr, rebuilds the `energy_contracts` templates of the
 # manifest with .github/scripts/tariffs.mjs and, when a price changed, opens a
-# pull request (manifest + CHANGELOG line). Merge it, then cut a release:
-# Gladys offers the new prices to the contracts using the templates.
+# pull request (manifest, CHANGELOG line, docs price tables and the grids of
+# test/fixtures/, which the tests check the manifest against). Merge it, then
+# cut a release: Gladys offers the new prices to the contracts using the templates.
 #
 # The grids come from a form of the website that needs a real browser
 # (Playwright, Chromium) and are PDFs (pdftotext, poppler-utils).
@@ -62,7 +63,9 @@ jobs:
       - name: Format and check
         if: steps.update.outputs.changed == 'true'
         run: |
-          npx prettier --write gladys-assistant-integration.json CHANGELOG.md
+          npx prettier --write gladys-assistant-integration.json CHANGELOG.md docs
+          npm run format:check
+          npm run lint
           npm test
 
       - name: Open the pull request
@@ -77,7 +80,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B "$branch"
-          git add gladys-assistant-integration.json CHANGELOG.md
+          git add gladys-assistant-integration.json CHANGELOG.md docs test/fixtures
           git commit -m "chore(prices): Gaz de Bordeaux electricity grid of ${GRID_DATE}"
           git push --force origin "$branch"
           body="New default prices from the official Gaz de Bordeaux grids of ${GRID_DATE}.

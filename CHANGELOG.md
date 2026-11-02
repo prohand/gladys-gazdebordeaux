@@ -10,6 +10,10 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Changed
+
+- Electricity contract templates: default prices of the official 2026-11-01 Gaz de Bordeaux grid (novafixe-elec-base, novafixe-elec-peak-off-peak, novafixe-bonus-elec-base, novafixe-bonus-elec-peak-off-peak, novaflex-elec-base, novaflex-elec-peak-off-peak).
+
 ## [1.1.2] - 2026-10-31
 
 ### Fixed

@@ -840,22 +840,22 @@
           "es": "Gaz de Bordeaux NovaFixe Élec – Base"
         },
         "description": {
-          "en": "Fixed-price offer: the kWh and subscription prices excl. taxes are locked for 3 years from subscription, 10% below the regulated tariff. Defaults: official prices incl. VAT of the 2026-10-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
-          "fr": "Offre à prix fixe : les prix HT du kWh et de l'abonnement sont bloqués 3 ans à la souscription, 10 % sous le tarif réglementé. Par défaut : prix TTC officiels de la grille du 01/10/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
-          "de": "Festpreisangebot: kWh- und Grundpreis ohne Steuern sind 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif. Standard: offizielle Bruttopreise der Preisliste vom 01.10.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
-          "es": "Oferta a precio fijo: los precios sin impuestos del kWh y de la suscripción quedan fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada. Por defecto: precios oficiales con IVA de la tarifa del 01/10/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
+          "en": "Fixed-price offer: the kWh and subscription prices excl. taxes are locked for 3 years from subscription, 10% below the regulated tariff. Defaults: official prices incl. VAT of the 2026-11-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
+          "fr": "Offre à prix fixe : les prix HT du kWh et de l'abonnement sont bloqués 3 ans à la souscription, 10 % sous le tarif réglementé. Par défaut : prix TTC officiels de la grille du 01/11/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
+          "de": "Festpreisangebot: kWh- und Grundpreis ohne Steuern sind 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif. Standard: offizielle Bruttopreise der Preisliste vom 01.11.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
+          "es": "Oferta a precio fijo: los precios sin impuestos del kWh y de la suscripción quedan fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada. Por defecto: precios oficiales con IVA de la tarifa del 01/11/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "rules",
-        "version": "2026-10-01",
+        "version": "2026-11-01",
         "inputs": [
           {
             "key": "kwh_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.18373,
+            "default": 0.1919,
             "required": true,
             "label": {
               "en": "kWh price (incl. VAT)",
@@ -864,10 +864,10 @@
               "es": "Precio del kWh (IVA incl.)"
             },
             "description": {
-              "en": "Default: 6 kVA. 9 kVA 0.18233, 12 kVA 0.18233, 15 kVA 0.18233.",
-              "fr": "Par défaut : 6 kVA. 9 kVA 0,18233, 12 kVA 0,18233, 15 kVA 0,18233.",
-              "de": "Standard: 6 kVA. 9 kVA 0,18233, 12 kVA 0,18233, 15 kVA 0,18233.",
-              "es": "Por defecto: 6 kVA. 9 kVA 0,18233, 12 kVA 0,18233, 15 kVA 0,18233."
+              "en": "Default: 6 kVA. 9 kVA 0.19042, 12 kVA 0.19042, 15 kVA 0.19042.",
+              "fr": "Par défaut : 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042.",
+              "de": "Standard: 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042.",
+              "es": "Por defecto: 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042."
             }
           },
           {
@@ -920,22 +920,22 @@
           "es": "Gaz de Bordeaux NovaFixe Élec – Horas valle"
         },
         "description": {
-          "en": "Fixed-price offer: the kWh and subscription prices excl. taxes are locked for 3 years from subscription, 10% below the regulated tariff. Defaults: official prices incl. VAT of the 2026-10-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
-          "fr": "Offre à prix fixe : les prix HT du kWh et de l'abonnement sont bloqués 3 ans à la souscription, 10 % sous le tarif réglementé. Par défaut : prix TTC officiels de la grille du 01/10/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
-          "de": "Festpreisangebot: kWh- und Grundpreis ohne Steuern sind 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif. Standard: offizielle Bruttopreise der Preisliste vom 01.10.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
-          "es": "Oferta a precio fijo: los precios sin impuestos del kWh y de la suscripción quedan fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada. Por defecto: precios oficiales con IVA de la tarifa del 01/10/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
+          "en": "Fixed-price offer: the kWh and subscription prices excl. taxes are locked for 3 years from subscription, 10% below the regulated tariff. Defaults: official prices incl. VAT of the 2026-11-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
+          "fr": "Offre à prix fixe : les prix HT du kWh et de l'abonnement sont bloqués 3 ans à la souscription, 10 % sous le tarif réglementé. Par défaut : prix TTC officiels de la grille du 01/11/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
+          "de": "Festpreisangebot: kWh- und Grundpreis ohne Steuern sind 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif. Standard: offizielle Bruttopreise der Preisliste vom 01.11.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
+          "es": "Oferta a precio fijo: los precios sin impuestos del kWh y de la suscripción quedan fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada. Por defecto: precios oficiales con IVA de la tarifa del 01/11/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "rules",
-        "version": "2026-10-01",
+        "version": "2026-11-01",
         "inputs": [
           {
             "key": "peak_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.19648,
+            "default": 0.20536,
             "required": true,
             "label": {
               "en": "Peak kWh price (incl. VAT)",
@@ -948,7 +948,7 @@
             "key": "off_peak_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.14669,
+            "default": 0.1528,
             "required": true,
             "label": {
               "en": "Off-peak kWh price (incl. VAT)",
@@ -1034,22 +1034,22 @@
           "es": "Gaz de Bordeaux NovaFixe Bonus Élec – Base"
         },
         "description": {
-          "en": "Fixed-price offer with €100 off the first year: prices excl. taxes locked for 3 years from subscription, 10% below the regulated tariff. Defaults: official prices incl. VAT of the 2026-10-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
-          "fr": "Offre à prix fixe avec 100 € offerts la première année : prix HT bloqués 3 ans à la souscription, 10 % sous le tarif réglementé. Par défaut : prix TTC officiels de la grille du 01/10/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
-          "de": "Festpreisangebot mit 100 € Bonus im ersten Jahr: Preise ohne Steuern 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif. Standard: offizielle Bruttopreise der Preisliste vom 01.10.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
-          "es": "Oferta a precio fijo con 100 € de regalo el primer año: precios sin impuestos fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada. Por defecto: precios oficiales con IVA de la tarifa del 01/10/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
+          "en": "Fixed-price offer with €100 off the first year: prices excl. taxes locked for 3 years from subscription, 10% below the regulated tariff. Defaults: official prices incl. VAT of the 2026-11-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
+          "fr": "Offre à prix fixe avec 100 € offerts la première année : prix HT bloqués 3 ans à la souscription, 10 % sous le tarif réglementé. Par défaut : prix TTC officiels de la grille du 01/11/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
+          "de": "Festpreisangebot mit 100 € Bonus im ersten Jahr: Preise ohne Steuern 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif. Standard: offizielle Bruttopreise der Preisliste vom 01.11.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
+          "es": "Oferta a precio fijo con 100 € de regalo el primer año: precios sin impuestos fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada. Por defecto: precios oficiales con IVA de la tarifa del 01/11/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "rules",
-        "version": "2026-10-01",
+        "version": "2026-11-01",
         "inputs": [
           {
             "key": "kwh_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.18373,
+            "default": 0.1919,
             "required": true,
             "label": {
               "en": "kWh price (incl. VAT)",
@@ -1058,10 +1058,10 @@
               "es": "Precio del kWh (IVA incl.)"
             },
             "description": {
-              "en": "Default: 6 kVA. 9 kVA 0.18233, 12 kVA 0.18233, 15 kVA 0.18233.",
-              "fr": "Par défaut : 6 kVA. 9 kVA 0,18233, 12 kVA 0,18233, 15 kVA 0,18233.",
-              "de": "Standard: 6 kVA. 9 kVA 0,18233, 12 kVA 0,18233, 15 kVA 0,18233.",
-              "es": "Por defecto: 6 kVA. 9 kVA 0,18233, 12 kVA 0,18233, 15 kVA 0,18233."
+              "en": "Default: 6 kVA. 9 kVA 0.19042, 12 kVA 0.19042, 15 kVA 0.19042.",
+              "fr": "Par défaut : 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042.",
+              "de": "Standard: 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042.",
+              "es": "Por defecto: 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042."
             }
           },
           {
@@ -1114,22 +1114,22 @@
           "es": "Gaz de Bordeaux NovaFixe Bonus Élec – Horas valle"
         },
         "description": {
-          "en": "Fixed-price offer with €100 off the first year: prices excl. taxes locked for 3 years from subscription, 10% below the regulated tariff. Defaults: official prices incl. VAT of the 2026-10-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
-          "fr": "Offre à prix fixe avec 100 € offerts la première année : prix HT bloqués 3 ans à la souscription, 10 % sous le tarif réglementé. Par défaut : prix TTC officiels de la grille du 01/10/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
-          "de": "Festpreisangebot mit 100 € Bonus im ersten Jahr: Preise ohne Steuern 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif. Standard: offizielle Bruttopreise der Preisliste vom 01.10.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
-          "es": "Oferta a precio fijo con 100 € de regalo el primer año: precios sin impuestos fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada. Por defecto: precios oficiales con IVA de la tarifa del 01/10/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
+          "en": "Fixed-price offer with €100 off the first year: prices excl. taxes locked for 3 years from subscription, 10% below the regulated tariff. Defaults: official prices incl. VAT of the 2026-11-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
+          "fr": "Offre à prix fixe avec 100 € offerts la première année : prix HT bloqués 3 ans à la souscription, 10 % sous le tarif réglementé. Par défaut : prix TTC officiels de la grille du 01/11/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
+          "de": "Festpreisangebot mit 100 € Bonus im ersten Jahr: Preise ohne Steuern 3 Jahre ab Vertragsabschluss fest, 10 % unter dem regulierten Tarif. Standard: offizielle Bruttopreise der Preisliste vom 01.11.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
+          "es": "Oferta a precio fijo con 100 € de regalo el primer año: precios sin impuestos fijos 3 años desde la contratación, un 10 % bajo la tarifa regulada. Por defecto: precios oficiales con IVA de la tarifa del 01/11/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "rules",
-        "version": "2026-10-01",
+        "version": "2026-11-01",
         "inputs": [
           {
             "key": "peak_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.19648,
+            "default": 0.20536,
             "required": true,
             "label": {
               "en": "Peak kWh price (incl. VAT)",
@@ -1142,7 +1142,7 @@
             "key": "off_peak_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.14669,
+            "default": 0.1528,
             "required": true,
             "label": {
               "en": "Off-peak kWh price (incl. VAT)",
@@ -1228,22 +1228,22 @@
           "es": "Gaz de Bordeaux NovaFlex Élec – Base"
         },
         "description": {
-          "en": "Indexed offer: the prices follow the regulated tariff (TRV), the kWh excl. taxes 5% below it. Update your prices when the TRV changes. Defaults: official prices incl. VAT of the 2026-10-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
-          "fr": "Offre indexée : les prix suivent le tarif réglementé (TRV), le kWh HT 5 % en dessous. Mettez vos prix à jour quand le TRV change. Par défaut : prix TTC officiels de la grille du 01/10/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
-          "de": "Indexiertes Angebot: die Preise folgen dem regulierten Tarif (TRV), die kWh ohne Steuern 5 % darunter. Preise anpassen, wenn sich der TRV ändert. Standard: offizielle Bruttopreise der Preisliste vom 01.10.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
-          "es": "Oferta indexada: los precios siguen la tarifa regulada (TRV), el kWh sin impuestos un 5 % por debajo. Actualice sus precios cuando cambie la TRV. Por defecto: precios oficiales con IVA de la tarifa del 01/10/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
+          "en": "Indexed offer: the prices follow the regulated tariff (TRV), the kWh excl. taxes 5% below it. Update your prices when the TRV changes. Defaults: official prices incl. VAT of the 2026-11-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
+          "fr": "Offre indexée : les prix suivent le tarif réglementé (TRV), le kWh HT 5 % en dessous. Mettez vos prix à jour quand le TRV change. Par défaut : prix TTC officiels de la grille du 01/11/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
+          "de": "Indexiertes Angebot: die Preise folgen dem regulierten Tarif (TRV), die kWh ohne Steuern 5 % darunter. Preise anpassen, wenn sich der TRV ändert. Standard: offizielle Bruttopreise der Preisliste vom 01.11.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
+          "es": "Oferta indexada: los precios siguen la tarifa regulada (TRV), el kWh sin impuestos un 5 % por debajo. Actualice sus precios cuando cambie la TRV. Por defecto: precios oficiales con IVA de la tarifa del 01/11/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "rules",
-        "version": "2026-10-01",
+        "version": "2026-11-01",
         "inputs": [
           {
             "key": "kwh_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.1919,
+            "default": 0.1968,
             "required": true,
             "label": {
               "en": "kWh price (incl. VAT)",
@@ -1252,10 +1252,10 @@
               "es": "Precio del kWh (IVA incl.)"
             },
             "description": {
-              "en": "Default: 6 kVA. 9 kVA 0.19042, 12 kVA 0.19042, 15 kVA 0.19042.",
-              "fr": "Par défaut : 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042.",
-              "de": "Standard: 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042.",
-              "es": "Por defecto: 6 kVA. 9 kVA 0,19042, 12 kVA 0,19042, 15 kVA 0,19042."
+              "en": "Default: 6 kVA. 9 kVA 0.19526, 12 kVA 0.19526, 15 kVA 0.19526.",
+              "fr": "Par défaut : 6 kVA. 9 kVA 0,19526, 12 kVA 0,19526, 15 kVA 0,19526.",
+              "de": "Standard: 6 kVA. 9 kVA 0,19526, 12 kVA 0,19526, 15 kVA 0,19526.",
+              "es": "Por defecto: 6 kVA. 9 kVA 0,19526, 12 kVA 0,19526, 15 kVA 0,19526."
             }
           },
           {
@@ -1308,22 +1308,22 @@
           "es": "Gaz de Bordeaux NovaFlex Élec – Horas valle"
         },
         "description": {
-          "en": "Indexed offer: the prices follow the regulated tariff (TRV), the kWh excl. taxes 5% below it. Update your prices when the TRV changes. Defaults: official prices incl. VAT of the 2026-10-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
-          "fr": "Offre indexée : les prix suivent le tarif réglementé (TRV), le kWh HT 5 % en dessous. Mettez vos prix à jour quand le TRV change. Par défaut : prix TTC officiels de la grille du 01/10/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
-          "de": "Indexiertes Angebot: die Preise folgen dem regulierten Tarif (TRV), die kWh ohne Steuern 5 % darunter. Preise anpassen, wenn sich der TRV ändert. Standard: offizielle Bruttopreise der Preisliste vom 01.10.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
-          "es": "Oferta indexada: los precios siguen la tarifa regulada (TRV), el kWh sin impuestos un 5 % por debajo. Actualice sus precios cuando cambie la TRV. Por defecto: precios oficiales con IVA de la tarifa del 01/10/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
+          "en": "Indexed offer: the prices follow the regulated tariff (TRV), the kWh excl. taxes 5% below it. Update your prices when the TRV changes. Defaults: official prices incl. VAT of the 2026-11-01 grid, 6 kVA. Enter those of your contract: the \"My contract prices\" button of the integration gives them.",
+          "fr": "Offre indexée : les prix suivent le tarif réglementé (TRV), le kWh HT 5 % en dessous. Mettez vos prix à jour quand le TRV change. Par défaut : prix TTC officiels de la grille du 01/11/2026, 6 kVA. Saisissez ceux de votre contrat : le bouton « Mes prix de contrat » de l'intégration les donne.",
+          "de": "Indexiertes Angebot: die Preise folgen dem regulierten Tarif (TRV), die kWh ohne Steuern 5 % darunter. Preise anpassen, wenn sich der TRV ändert. Standard: offizielle Bruttopreise der Preisliste vom 01.11.2026, 6 kVA. Tragen Sie die Ihres Vertrags ein: die Schaltfläche „Meine Vertragspreise“ der Integration nennt sie.",
+          "es": "Oferta indexada: los precios siguen la tarifa regulada (TRV), el kWh sin impuestos un 5 % por debajo. Actualice sus precios cuando cambie la TRV. Por defecto: precios oficiales con IVA de la tarifa del 01/11/2026, 6 kVA. Introduzca los de su contrato: el botón «Mis precios de contrato» de la integración los da."
         },
         "country": "FR",
         "currency": "EUR",
         "timezone": "Europe/Paris",
         "pricing_mode": "rules",
-        "version": "2026-10-01",
+        "version": "2026-11-01",
         "inputs": [
           {
             "key": "peak_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.20536,
+            "default": 0.21067,
             "required": true,
             "label": {
               "en": "Peak kWh price (incl. VAT)",
@@ -1336,7 +1336,7 @@
             "key": "off_peak_price",
             "type": "number",
             "unit": "EUR/kWh",
-            "default": 0.1528,
+            "default": 0.15646,
             "required": true,
             "label": {
               "en": "Off-peak kWh price (incl. VAT)",
